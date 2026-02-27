@@ -33,15 +33,12 @@ function microtime_float() {
 */
 function BenutzerHatRechtMandant($iRecht, $iMandant=null) {
   global $loginID;
-  $q = 'SELECT USERID
-          FROM RECHTZUORDNUNG
-        WHERE USERID = ' . $loginID . '
-          AND RECHTID = "' . $iRecht . '"';
   if ($iMandant) {
-    $q .= '
-          AND MANDANTID = ' . $iMandant;
+    $q = 'SELECT USERID FROM RECHTZUORDNUNG WHERE USERID = ? AND RECHTID = ? AND MANDANTID = ?';
+    return (DB::getOne($q, (int)$loginID, $iRecht, (int)$iMandant) == $loginID);
   }
-  return (DB::getOne($q) == $loginID);
+  $q = 'SELECT USERID FROM RECHTZUORDNUNG WHERE USERID = ? AND RECHTID = ?';
+  return (DB::getOne($q, (int)$loginID, $iRecht) == $loginID);
 }
 
 /* Prüft lediglich auf Rechte für den entsprechenden Bereich
@@ -144,12 +141,8 @@ class PELAS {
         if (empty($cat)) {
             $cat = NULL;
         }
-        $cat = DB::$link->real_escape_string($cat);
-        $msg = DB::$link->real_escape_string($msg);
-        $sql = 'INSERT INTO `logging`
-                (`userID`, `msg`, `cat`)
-                VALUES (' . (($userID == NULL) ? 'NULL' : $userID) . ", '$msg', " . (($cat == NULL) ? 'NULL' : "'" . $cat . "'") . ")";
-        return DB::query($sql) ? true : false;
+        $sql = 'INSERT INTO `logging` (`userID`, `msg`, `cat`) VALUES (?, ?, ?)';
+        return DB::query($sql, $userID, $msg, $cat) ? true : false;
     }
 
     /* Gibt ein Array in der Form
@@ -180,13 +173,14 @@ class PELAS {
                   FROM RECHTZUORDNUNG
                   WHERE RECHTID = 'TEAMMEMBER'
                   GROUP BY USERID";
+            $res = DB::query($q);
         } else {
             $q = "SELECT USERID
                   FROM RECHTZUORDNUNG
                   WHERE RECHTID = 'TEAMMEMBER'
-                  AND MANDANTID = ".$mandant;
+                  AND MANDANTID = ?";
+            $res = DB::query($q, (int)$mandant);
         }
-        $res = DB::query($q);
         $retval = array();
         while ($row = $res->fetch_row()) {
             array_push($retval, $row[0]);
@@ -197,10 +191,8 @@ class PELAS {
     /* Liefert die Beschreibung des Mandanten. */
     function mandantByID($mandant_id) {
         if (isset($mandant_id)) {
-            $q = 'SELECT BESCHREIBUNG
-                  FROM MANDANT
-                  WHERE MANDANTID = '.$mandant_id;
-            $res = DB::query($q);
+            $q = 'SELECT BESCHREIBUNG FROM MANDANT WHERE MANDANTID = ?';
+            $res = DB::query($q, (int)$mandant_id);
             $row = $res->fetch_row();
             return $row[0];
         }
@@ -209,11 +201,8 @@ class PELAS {
     /* Liefert die aktuell aktive PartyID des Mandaten. */
     public static function mandantAktuelleParty($mandant_id) {
         if (isset($mandant_id)) {
-            $q = "SELECT partyId
-                  FROM party
-                  WHERE mandantId = '".intval($mandant_id)."'
-                    AND aktiv = 'J'";
-            $res = DB::query($q);
+            $q = "SELECT partyId FROM party WHERE mandantId = ? AND aktiv = 'J'";
+            $res = DB::query($q, (int)$mandant_id);
             $row = $res->fetch_row();
             return $row[0];
         }
@@ -223,12 +212,11 @@ class PELAS {
     public static function mandantNextParty($mandant_id, $aktuelle_party_id) {
 		$q = "SELECT partyId
                   FROM party
-                  WHERE 
-					mandantId = '".intval($mandant_id)."'
-                    AND terminVon > (SELECT terminVon FROM party WHERE partyId = ".intval($aktuelle_party_id).")
+                  WHERE mandantId = ?
+                    AND terminVon > (SELECT terminVon FROM party WHERE partyId = ?)
 				  ORDER BY terminVon ASC
 				  LIMIT 1";
-            $res = DB::query($q);
+            $res = DB::query($q, (int)$mandant_id, (int)$aktuelle_party_id);
             $row = $res->fetch_row();
 			
             if (isset($row[0]) && $row[0] > 0)
@@ -240,10 +228,8 @@ class PELAS {
     /* Liefert die MandantID anhand der aktuellen PartyID. */
     function AktuellePartyMandant($party_id) {
         if (isset($party_id)) {
-            $q = 'SELECT mandantId
-                  FROM party
-                  WHERE partyId = ' . $party_id;
-            $res = DB::query($q);
+            $q = 'SELECT mandantId FROM party WHERE partyId = ?';
+            $res = DB::query($q, (int)$party_id);
             $row = $res->fetch_row();
             return $row[0];
         }
@@ -328,10 +314,10 @@ class User {
         $q = 'SELECT uet.*
 	      FROM user_ext_team uet,
 		  		USER_EXT ue
-              WHERE ue.USERID = ' . $user . '
+              WHERE ue.USERID = ?
                 AND uet.id = ue.TEILTEAMID';
-			
-		$row = DB::getRow($q);
+		
+		$row = DB::getRow($q, (int)$user);
 		if ( $row ) {
 			if ($row['leader_id'] == $user || $row['proxy_id'] == $user) {
 				$ret = "Head of ";
@@ -357,15 +343,15 @@ class User {
     function hasRight($right, $mandantID=null) {
         $q = 'SELECT COUNT(*) > 0
 	      FROM RECHTZUORDNUNG
-              WHERE USERID = ' . $this->userID . '
-                AND RECHTID = "' . $right . '"';
+              WHERE USERID = ?
+                AND RECHTID = ?';
 	$mandantID = (int) $mandantID;
         if ($mandantID) {
             # Nur gegen den angegebenen Mandanten prüfen.
-            $q .= '
-                AND MANDANTID = ' . $mandantID;
+            $q .= ' AND MANDANTID = ?';
+            return DB::getOne($q, (int)$this->id, $right, $mandantID);
         }
-        return DB::getOne($q);
+        return DB::getOne($q, (int)$this->id, $right);
     }
 
     /* Liefert alle Mandanten, auf die der Benutzer mit dem angegebenen Recht
@@ -399,20 +385,16 @@ class User {
         if ($userID == -1) {
             $userID = User::loginID();
         }
-        $q = 'SELECT LOGIN
-              FROM USER
-              WHERE USERID = ' . $userID;
-	return DB::getOne($q);
+        $q = 'SELECT LOGIN FROM USER WHERE USERID = ?';
+	return DB::getOne($q, (int)$userID);
     }
 
     function email($userID=-1) {
         if ($userID == -1) {
             $userID = User::loginID();
         }
-        $q = 'SELECT EMAIL
-              FROM USER
-              WHERE USERID = ' . $userID;
-	return DB::getOne($q);
+        $q = 'SELECT EMAIL FROM USER WHERE USERID = ?';
+	return DB::getOne($q, (int)$userID);
     }
 
     /*
@@ -429,14 +411,14 @@ class User {
 	$mandantID = (int) $mandantID;
         $q = "SELECT COUNT(*) > 0
 	      FROM RECHTZUORDNUNG
-              WHERE USERID = '" . $userID . "'
-                AND RECHTID = '" . $recht . "' ";
+              WHERE USERID = ?
+                AND RECHTID = ?";
         if ($mandantID != -1) {
             # Nur nach dem angegebenen Mandanten schauen.
-            $q .= '
-                AND MANDANTID = ' . $mandantID;
+            $q .= ' AND MANDANTID = ?';
+            return DB::getOne($q, $userID, $recht, $mandantID);
         }
-        return DB::getOne($q);
+        return DB::getOne($q, $userID, $recht);
     }
 
     function istAngemeldet($userID=-1, $mandantID=-1) {
@@ -453,10 +435,10 @@ class User {
         }
         $q = 'SELECT COUNT(*)
               FROM ASTATUS
-              WHERE USERID = ' . $userID . '
-                AND MANDANTID = ' . $mandantID . '
-                AND STATUS = ' . $STATUS_ANGEMELDET;
-        return (DB::getOne($q) == 1);
+              WHERE USERID = ?
+                AND MANDANTID = ?
+                AND STATUS = ?';
+        return (DB::getOne($q, (int)$userID, (int)$mandantID, (int)$STATUS_ANGEMELDET) == 1);
     }
 
     /*
@@ -497,24 +479,24 @@ class User {
         # Sonst nur nach dem angegebenen Mandanten schauen.
         $q = "SELECT COUNT(*)
               FROM ASTATUS
-              WHERE USERID = $userID
-                AND MANDANTID = $mandantID
+              WHERE USERID = ?
+                AND MANDANTID = ?
                 AND STATUS IN ($STATUS_BEZAHLT, $STATUS_BEZAHLT_LOGE, $STATUS_BEZAHLT_VIPLOGE, $STATUS_COMFORT_4PERS, $STATUS_COMFORT_6PERS,
                            $STATUS_COMFORT_8PERS, $STATUS_PREMIUM_4PERS, $STATUS_PREMIUM_6PERS,
                            $STATUS_ZUGEORDNET, $STATUS_VIP_2PERS, $STATUS_VIP_4PERS)";
-        $rc = (DB::getOne($q) == 1);
+        $rc = (DB::getOne($q, (int)$userID, (int)$mandantID) == 1);
 
         # neues System
         $q = "SELECT t.userId
               FROM acc_tickets t,
                 party p
-              WHERE t.userId = '$userID'
+              WHERE t.userId = ?
 	        AND t.partyId = p.partyId
 	        AND p.aktiv = 'J'
-	        AND t.statusId = '" . ACC_STATUS_BEZAHLT . "'
-	        AND p.mandantId = '$mandantID'
+	        AND t.statusId = ?
+	        AND p.mandantId = ?
             ";
-        $res = DB::query($q);
+        $res = DB::query($q, (int)$userID, ACC_STATUS_BEZAHLT, (int)$mandantID);
         if ($res->num_rows) {
             $rc = true;
         };
@@ -549,13 +531,13 @@ class User {
         $q = "SELECT s.ownerId
               FROM acc_supporterpass s,
                 party p
-              WHERE s.ownerId = '$userID'
+              WHERE s.ownerId = ?
 	        AND s.partyId = p.partyId
 	        AND p.aktiv = 'J'
-	        AND s.statusId = '" . ACC_STATUS_BEZAHLT . "'
-	        AND s.partyId = '$realPartyID'
+	        AND s.statusId = ?
+	        AND s.partyId = ?
             ";
-	      $res = DB::query($q);
+	      $res = DB::query($q, (int)$userID, ACC_STATUS_BEZAHLT, (int)$realPartyID);
         if ($res->num_rows) {
             $rc = true;
         };
@@ -597,11 +579,8 @@ class CFG {
             $mandant = $nPartyID;
         }
         # Sonst nur nach dem angegebenen Mandanten schauen.
-        $q = 'SELECT STRINGWERT
-              FROM CONFIG
-              WHERE PARAMETER = "' . $key . '"
-                AND MANDANTID = "' . $mandant . '"';
-				$value = DB::getOne($q);
+        $q = 'SELECT STRINGWERT FROM CONFIG WHERE PARAMETER = ? AND MANDANTID = ?';
+				$value = DB::getOne($q, $key, (int)$mandant);
 				if ($value == "") {
 					return -1;
 				} else {
@@ -642,18 +621,45 @@ class DB {
 
     /* Ausführen eines Queries.
      *
-     * Optional können Parameter übergeben werden, die autmatisch maskiert und für
-     * Platzhalter ('?') im Query-String eingesetzt werden. Dabei muss die Anzahl der
-     * Platzhalter mit der Anzahl der Parameter überein stimmen.
+     * Optional können Parameter übergeben werden, die als echte Prepared-Statement-
+     * Parameter (MySQLi prepare/bind_param) übergeben werden. Dabei muss die Anzahl
+     * der Platzhalter ('?') mit der Anzahl der Parameter übereinstimmen.
      */
     static function query($sql) {
-        # Replace placeholders in query string if parameters are given.
-		
-	if (func_num_args() > 1) {
-	    $params = func_get_args();
-	    array_shift($params);
-	    $sql = DB::buildQuery($sql, $params);
-	}
+        # Use a real prepared statement when parameters are provided via ? placeholders.
+        if (func_num_args() > 1) {
+            $params = array_slice(func_get_args(), 1);
+            if (DB_STATISTICS) {
+                $start = microtime_float();
+            }
+            $stmt = DB::$link->prepare($sql);
+            if (!$stmt) {
+                echo 'Query prepare failed: ' . DB::$link->error . "\n";
+                return false;
+            }
+            $types = '';
+            foreach ($params as $param) {
+                if (is_int($param) || is_bool($param)) {
+                    $types .= 'i';
+                } elseif (is_float($param)) {
+                    $types .= 'd';
+                } else {
+                    $types .= 's';
+                }
+            }
+            $stmt->bind_param($types, ...$params);
+            $stmt->execute();
+            if (DB_STATISTICS) {
+                $GLOBALS['queries'][] = array(
+                    'query' => $sql,
+                    'time' => microtime_float() - $start);
+            }
+            if ($stmt->errno) {
+                echo 'Query failed: ' . $stmt->error . "\n";
+                return false;
+            }
+            return $stmt->get_result();
+        }
 
 	# Execute (and, optionally, measure) query.
         if (DB_STATISTICS) {

@@ -191,7 +191,10 @@ if (isset($_GET['action']) && $_GET['action'] == "passwordreset") {
 		if ($captchaCheck == "1") {
 			
 			$email_lowered = strtolower($_POST['iEmail']);
-			$result = mysql_query("select USERID, LOGIN, EMAIL from USER where LCASE(EMAIL)= '".$email_lowered."'");
+			$stmt = DB::$link->prepare("select USERID, LOGIN, EMAIL from USER where LCASE(EMAIL) = ?");
+			$stmt->bind_param('s', $email_lowered);
+			$stmt->execute();
+			$result = $stmt->get_result();
 			//echo mysql_errno().": ".mysql_error()."<BR>";
 			$row = mysql_fetch_array($result);
 			$resultemail_lowered = strtolower($row['EMAIL']);
