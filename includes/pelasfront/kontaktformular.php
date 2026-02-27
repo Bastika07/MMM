@@ -93,10 +93,7 @@ function sendMail($text, $to, $from) {
 					
     if ($erfolg) {
       // erfolg      
-      $q = "INSERT INTO USERMAIL\n"
-          ."(von, an, text, zeit)\n"
-          ."VALUES ($from, $to, '".addslashes($msg)."', ".time().")";
-      DB::query($q);
+      DB::query("INSERT INTO USERMAIL (von, an, text, zeit) VALUES (?, ?, ?, ?)", $from, $to, $msg, time());
       echo "<table width=\"90%\" border=\"0\" cellpadding=\"2\" cellspacing=\"1\">\n";
       echo "  <tr><td class=\"pelas_benutzer_titel\" height=\"39\" colspan=\"3\" valign=\"top\">";
       echo "    <table width=\"100%\" height=\"100%\" cellpadding=\"2\" cellspacing=\"0\" border=\"0\">";
