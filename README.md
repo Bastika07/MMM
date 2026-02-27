@@ -326,7 +326,8 @@ All dependencies are vendored (no package manager):
 | PHPMailer | `includes/PHPMailer/` | Outgoing email |
 | Smarty 3 (SmartyBC) | `includes/smarty/` | Templating |
 | jQuery 3.7.1 | `multimadness.de/js/` | Frontend JS |
-| Lightbox | `multimadness.de/js/`, `css/` | Image gallery |
+| Lightbox 2.11.5 | `multimadness.de/js/`, `css/`, `img/` | Image gallery |
+| bxSlider 4.2.17 | `multimadness.de/js/`, `css/` | Responsive content slider |
 | html2canvas | `multimadness.de/` | Client-side canvas screenshot |
 | html2pdf (TCPDF-based) | `includes/html2pdf/`, `multimadness.de/html2pdf/` | PDF generation |
 | phpqrcode | `includes/phpqrcode.php` | QR code generation |
@@ -422,13 +423,16 @@ Each block sets:
 
 ### 🟡 Medium
 
-7. **Error suppression with `@`** — Many database calls use the `@` operator to silence errors instead of proper exception handling, making debugging very difficult.
+7. **Error suppression with `@`** — Many database calls use the `@` operator to silence PHP errors instead of proper exception handling, making debugging very difficult. Examples in the current codebase include `@DB::query(...)` calls in `includes/pelasfront/teilnahme.php` (lines 200–202). When a query fails silently, there is no logged error message and no stack trace, so failures only manifest as missing data or a blank page. The fix is to remove the `@` prefix and rely on MySQLi exceptions (or explicit `DB::$link->error` checks) so that failures surface during development.
 
-8. **Global variable pollution** — Auth state is propagated via bare globals (`$loginID`, `$nLoginID`, `$sLogin`) included from `getsession.php`, with no encapsulation.
+8. **Global variable pollution** — Auth state is propagated via bare global variables (`$nLoginID`, `$sLogin`, `$loginID`) that are written by `includes/getsession.php` and then read with `global $nLoginID;` declarations scattered across 24+ functions in 70+ files. There is no single authoritative accessor and no encapsulation, so any file can silently overwrite these values. A future improvement is to introduce a lightweight `Session` or `Auth` value-object that is instantiated once and passed explicitly (dependency injection) rather than relying on PHP's global scope.
 
-9. **Inline HTML / mixed concerns** — Pages mix HTML, SQL, and business logic in the same file with no separation, making testing and maintenance harder.
+9. **Inline HTML / mixed concerns** — Page modules (files under `includes/pelasfront/`, `multimadness.de/page/`, and `multimadness.de/admin/`) mix raw SQL queries, business logic, and HTML output in the same file with no separation of concerns. For example, `includes/pelasfront/teilnahme.php` issues DB queries, performs business-logic calculations, and `echo`s HTML form markup all in the same function. This tight coupling makes unit-testing individual concerns impossible without a browser/DB harness. The long-term fix is to separate controllers (routing + input validation) from models (DB/domain logic) and views (HTML templates).
 
-10. **Outdated frontend libraries** — other vendored JS/CSS libraries may not be receiving security updates.
+10. ~~**Outdated frontend libraries**~~ — **Fixed.** All vendored JS/CSS libraries have now been updated:
+    - **jQuery** updated from legacy 2.x → **3.7.1** ✅ (done previously)
+    - **bxSlider** updated from **v4.1.2** → **v4.2.17** (`js/jquery.bxslider.min.js`, `css/jquery.bxslider.css`, `css/images/`) ✅
+    - **Lightbox** updated from **v2.7.1 / v2.7.2** → **v2.11.5** (`js/lightbox.min.js`, `js/lightbox22.min.js`, `css/lightbox.css`, `img/close.png`, `img/loading.gif`, `img/next.png`, `img/prev.png`) ✅
 
 ### 🟢 Low / Informational
 
@@ -451,6 +455,8 @@ Each block sets:
 | ✅ | ~~Add CSRF token generation and validation to all state-changing forms~~ — done |
 | ✅ | ~~Replace hard-coded absolute paths in dev/intranet `constants.php` blocks with a single `BASE_DIR` constant derived at runtime (e.g. `dirname(__DIR__)`)~~ — done |
 | ✅ | ~~Add PHPUnit test coverage for core business logic (`pelasfunctions.php`, `DB::`, tournament classes)~~ — done |
-| 🟡 | Introduce a lightweight router/framework to separate routing, controllers, and views |
-| ✅ | Update or replace vendored frontend libraries (jQuery updated to 3.7.1) |
+| ✅ | ~~Update or replace vendored frontend libraries~~ — jQuery 3.7.1, bxSlider 4.2.17, Lightbox 2.11.5 — done |
+| 🟡 | Remove `@` error-suppression prefix from all `DB::query()` / MySQLi calls and add proper error handling (see item 7 in Known Issues) |
+| 🟡 | Encapsulate auth state (`$nLoginID`, `$sLogin`, `$loginID`) in a `Session`/`Auth` value-object and pass it via dependency injection instead of relying on PHP globals (see item 8) |
+| 🟡 | Introduce a lightweight router/framework to separate routing, controllers, and views (see item 9) |
 | 🟢 | Clean up dead/commented-out code in `pelasfunctions.php` |
