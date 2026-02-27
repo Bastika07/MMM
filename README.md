@@ -423,7 +423,7 @@ Each block sets:
 
 ### 🟡 Medium
 
-7. **Error suppression with `@`** — Many database calls use the `@` operator to silence PHP errors instead of proper exception handling, making debugging very difficult. Examples in the current codebase include `@DB::query(...)` calls in `includes/pelasfront/teilnahme.php` (lines 200–202). When a query fails silently, there is no logged error message and no stack trace, so failures only manifest as missing data or a blank page. The fix is to remove the `@` prefix and rely on MySQLi exceptions (or explicit `DB::$link->error` checks) so that failures surface during development.
+7. ~~**Error suppression with `@`**~~ — **Fixed.** The two `@DB::query(...)` calls in `includes/pelasfront/teilnahme.php` (the `update ASTATUS` and `insert into ASTATUS` statements) have been removed. Both calls have been converted to use `DB::query()` with `?` prepared-statement placeholders, so query failures now surface via the existing `DB::query()` error reporting rather than being silently swallowed by the `@` operator.
 
 8. **Global variable pollution** — Auth state is propagated via bare global variables (`$nLoginID`, `$sLogin`, `$loginID`) that are written by `includes/getsession.php` and then read with `global $nLoginID;` declarations scattered across 24+ functions in 70+ files. There is no single authoritative accessor and no encapsulation, so any file can silently overwrite these values. A future improvement is to introduce a lightweight `Session` or `Auth` value-object that is instantiated once and passed explicitly (dependency injection) rather than relying on PHP's global scope.
 
@@ -456,7 +456,7 @@ Each block sets:
 | ✅ | ~~Replace hard-coded absolute paths in dev/intranet `constants.php` blocks with a single `BASE_DIR` constant derived at runtime (e.g. `dirname(__DIR__)`)~~ — done |
 | ✅ | ~~Add PHPUnit test coverage for core business logic (`pelasfunctions.php`, `DB::`, tournament classes)~~ — done |
 | ✅ | ~~Update or replace vendored frontend libraries~~ — jQuery 3.7.1, bxSlider 4.2.17, Lightbox 2.11.5 — done |
-| 🟡 | Remove `@` error-suppression prefix from all `DB::query()` / MySQLi calls and add proper error handling (see item 7 in Known Issues) |
+| ✅ | ~~Remove `@` error-suppression prefix from all `DB::query()` / MySQLi calls and add proper error handling (see item 7 in Known Issues)~~ — done |
 | 🟡 | Encapsulate auth state (`$nLoginID`, `$sLogin`, `$loginID`) in a `Session`/`Auth` value-object and pass it via dependency injection instead of relying on PHP globals (see item 8) |
 | 🟡 | Introduce a lightweight router/framework to separate routing, controllers, and views (see item 9) |
 | 🟢 | Clean up dead/commented-out code in `pelasfunctions.php` |
