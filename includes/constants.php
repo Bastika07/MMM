@@ -32,6 +32,10 @@ date_default_timezone_set('Europe/Berlin');
     }
 })();
 
+// Filesystem root of the repository (parent of includes/).
+// Used to derive portable paths for dev/intranet environments.
+define('BASE_DIR', dirname(__DIR__));
+
 // Upload-Stuff
 define('UNZIP',		'/usr/bin/unzip');
 define('NICE',		'/usr/bin/nice');
@@ -158,10 +162,10 @@ if ($srv_conf == "urtyp_live_internet" || php_sapi_name() == 'cli') {
 
 } else if ($srv_conf == "urtyp_dev_internet") {
 	define('PELASHOST',		'http://pelas-dev.innovalan.de/');
-	define('PELASDIR',		'/var/www.il-dev/pelas.innovalan.de/');
+	define('PELASDIR',		BASE_DIR . '/multimadness.de/');
 
-	define('ARCHIV_UPLOADDIR',	'/var/www.il-dev/archiv_gesperrt/');
-	define('SMARTY_BASE_DIR',	'/var/www.il-dev/Smarty/');
+	define('ARCHIV_UPLOADDIR',	BASE_DIR . '/archiv_gesperrt/');
+	define('SMARTY_BASE_DIR',	BASE_DIR . '/includes/smarty/');
 
 	define('LOCATION', 'internet');
 
@@ -178,10 +182,10 @@ if ($srv_conf == "urtyp_live_internet" || php_sapi_name() == 'cli') {
 
 } else if ($srv_conf == "urtyp_dev_intranet") {
 	define('PELASHOST',		'/pelashost/');
-	define('PELASDIR',		'/var/www.il-dev/pelas.innovalan.de/');
+	define('PELASDIR',		BASE_DIR . '/multimadness.de/');
 
-	define('ARCHIV_UPLOADDIR',	'/var/www.il-dev/archiv_gesperrt/');
-	define('SMARTY_BASE_DIR',	'/var/www.il-dev/Smarty/');
+	define('ARCHIV_UPLOADDIR',	BASE_DIR . '/archiv_gesperrt/');
+	define('SMARTY_BASE_DIR',	BASE_DIR . '/includes/smarty/');
 
 	define('LOCATION', 'intranet');
 

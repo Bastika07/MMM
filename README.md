@@ -324,6 +324,7 @@ Each block sets:
 | `DESIGN_FORUM` / `DESIGN_NEWS` / `DESIGN_NEWSCOMMENTS` / `DESIGN_COMMENTS` / `DESIGN_NEWSADMIN` | Forum board display modes |
 | `USER_ONLINE_TIMEOUT` | Seconds of inactivity before user is shown as offline (300 s) |
 | `PELASHOST` / `PELASDIR` / `BASE_URL` | URL and filesystem paths (set per hostname) |
+| `BASE_DIR` | Repository root at runtime (`dirname(__DIR__)`) — used to derive portable dev/intranet paths |
 | `LOCATION` | `'internet'` or `'intranet'` (controls menu visibility) |
 | `SMARTY_HOME_DIR` / `SMARTY_CLASS` | Smarty library path |
 | `NEWSBILD_DIR` / `SLIDER_DIR` / `VERPFLEGUNG_DIR` / `LOCATION_DIR` / `SPONSOR_DIR` | Upload directories for image categories |
@@ -348,7 +349,7 @@ Each block sets:
 
 4. ~~**No CSRF protection**~~ — **Fixed.** A per-session CSRF token (`bin2hex(random_bytes(32))`) is generated in `includes/dblib.php` (`csrf_token()`) and stored in the PHP session. `csrf_verify()` is called centrally in `includes/getsession.php` on every non-GET request and returns HTTP 403 on token mismatch. All state-changing HTML forms now embed the token via `<?= csrf_field() ?>` (PHP templates) or `{csrf_field}` (Smarty templates). External forms (e.g. PayPal) and the pre-session cookie-consent form are intentionally excluded.
 
-5. **Hard-coded absolute filesystem paths** — The production block in `constants.php` now supports overrides via `LIVE_PELASDIR` and `LIVE_SMARTY_BASE_DIR` environment variables, but the dev/intranet configuration blocks (`urtyp_dev_internet`, `urtyp_dev_intranet`) still reference `/var/www.il-dev/…` directly. A single `BASE_DIR` constant derived at runtime (e.g. `dirname(__DIR__)`) would make the codebase fully portable.
+5. ~~**Hard-coded absolute filesystem paths**~~ — **Fixed.** A `BASE_DIR` constant (`dirname(__DIR__)`) is now defined at the top of `constants.php` and used in the `urtyp_dev_internet` and `urtyp_dev_intranet` configuration blocks instead of the previous `/var/www.il-dev/…` hard-coded paths. `PELASDIR`, `ARCHIV_UPLOADDIR`, and `SMARTY_BASE_DIR` are all derived from `BASE_DIR` at runtime, making the dev/intranet configuration fully portable.
 
 6. **`hostconfig.php` calls `die()`** — `includes/hostconfig.php` was removed and replaced with a `die()` stub. The only remaining reference to it is a comment in `includes/classes/PelasSmarty.class.php`; the file is no longer `require`d anywhere, so this has no runtime impact.
 
@@ -381,7 +382,7 @@ Each block sets:
 | ✅ | ~~Use prepared statements (MySQLi `prepare()` / `bind_param()`) for all DB queries to eliminate SQL injection risk~~ — done |
 | ✅ | ~~Replace remaining legacy `mysql_*` call-sites across 80+ files with the `DB::` MySQLi wrapper~~ — done |
 | ✅ | ~~Add CSRF token generation and validation to all state-changing forms~~ — done |
-| 🟠 | Replace hard-coded absolute paths in dev/intranet `constants.php` blocks with a single `BASE_DIR` constant derived at runtime (e.g. `dirname(__DIR__)`) |
+| ✅ | ~~Replace hard-coded absolute paths in dev/intranet `constants.php` blocks with a single `BASE_DIR` constant derived at runtime (e.g. `dirname(__DIR__)`)~~ — done |
 | 🟡 | Add PHPUnit test coverage for core business logic (`pelasfunctions.php`, `DB::`, tournament classes) |
 | 🟡 | Introduce a lightweight router/framework to separate routing, controllers, and views |
 | 🟡 | Update or replace vendored frontend libraries (jQuery 2.1.1 is EOL, update to 3.x+) |
