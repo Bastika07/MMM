@@ -57,33 +57,21 @@ Dev (internet) variants follow the pattern `<brand>-dev.innovalan.de`; intranet 
 
 ---
 
-## Local Development
+## Local Development (XAMPP)
 
 ### Prerequisites
 
-- [Docker Desktop](https://www.docker.com/products/docker-desktop/) (or Docker Engine + Compose plugin)
+- [XAMPP](https://www.apachefriends.org/) with PHP 8.x and MySQL/MariaDB
 
 ### Quick Start
 
-```bash
-# 1. Copy the environment template and fill in values (or keep the defaults for local testing)
-cp includes/.env.example includes/.env
+1. Copy the `multimadness.de/` folder into your XAMPP `htdocs/` (or configure a virtual host pointing at it).
+2. Make sure `includes/` is accessible one level above the web root (or adjust the `require_once` paths in `index.php` to match your setup).
+3. Fill in your database and mail settings in `includes/.env` (create it if it does not exist – copy the variables listed in the [Environment variables](#environment-variables-full-list) table).
+4. Import a SQL dump into your local MySQL/MariaDB instance, then start Apache and MySQL in the XAMPP control panel.
+5. Open `http://localhost/` in your browser.
 
-# 2. Start all services (web + MariaDB + phpMyAdmin + Mailhog)
-docker compose up -d
-```
-
-| Service | URL |
-|---|---|
-| Web application | <http://localhost:8080> |
-| phpMyAdmin | <http://localhost:8081> |
-| Mailhog (SMTP UI) | <http://localhost:8025> |
-
-The `includes/` directory is mounted read-only into the container at `/var/www/includes`; `multimadness.de/` becomes the Apache document root at `/var/www/html`.
-
-Database credentials and mail settings are injected via environment variables defined in `includes/.env` (see `docker-compose.yml` for the full list). Environment variables override any hard-coded values inside `constants.php`.
-
-> **Note** – a blank database is created by default. Import a recent SQL dump to get a working dataset.
+> **Note** – any unrecognised hostname (including `localhost`) falls through to the `urtyp_live_internet` configuration block in `constants.php`, which reads DB credentials from `includes/.env`.
 
 ---
 
@@ -92,10 +80,8 @@ Database credentials and mail settings are injected via environment variables de
 ```
 /
 ├── README.md
-├── Dockerfile                  # PHP 8.2 + Apache image for local development
-├── docker-compose.yml          # Local dev stack (web, MariaDB, phpMyAdmin, Mailhog)
 ├── includes/                   # Core libraries and shared PHP code
-│   ├── .env.example            # Environment variable template (copy to .env)
+│   ├── .env                    # Environment variables (not committed – see .gitignore)
 │   ├── constants.php           # All configuration, DB credentials, constants
 │   ├── dblib.php               # MySQLi database wrapper (DB:: static class)
 │   ├── session.php             # Session creation / DB persistence
@@ -185,7 +171,8 @@ Database credentials and mail settings are injected via environment variables de
 |---|---|
 | `multimadness.de/index.php` | Front controller: maps `?page=N` to `page/<name>.php` modules; handles cookie consent and newsletter popup |
 | `includes/constants.php` | All runtime configuration: DB credentials, mail credentials, file paths, status codes, category IDs, constants; includes minimal `.env` loader |
-| `includes/dblib.php` | `DB::` static class wrapping MySQLi; provides `DB::connect()`, `DB::query()`, `DB::getOne()`, `DB::getAll()` etc.; also `safe()` escape helper and `BenutzerHatRecht()` permission check |
+| `includes/.env` | Local environment variables (not committed); create from the variable list in [Configuration & Environment](#configuration--environment) |
+| `includes/dblib.php` | `DB::` static class wrapping MySQLi; provides `DB::connect()`, `DB::query()`, `DB::getOne()`, `DB::getAll()` etc.; also `safe()` escape helper, `BenutzerHatRecht()` permission check, and backward-compat shims for legacy `mysql_*` calls |
 | `includes/getsession.php` | Reads session cookie, queries `SESSION` table, populates `$nLoginID` / `$sLogin` / `$loginID` globals |
 | `includes/security.php` | Guards admin/protected pages; redirects to `login.php` if `$nLoginID` is not set |
 | `includes/pelasfunctions.php` | Business logic: invoice creation, ticket status transitions, accounting helpers, PayPal fee calculation, password hashing |
@@ -193,11 +180,8 @@ Database credentials and mail settings are injected via environment variables de
 | `includes/turnier/` | Tournament engine: `Turnier`, `Team`, `Match`, `Round`, `Jump`, `Ranking`, `TurnierSystem`, group and liga sub-classes |
 | `includes/turnier-frontend/` | Admin-facing tournament management pages (tap, verwaltung, seeding, transfer, export, prices, admins) |
 | `includes/pelasfront/` | Frontend page-logic modules shared between web roots (accounting, archiv, forum, geekradar, sitzplan, login, …) |
-| `multimadness.de/admin/index.php` | Admin panel entry point; contains legacy `mysql_*` calls (non-functional on PHP ≥ 7) |
+| `multimadness.de/admin/index.php` | Admin panel entry point |
 | `multimadness.de/admin/controller.php` | Admin AJAX/action dispatcher |
-| `Dockerfile` | PHP 8.2 + Apache image with `mysqli` extension and `mod_rewrite` enabled |
-| `docker-compose.yml` | Local dev stack: web, MariaDB 10.11, phpMyAdmin, Mailhog |
-| `includes/.env.example` | Environment variable template; copy to `includes/.env` before first run |
 
 ---
 
@@ -290,9 +274,9 @@ All runtime configuration lives in **`includes/constants.php`**.
 
 ### `.env` support
 
-`constants.php` includes a minimal `.env` file loader at the top. On startup it reads `includes/.env` (if present), registering each `KEY=VALUE` pair via `putenv()`. Environment variables already set in the process (e.g. by Docker) take precedence over the `.env` file.
+`constants.php` includes a minimal `.env` file loader at the top. On startup it reads `includes/.env` (if present), registering each `KEY=VALUE` pair via `putenv()`. Environment variables already set in the process take precedence over the `.env` file.
 
-Copy `includes/.env.example` → `includes/.env` and fill in your values before first run. **Never commit `includes/.env` to version control** (it is already in `.gitignore`).
+Create `includes/.env` with the variables listed in the table below and fill in your values. **Never commit `includes/.env` to version control** (it is already in `.gitignore`).
 
 ### Environment selection
 
@@ -354,37 +338,37 @@ Each block sets:
 
 ### 🔴 Critical
 
-1. **Credentials committed to source control** - `includes/constants.php` contains production database passwords, mail passwords, and a Bing Maps API key in plain text. These should be moved to environment variables or an `.env` file that is excluded from version control.
+1. ~~**Credentials committed to source control**~~ — **Fixed.** All database passwords, mail passwords, and the Bing Maps API key are now read exclusively from environment variables via `getenv()` in `constants.php` and `index.php`. No credentials are hard-coded. Store secrets in `includes/.env` (excluded from version control by `.gitignore`).
 
-2. **Deprecated `mysql_*` functions** - `multimadness.de/admin/index.php` still uses the removed `mysql_query()` / `mysql_fetch_assoc()` API (removed in PHP 7.0). These calls are non-functional on any modern PHP version. The rest of the codebase correctly uses the `DB::` MySQLi wrapper.
+2. **Deprecated `mysql_*` functions** — `multimadness.de/admin/index.php` has been migrated to the `DB::` MySQLi wrapper. However, legacy `mysql_*` calls still exist in 80+ other files (800+ call-sites). `includes/dblib.php` now provides backward-compatible shims (`mysql_query()`, `mysql_fetch_assoc()`, etc.) that delegate to the active MySQLi connection, so these calls are functional on PHP 7/8 — but the underlying queries are still plain string-concatenation and not prepared statements (see item 3).
 
-3. **SQL injection** - Several files build SQL queries by string-interpolating unescaped variables directly (e.g. `includes/format.php`, `includes/pelasfront/casemod.php`, `includes/pelasfront/archiv.php`, `includes/turnier/Team.class.php`). The `safe()` / `DB::$link->real_escape_string()` helper exists but is not consistently applied. Prepared statements (MySQLi or PDO) should be used throughout.
+3. **SQL injection** — Several files build SQL queries by string-interpolating unescaped variables directly (e.g. `includes/pelasfront/news.php` uses `$_GET[newsID]` directly in a query string; similar patterns exist in `clanverwaltung.php`, `format.php`, `archiv.php`, `Team.class.php`). The `safe()` / `DB::$link->real_escape_string()` helper exists but is not consistently applied. Prepared statements (MySQLi `prepare()` / `bind_param()`) should be used throughout.
 
 ### 🟠 High
 
-4. **No CSRF protection** - Forms (newsletter opt-in, login, seating reservation, accounting) do not include or validate a CSRF token.
+4. **No CSRF protection** — Forms (newsletter opt-in, login, seating reservation, accounting) do not include or validate a CSRF token.
 
-5. **Hard-coded absolute filesystem paths** - `constants.php` and several includes reference `/var/www/vhosts/hosting103794.af995.netcup.net/…` directly, making the codebase non-portable without editing PHP files.
+5. **Hard-coded absolute filesystem paths** — The production block in `constants.php` now supports overrides via `LIVE_PELASDIR` and `LIVE_SMARTY_BASE_DIR` environment variables, but the dev/intranet configuration blocks (`urtyp_dev_internet`, `urtyp_dev_intranet`) still reference `/var/www.il-dev/…` directly. A single `BASE_DIR` constant derived at runtime (e.g. `dirname(__DIR__)`) would make the codebase fully portable.
 
-6. **`hostconfig.php` calls `die()`** - `includes/hostconfig.php` was removed and replaced with a `die()` stub. Any code that still requires it will produce a fatal error.
+6. **`hostconfig.php` calls `die()`** — `includes/hostconfig.php` was removed and replaced with a `die()` stub. The only remaining reference to it is a comment in `includes/classes/PelasSmarty.class.php`; the file is no longer `require`d anywhere, so this has no runtime impact.
 
 ### 🟡 Medium
 
-7. **Error suppression with `@`** - Many database calls use the `@` operator to silence errors instead of proper exception handling, making debugging very difficult.
+7. **Error suppression with `@`** — Many database calls use the `@` operator to silence errors instead of proper exception handling, making debugging very difficult.
 
-8. **Global variable pollution** - Auth state is propagated via bare globals (`$loginID`, `$nLoginID`, `$sLogin`) included from `getsession.php`, with no encapsulation.
+8. **Global variable pollution** — Auth state is propagated via bare globals (`$loginID`, `$nLoginID`, `$sLogin`) included from `getsession.php`, with no encapsulation.
 
-9. **Inline HTML / mixed concerns** - Pages mix HTML, SQL, and business logic in the same file with no separation, making testing and maintenance harder.
+9. **Inline HTML / mixed concerns** — Pages mix HTML, SQL, and business logic in the same file with no separation, making testing and maintenance harder.
 
-10. **Outdated frontend libraries** - jQuery 2.1.1 (EOL) and other vendored JS/CSS libraries are not receiving security updates.
+10. **Outdated frontend libraries** — jQuery 2.1.1 (EOL) and other vendored JS/CSS libraries are not receiving security updates.
 
 ### 🟢 Low / Informational
 
-11. **No automated tests** - There is no test suite (no PHPUnit, no Jest, no CI pipeline). All validation is manual.
+11. **No automated tests** — There is no test suite (no PHPUnit, no Jest). All validation is manual.
 
-12. **Commented-out dead code** - Large blocks of commented-out SQL and PHP exist throughout `pelasfunctions.php` and `index.php`.
+12. **Commented-out dead code** — Large blocks of commented-out SQL and PHP exist throughout `pelasfunctions.php`.
 
-13. **Encoding issues** - Some comments in `constants.php` show garbled UTF-8 (`Ã`, `ü` rendered as multi-byte artefacts), suggesting the file was edited with incorrect encoding at some point.
+13. ~~**Encoding issues**~~ — **Fixed.** The double-encoded UTF-8 comment artifacts (`fÃƒÂ¼r` → `für`) in `constants.php` have been corrected.
 
 ---
 
@@ -392,14 +376,13 @@ Each block sets:
 
 | Priority | Action |
 |---|---|
-| 🔴 | Move all credentials/secrets to `.env` / environment variables; `includes/.env.example` now exists — ensure production is using it |
-| 🔴 | Replace legacy `mysql_*` calls in `admin/index.php` with MySQLi / `DB::` wrapper |
-| 🔴 | Use prepared statements (MySQLi `prepare()` / `bind_param()`) for all DB queries |
+| ✅ | ~~Move all credentials/secrets to `.env` / environment variables~~ — done |
+| ✅ | ~~Fix UTF-8 encoding artefacts in `constants.php`~~ — done |
+| 🔴 | Use prepared statements (MySQLi `prepare()` / `bind_param()`) for all DB queries to eliminate SQL injection risk |
+| 🔴 | Replace remaining legacy `mysql_*` call-sites across 80+ files with the `DB::` MySQLi wrapper; the shims in `dblib.php` keep them functional but they should be migrated for clarity |
 | 🟠 | Add CSRF token generation and validation to all state-changing forms |
-| 🟠 | Replace hard-coded absolute paths with a single `BASE_DIR` constant derived at runtime |
+| 🟠 | Replace hard-coded absolute paths in dev/intranet `constants.php` blocks with a single `BASE_DIR` constant derived at runtime (e.g. `dirname(__DIR__)`) |
 | 🟡 | Add PHPUnit test coverage for core business logic (`pelasfunctions.php`, `DB::`, tournament classes) |
 | 🟡 | Introduce a lightweight router/framework to separate routing, controllers, and views |
 | 🟡 | Update or replace vendored frontend libraries (jQuery 2.1.1 is EOL, update to 3.x+) |
-| 🟢 | Add a `.github/workflows/` CI pipeline (PHP lint + static analysis with PHPStan/Psalm) |
-| 🟢 | Clean up dead/commented-out code in `pelasfunctions.php` and `index.php` |
-| 🟢 | Fix UTF-8 encoding artefacts in `constants.php` |
+| 🟢 | Clean up dead/commented-out code in `pelasfunctions.php` |
