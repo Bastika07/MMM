@@ -210,6 +210,7 @@ A:HOVER, A:ACTIVE {
     echo $sInfoText;
 
     echo "<form method=\"post\" action=\"?page=31&iAction=add\">\n";
+    echo csrf_field() . "\n";
     echo "<table class=\"rahmen_allg\" style=\"max-width:800px;\" border=\"0\" cellpadding=\"3\" cellspacing=\"1\">\n";
     echo "  <tr><td class=\"pelas_benutzer_titel\" colspan=\"3\" valign=\"top\">";
     echo "    <b>Gastserver anmelden</b>\n";

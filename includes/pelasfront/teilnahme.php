@@ -149,6 +149,7 @@ if (($row[STRINGWERT] == "J" || $bVoranmeld == 1 || User::hatBezahlt($nLoginID, 
 			}
 			echo $config[EINTRITT_XTRA].") $str[klickundfertig2]\n</p>\n";
 			echo "<form action=\"teilnahme.php\" method=POST>";
+			echo csrf_field() . "\n";
 			echo "<p>\n<input type=\"checkbox\" name=\"check\" value=\"J\">&nbsp;$str[jaichakzeptiere1] <a href=\"bedingungen.php\">$str[jaichakzeptiere2]</a>";
 			$row = DB::query("select BESCHREIBUNG from MANDANT where MANDANTID = $nPartyID")->fetch_assoc();
 			echo " $str[jaichakzeptiere3] <i>".$row[BESCHREIBUNG]."</i> $str[jaichakzeptiere4].\n</p>\n";

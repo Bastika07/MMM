@@ -201,6 +201,7 @@ function add($sLogin,$nLoginID,$beschreibung,$kurzbeschreibung,$type,$artist,$pe
 				
 				</td</tr></table>
 				<form name="caseadd" action="casemod.php" method="post">
+				<?= csrf_field() ?>
 				<input type="hidden" name="action" value="add"><?
 				echo "<input type=hidden name=pelasid value=$nLoginID>";
 				echo "<input type=hidden name=artist value=$sLogin>";?>
@@ -450,6 +451,7 @@ $gastbewertung - Jury: $juribewertung - Gesamt: $bewertung</td></tr>";
 	    else
 	    {	
 	    echo "<form action='casemod.php' method='POST'>";
+	    echo csrf_field() . "\n";
 	    echo "<input type=hidden name='casemodid' value='$id'>";
 	    echo "<input type=hidden name='action' value='vote'>";
 	    echo "Bewertung:<br>";
@@ -559,6 +561,7 @@ function bild($photo, $nLoginID, $id) {
       echo "<table><tr><td>";
       echo "Die Bilder d&uuml;fen nicht gr&ouml;sser als 100Kb und 800x600 Pixel sein!<br><br><b>Bild Hochladen:<b><br><br>";
       echo "<form action='casemod.php' method='post' enctype='multipart/form-data'>";
+      echo csrf_field() . "\n";
       echo "<input name='action' type='hidden' value='upload'>";
       echo "<input name='photo' type='file'>";
       echo "<input type='submit' name='Submit' value='Upload>>'>";
@@ -637,6 +640,7 @@ if(isset($kurzbeschreibung) && strlen($kurzbeschreibung) && isset($beschreibung)
 
 		echo "<table witdh=500 border=0><tr><td><a href=\"casemod.php?action=bild&id=$id\"> Bilder Uploaden/Löschen</a> - <a href=\"casemod.php?action=detail&id=$id\">Mein Case</a> - <a href=\"casemod.php\">Alle Cases</a></td></tr></table>";
 		echo "<form name=\"newsedit\" action=\"casemod.php\" method=\"post\"><input type=\"hidden\" name=\"action\" value=\"edit\"><table witdh=500 border=0><tr><td>Kurzbeschreibung:</td><td><input type=text name=kurzbeschreibung value='$kurzbeschreibung' size=64></td></tr>";
+		echo csrf_field() . "\n";
 		echo "<tr><td valign=top>Beschreibung:</td><td><textarea rows=20 cols=48 name='beschreibung'>$beschreibung</textarea></td></tr>";
 		echo "<input type=hidden name=id value=$id>";
 		echo "<input type=hidden name=\"action\" value=\"edit\">";

@@ -36,6 +36,7 @@ foreach ($list as $id => $row) {
 	$tdclass = ($tdclass == 'hblau') ? 'dblau' : 'hblau';
 }
 echo "<form method=\"POST\" action=\"{$_SERVER['PHP_SELF']}?action=add\">";
+echo csrf_field() . "\n";
 ?>
 <tr><td class="dblau" width="50"></td>
 <td class="dblau" width="50"><input type="text" size="6" maxlength="5" name="ports"></td>

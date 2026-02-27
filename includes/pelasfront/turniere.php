@@ -257,6 +257,7 @@ if ($nLoginID != $UserID) {
 	echo " wirklich vom Turnier ".db2display($TurnierName)." abmelden?";
 	
 	echo "<form method=\"post\" action=\"turniere.php?action=abmelden&turnierid=$turnierid&UserID=$UserID&TurnierTeilnehmerID=$TurnierTeilnehmerID\">";
+	echo csrf_field() . "\n";
 	echo "<input type=\"hidden\" name=\"DoIt\" value=\"yes\">";
 	echo "<input type=\"submit\" value=\" Ja \">";
 	echo " <input type=\"button\" value=\" Nein \" OnClick=\"document.location.href='turniere.php?action=detail&turnierid=$turnierid';\">";
@@ -288,6 +289,7 @@ global $UserClan, $UserClanName, $iTEAMNAME, $iKOMMENTAR, $turnierid;
 Wenn Du ein neues Team erstellst, musst Du einen Namen eingeben.</p>
 
 <form method="post" action="turniere.php?action=teilnehmen&turnierid=<?php echo $turnierid;?>" name="data">
+<?= csrf_field() ?>
 <table class="rahmen_allg" cellspacing=1 cellpadding=2>
 	<TR><TD class='dblau'><input type="radio" value=\"name\" name="NimmClan" checked></td><TD class='hblau'>Neues Team erstellen</TD><TD class='hblau'><input type="text" name="iTEAMNAME" size=25 maxlength=40 value="<?php echo $iTEAMNAME;?>"></TD></TR>
 	<?php
@@ -568,6 +570,7 @@ echo "<p><a href=\"turniere.php?action=detail&turnierid=$turnierid\">Zur&uuml;ck
 		echo "<p>Willst Du wirklich aus diesem Team austreten und Dich somit vom Turnier $TurnierName abmelden?";
 
 		echo "<form method=\"post\" action=\"turniere.php?action=austreten&turnierid=$turnierid&UserID=$UserID&TurnierTeilnehmerID=$TurnierTeilnehmerID\">";
+		echo csrf_field() . "\n";
 		echo "<input type=\"hidden\" name=\"DoIt\" value=\"yes\">";
 		echo "<input type=\"submit\" value=\" Ja \">";
 		echo " <input type=\"button\" value=\" Nein \" OnClick=\"document.location.href='turniere.php?action=detail&turnierid=$turnierid';\">";

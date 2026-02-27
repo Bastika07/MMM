@@ -73,6 +73,7 @@ if ($nLoginID == "") {
 			echo "<p>M&ouml;chtest Du wirklich Dein bisheriges Clanmitglied <i>&quot;".htmlspecialchars($sClanmateName)."&quot;</i> aus Deinem Clan entfernen?</p>";
 			
 			echo "<form method=\"post\" action=\"?page=18&action=entf&nClanmate=".intval($_GET['nClanmate'])."\">";
+			echo csrf_field() . "\n";
 			echo "<input type=\"hidden\" name=\"check\" value=\"yes\">";
 			echo "<input type=\"submit\" class=\"button\" value=\"Ja\"> &nbsp; <input type=\"button\" value=\"Nein\" OnClick=\"window.history.back();\">";
 			echo "</form>";
@@ -543,6 +544,7 @@ function ShowForm() {
 	
 	?>
 	<form name="clanverwaltung" method="post" action="?page=18&action=<?=$_GET['action'];?>">
+  <?= csrf_field() ?>
   <input type="hidden" name="go" value="true" />
 	<table>
 	<tr>

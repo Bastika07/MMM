@@ -36,6 +36,7 @@ if ($aktuelle_umfrage < 1) {
 } else {
 	//Umfrage zeigen
 	echo "<form method=\"post\" action=\"?page=32\">";
+	echo csrf_field() . "\n";
 	
 	echo "<p>$putout</p>";
 	if($anzahl>1){

@@ -44,6 +44,7 @@ if ($nLoginID < 1) {
     $row = $result->fetch_array();
 
     echo "<form method=\"post\" action=\"?page=17&nUserID=".intval($_GET['nUserID'])."\">\n";
+    echo csrf_field() . "\n";
     echo "<table border=\"0\" cellpadding=\"3\" cellspacing=\"1\">\n";
     echo "  <tr><td class=\"pelas_benutzer_titel\" height=\"39\" valign=\"middle\" colspan=\"3\" valign=\"top\">";
     echo "    <b>".$str['kontakt_to'].": ".db2display($row['LOGIN'])."</b>\n";
