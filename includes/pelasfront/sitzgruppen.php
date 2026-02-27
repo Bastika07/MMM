@@ -78,8 +78,8 @@ if ($bAnmeld == 1 || $bVoranmeld == 1) {
                from
                 sitzgruppen_mitglieder
                where
-                GRUPPEN_ID = '$mygroup'AND USERID = '$_GET[tauschen]'";
-      $res = DB::query($sql);
+                GRUPPEN_ID = ? AND USERID = ?";
+      $res = DB::query($sql, $mygroup, (int)$_GET['tauschen']);
       if ($row = $res->fetch_row()) {
         
         //Mein Reihe Platz kriegen
@@ -97,10 +97,10 @@ if ($bAnmeld == 1 || $bVoranmeld == 1) {
         //Update mich auf seinen Platz      
         $sql = " UPDATE 
                   SITZ
-                 SET USERID='$nLoginID'
+                 SET USERID=?
                  where
-                  MANDANTID='$nPartyID' AND USERID='$_GET[tauschen]'";
-        DB::query($sql);
+                  MANDANTID=? AND USERID=?";
+        DB::query($sql, (int)$nLoginID, (int)$nPartyID, (int)$_GET['tauschen']);
         if(DB::$link->affected_rows<1){
           Pelas::fehler('Fehler beim setzen des 1. Platzes.');
         }
@@ -108,10 +108,10 @@ if ($bAnmeld == 1 || $bVoranmeld == 1) {
         // Ihn auf meinen alten PLatz
         $sql = " UPDATE 
             SITZ
-           SET USERID='$_GET[tauschen]'
+           SET USERID=?
            where
-            MANDANTID='$nPartyID' AND REIHE='$meineReihe' AND PLATZ='$meinPlatz'";
-        DB::query($sql);
+            MANDANTID=? AND REIHE=? AND PLATZ=?";
+        DB::query($sql, (int)$_GET['tauschen'], (int)$nPartyID, $meineReihe, $meinPlatz);
         if(DB::$link->affected_rows<1){
           Pelas::fehler('Fehler beim setzen des 2. Platzes');
         }
@@ -131,8 +131,8 @@ if ($bAnmeld == 1 || $bVoranmeld == 1) {
             from
               sitzgruppe s, USER u
             where
-              s.MANDANTID=$nPartyID AND s.GRUPPEN_ID='".$_GET['gruppenID']. "' AND s.ERSTELLT_VON=u.USERID";
-    $res = DB::query($sql);
+              s.MANDANTID=? AND s.GRUPPEN_ID=? AND s.ERSTELLT_VON=u.USERID";
+    $res = DB::query($sql, (int)$nPartyID, (int)$_GET['gruppenID']);
     $row = $res->fetch_row();
     if(!$row){
       PELAS::fehler('Fehler beider Verarbeitung aufgetreten');
@@ -176,10 +176,10 @@ if ($bAnmeld == 1 || $bVoranmeld == 1) {
               from
                 sitzgruppen_mitglieder s, USER u
               where
-                s.MANDANTID=$nPartyID AND s.USERID=u.USERID AND s.GRUPPEN_ID='".$_GET['gruppenID']."'
+                s.MANDANTID=? AND s.USERID=u.USERID AND s.GRUPPEN_ID=?
               ORDER BY
                 u.LOGIN";
-      $res2 = DB::query($sql2);
+      $res2 = DB::query($sql2, (int)$nPartyID, (int)$_GET['gruppenID']);
       
       echo"<br>";
       
@@ -211,10 +211,10 @@ if ($bAnmeld == 1 || $bVoranmeld == 1) {
          from
           sitzgruppen_einladung i, USER u
          where
-          i.GRUPPEN_ID='$_GET[gruppenID]' AND u.USERID=i.USERID";
-      $res = DB::query($sql);
+          i.GRUPPEN_ID=? AND u.USERID=i.USERID";
+      $res = DB::query($sql, (int)$_GET['gruppenID']);
       if ($res->num_rows>0){
-        if (checkUserSeatgroup($nPartyID, $nLoginID)==$_GET[gruppenID]){
+        if (checkUserSeatgroup($nPartyID, $nLoginID)==(int)$_GET['gruppenID']){
           echo "<TABLE class='rahmen_allg' width=400 cellspacing=1 cellpadding=2 class=msg2>";  
           echo "<TR><TD class='TNListe'>Eingeladene Spieler</TD><TD align=center class='TNListe'>Ausladen</TD></TR>";
           while($row = $res->fetch_array()){
@@ -260,22 +260,22 @@ if ($bAnmeld == 1 || $bVoranmeld == 1) {
             FROM 
               ASTATUS
             WHERE
-              USERID = '".$_GET['einladen']."' AND
-              MANDANTID = '$nPartyID' AND
+              USERID = ? AND
+              MANDANTID = ? AND
               STATUS IN ($STATUS_BEZAHLT, $STATUS_BEZAHLT_LOGE, $STATUS_COMFORT_4PERS, $STATUS_COMFORT_6PERS, 
                          $STATUS_COMFORT_8PERS, $STATUS_PREMIUM_4PERS, $STATUS_PREMIUM_6PERS, 
                           $STATUS_ZUGEORDNET, $STATUS_VIP_2PERS)";
-      $res = DB::query($q);
+      $res = DB::query($q, (int)$_GET['einladen'], (int)$nPartyID);
       $row2 = $res->fetch_row();
-    	if($mygroup && !checkUserSeatgroup($nPartyID, $_GET['einladen']) && 
-    	    (($row[0]=='platz'&&USER::hatBezahlt($_GET['einladen']))||($row[0]=='logenplatz'&&$row2[0]==$STATUS_BEZAHLT_LOGE))){
+    	if($mygroup && !checkUserSeatgroup($nPartyID, (int)$_GET['einladen']) && 
+    	    (($row[0]=='platz'&&USER::hatBezahlt((int)$_GET['einladen']))||($row[0]=='logenplatz'&&$row2[0]==$STATUS_BEZAHLT_LOGE))){
     		$sql = "select
     							USERID
     						from
     							`sitzgruppen_einladung`
     						where
-    							USERID=".$_GET['einladen']." AND GRUPPEN_ID='$mygroup'";
-    		$res = DB::query($sql);
+    							USERID=? AND GRUPPEN_ID=?";
+    		$res = DB::query($sql, (int)$_GET['einladen'], $mygroup);
     		if($res->fetch_row()){
     			PELAS::fehler('Dieser Teilnehmer wurde bereits in die Gruppe eingeladen');
     		}else {
@@ -283,8 +283,8 @@ if ($bAnmeld == 1 || $bVoranmeld == 1) {
   	  							into
   	  						sitzgruppen_einladung (GRUPPEN_ID, USERID, MANDANTID)
   	  							values
-  	  						('$mygroup', '".$_GET['einladen']."', '$nPartyID')";
-  	  		if(!DB::query($sql)){
+  	  						(?, ?, ?)";
+  	  		if(!DB::query($sql, $mygroup, (int)$_GET['einladen'], (int)$nPartyID)){
   	  			PELAS::fehler('Es gab einen fehler beim erstellen der Einladung, bitte versuche es erneut');
   	  		}
   	  		?>
@@ -316,15 +316,15 @@ if ($bAnmeld == 1 || $bVoranmeld == 1) {
               from
                 sitzgruppen_einladung
               WHERE
-                GRUPPEN_ID='$mygroup' AND USERID='$_GET[ausladen]'";
-      $res = DB::query($sql);
+                GRUPPEN_ID=? AND USERID=?";
+      $res = DB::query($sql, $mygroup, (int)$_GET['ausladen']);
       if ($res->num_rows==1){
         $sql = "delete
                 from
                   sitzgruppen_einladung
                 WHERE
-                  GRUPPEN_ID='$mygroup' AND USERID='$_GET[ausladen]'";   
-        $res = DB::query($sql);
+                  GRUPPEN_ID=? AND USERID=?";   
+        $res = DB::query($sql, $mygroup, (int)$_GET['ausladen']);
         if(DB::$link->affected_rows==1){
           echo"<p> Der Benutzer wurde erfolgreich aus der Einladungsliste entfernt.</p> 
                   <p><img src=\"gfx/headline_pfeil.png\"> <a href=sitzgruppen.php?gruppenID=$mygroup> Zurück. </a></p>";

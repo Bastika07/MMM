@@ -609,23 +609,25 @@ function InhaltAnlegen($nKategorieID, $nParentID) {
 			    $Nick2db = $_POST['iNickname'];
 			    $Userid2db = -1;
 			}
-			$result = DB::query("
-			    INSERT INTO INHALT (
+			$result = DB::query(
+			    'INSERT INTO INHALT (
 			        MANDANTID, PARENTID, KATEGORIEID, AKTIV,
 			        TITEL, AUTOR, AUTORNAME, DERINHALT, DATE1,
 				WANNANGELEGT, WERANGELEGT, WERGEAENDERT
-			    ) VALUES ($nPartyID, '$_POST[iParent]', $nKategorieID, 'J',
-			        '$_POST[iBeitragstitel]', $Userid2db, '$Nick2db', '$_POST[iBeitrag]', NOW(),
-				NOW(), $Userid2db, $Userid2db)
-			");
+			    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW(), ?, ?)',
+			    (int)$nPartyID, (int)$_POST['iParent'], (int)$nKategorieID, 'J',
+			    $_POST['iBeitragstitel'], (int)$Userid2db, $Nick2db, $_POST['iBeitrag'],
+			    (int)$Userid2db, (int)$Userid2db
+			);
 			if ($_POST['iParent'] > 0) {
 			    # Letzen Beitrag in den Parentbeitrag schreiben.
-			    $result = DB::query("
-			        UPDATE INHALT SET DATE1 = NOW()
-				WHERE INHALTID = $_POST[iParent]
-				  AND KATEGORIEID = $nKategorieID
-				  AND MANDANTID = $nPartyID
-			    ");
+			    $result = DB::query(
+			        'UPDATE INHALT SET DATE1 = NOW()
+				WHERE INHALTID = ?
+				  AND KATEGORIEID = ?
+				  AND MANDANTID = ?',
+			        (int)$_POST['iParent'], (int)$nKategorieID, (int)$nPartyID
+			    );
 			}
 			# Zurückleiten
 			if ($nKategorieID == $KATEGORIE_FORUM) {
@@ -661,22 +663,22 @@ function InhaltEdit($nKategorieID, $nParentID) {
 	$nTempKat = $nKategorieID;
     }
 		
-    $sql = "SELECT PARENTID, DERINHALT, KATEGORIEID
+    $sql = 'SELECT PARENTID, DERINHALT, KATEGORIEID
             FROM INHALT
-            WHERE INHALTID = '$_GET[Inhalt]'";
-    $res = DB::query($sql);
+            WHERE INHALTID = ?';
+    $res = DB::query($sql, (int)$_GET['Inhalt']);
     if ($res->num_rows != 1) {
         PELAS::fehler('Ungültige BeitragsID');
     } else {
         $row = $res->fetch_row();
-        $nParentID = ($row[0] == -1) ? $_GET['Inhalt'] : $row[0];
+        $nParentID = ($row[0] == -1) ? (int)$_GET['Inhalt'] : $row[0];
         $inhalt = $row[1];      
         $nKategorieID = $row[2];
 		
-        $sql = "SELECT TITEL
+        $sql = 'SELECT TITEL
 		FROM INHALT 
-		WHERE INHALTID = '$nParentID'";
-	$result = DB::query($sql);
+		WHERE INHALTID = ?';
+	$result = DB::query($sql, (int)$nParentID);
 	$row = $result->fetch_row();
 	$titel = $row[0];
 
@@ -780,10 +782,10 @@ function InhaltEdit($nKategorieID, $nParentID) {
 					$Nick2db = $_POST['iNickname'];
 					$Userid2db = -1;
 				}
-				$sql = "UPDATE INHALT
-				        SET DERINHALT = '$_POST[iBeitrag]'
-				        WHERE INHALTID = '$_GET[Inhalt]'";
-			        DB::query($sql);				
+				$sql = 'UPDATE INHALT
+				        SET DERINHALT = ?
+				        WHERE INHALTID = ?';
+			        DB::query($sql, $_POST['iBeitrag'], (int)$_GET['Inhalt']);
 				
 				$sql = "UPDATE INHALT
 				        SET DATE1 = NOW()
