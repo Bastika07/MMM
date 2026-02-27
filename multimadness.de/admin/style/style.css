@@ -1,0 +1,230 @@
+/* Allgemeines */
+
+html, body {
+	height: 100%; /* wichtig */
+	margin:0;
+}
+
+body {
+  background-color: #ffffff;
+  color: #000000;
+  font-family: Arial, sans-serif;
+}
+
+p, ul, ol, li, td { 
+  font-size: 11pt;
+	line-height:13pt;
+  color: #000000;
+}
+
+h1 {
+  font-size: 1.4em;
+}
+h2 {
+  font-size: 1.15em;
+}
+h3 {
+  font-size: 1.1em;
+  font-weight: normal;
+}
+
+/* Navigation */
+
+#menu {
+		position: absolute;
+    top: 0em; left: 0em;
+	  background-color: #333366;
+    color: #f4f4f4;
+    font-family: Tahoma, Arial, sans-serif;
+    margin: 0;
+    padding: 10px;
+    width: 175px;
+		float:left;
+		min-height:100%;
+}
+
+/* Responsive und so */
+
+@media (min-width: 1000px) { 
+	html>body #menu {  /* Menüleiste "kleben" lassen - nur bei PC-Auflösung */
+  	  position: fixed;
+	}
+}
+
+#menu th, #menu td, #menu h2 { font-size: 10pt; }
+#menu h2 {
+	  border-bottom: 1px solid #999999;
+    font-style: italic;
+    font-variant: small-caps;
+    letter-spacing: 0.05em;
+    margin: 0.2em 0 0.1em 0.3em;
+    padding: 0.1em 0;
+}
+#menu ul {
+    list-style: none;
+    margin: 0 0 0 0.3em;
+    padding: 0;
+}
+#menu li {
+    color: #808080;
+    background: url('arrow.png') 0 50% no-repeat;
+    padding: 0 0 0 12px;
+}
+#menu a {
+    color: #f4f4f4;
+    text-decoration: none;
+}
+#menu a:hover {
+    text-decoration: underline;
+}
+
+#content { margin-left:195px; padding:20px 20px 20px 20px; }
+
+
+/* PELAS */
+
+.confirm {
+  color: #008000;
+}
+.fehler {
+  color: #CC0000;
+}
+
+/* PELAS Forum */
+td.forum_titel {
+  font-family:Arial,sans-serif; 
+  font-size:9pt;
+  color:#FFFFFF;
+  text-decoration: none;
+  background-color:#333366;
+  font-weight: bold;
+}
+
+td.forum_bg1 {
+  background-color: #D8E0F9;
+}
+td.forum_bg2 {
+  background-color: #EFF3F7;
+}
+
+.forumlink {
+  font-family:Arial,sans-serif; 
+  font-size:9pt;
+  color:#FFFFFF;
+  text-decoration: none;
+}
+a.forumlink:hover {
+  text-decoration: underline;
+}
+
+/* Forum */
+.lastEdited {
+  font-size: 7pt;
+  color: #0000A0;
+}
+
+/* phpbb2Code */
+div.ng_quote_body {
+  border: 1px black solid;
+  width: 80%;
+  align: center;
+  position: relative;
+  left: 50px;
+  padding: 5px;
+}
+
+div.ng_code {
+  color: #FF0000;
+  border: 1px black solid;
+  width: 80%;
+  align: center;
+  position: relative;
+  left: 50px;
+  padding: 2px;
+}
+
+
+/* Tabellen */
+
+table.outer {
+  background-color: #333366;
+  border-spacing: 1px;
+}
+table.outer th,
+table.outer td {
+  vertical-align: top;
+}
+table.outer th {
+  padding: 0.1em 0.3em;
+}
+table.outer td {
+  padding: 0.2em 0.8em 0.2em 0.4em;
+}
+
+th {
+  font-weight: bold;
+  text-align: left;
+}
+th,
+td.navbar {
+  background-color: #333366;
+  color: #FFFFFF;
+  font-size: 9pt;
+  text-decoration: none;
+}
+
+
+/* Tabellen mit Hintegrundfarbe */
+
+tr.row-0 td,
+td.hblau {
+  color: #000000;
+  background-color: #EFF3F7;
+}
+tr.row-1 td,
+td.dblau {
+  color: #000000;
+  background-color: #D8E0F9;
+}
+tr.row-active td,
+td.red {
+  background-color: #F9D8D8;
+}
+tr.row-inactive td {
+  background-color: #BBBBBB;
+}
+
+
+/* Formulare */
+
+input:focus,
+select:focus,
+textarea:focus {
+  background-color: #ffddbb;
+  border-color: #555555;
+  border-style: solid;
+}
+
+input, select { padding:5px; }
+
+/* Sitzplan */
+
+td.sitzborder {
+  background-color: #666699;
+}
+
+td.sitzcontent {
+  font-size: 9pt;
+  color: #FFFFFF;
+  text-decoration: none;
+  background-color: #333366;
+}
+
+td.tiny {
+  font-size: 0.7em;
+}
+
+table.sitzplan_bg tr td {
+  border: 1px solid #ffffff;
+}
+

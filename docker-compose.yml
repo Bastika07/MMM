@@ -1,0 +1,84 @@
+# Docker Compose – local development environment
+#
+# Prerequisites: Docker Desktop (or Docker Engine + Compose plugin)
+#
+# Quick start:
+#   cp includes/.env.example includes/.env   # then fill in your values
+#   docker compose up -d
+#
+# The web root is served at http://localhost:8080
+# phpMyAdmin is available at http://localhost:8081
+#
+# The 'includes' directory is mounted read-only into /var/www/includes and
+# the 'multimadness.de' directory becomes the Apache document root at
+# /var/www/html so that existing include_once paths stay intact.
+
+services:
+  web:
+    build: .
+    ports:
+      - "8080:80"
+    volumes:
+      - ./multimadness.de:/var/www/html
+      - ./includes:/var/www/includes:ro
+    environment:
+      # Override DB credentials via environment; the includes/.env file is
+      # loaded by constants.php at runtime, but Docker environment variables
+      # take precedence over the .env file.
+      LIVE_DB_HOST: db
+      LIVE_DB_NAME: ${LIVE_DB_NAME:-mmmdb}
+      LIVE_DB_USER: ${LIVE_DB_USER:-mmmuser}
+      LIVE_DB_PASS: ${LIVE_DB_PASS:-changeme}
+      DEV_DB_HOST: db
+      DEV_DB_NAME: ${DEV_DB_NAME:-mmmdb}
+      DEV_DB_USER: ${DEV_DB_USER:-mmmuser}
+      DEV_DB_PASS: ${DEV_DB_PASS:-changeme}
+      LAN_DB_HOST: db
+      LAN_DB_NAME: ${LAN_DB_NAME:-mmmdb}
+      LAN_DB_USER: ${LAN_DB_USER:-mmmuser}
+      LAN_DB_PASS: ${LAN_DB_PASS:-changeme}
+      MAIL_HOST: ${MAIL_HOST:-mailhog}
+      MAIL_USERNAME: ${MAIL_USERNAME:-test@example.com}
+      MAIL_PASSWORD: ${MAIL_PASSWORD:-}
+      MAIL_HOST_NEWSLETTER: ${MAIL_HOST_NEWSLETTER:-mailhog}
+      MAIL_USERNAME_NEWSLETTER: ${MAIL_USERNAME_NEWSLETTER:-newsletter@example.com}
+      MAIL_PASSWORD_NEWSLETTER: ${MAIL_PASSWORD_NEWSLETTER:-}
+      BINGMAPS_KEY: ${BINGMAPS_KEY:-}
+    depends_on:
+      db:
+        condition: service_healthy
+
+  db:
+    image: mariadb:10.11
+    environment:
+      MARIADB_ROOT_PASSWORD: root
+      MARIADB_DATABASE: ${LIVE_DB_NAME:-mmmdb}
+      MARIADB_USER: ${LIVE_DB_USER:-mmmuser}
+      MARIADB_PASSWORD: ${LIVE_DB_PASS:-changeme}
+    volumes:
+      - db_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  phpmyadmin:
+    image: phpmyadmin:latest
+    ports:
+      - "8081:80"
+    environment:
+      PMA_HOST: db
+      PMA_USER: root
+      PMA_PASSWORD: root
+    depends_on:
+      - db
+
+  mailhog:
+    image: mailhog/mailhog:latest
+    ports:
+      - "1025:1025"   # SMTP
+      - "8025:8025"   # Web UI
+
+volumes:
+  db_data:

@@ -1,0 +1,44 @@
+/* Styles für Anwesenheitslisten */
+
+table.presences {
+  border: 1px solid #333366;
+  border-collapse: collapse;
+}
+
+.gray {
+  color: #C0C0C0;
+}
+
+tr.hours td {
+  text-align: left;
+  width: 30px;
+}
+tr.hours td.first {
+  width: 130px;
+}
+
+tr.linesep:hover td {
+  background-color: #ffcccc;
+}
+tr.linesep td.label {
+  font-size: .8em;
+  padding: 0 .5em 0 .2em;
+  text-align: right;
+}
+tr.linesep td {
+  border-top: 1px dotted gray;
+  font-size: .7em;
+  padding-top: 2px !important;
+  padding: 1px 0;
+}
+tr.linesep div {
+  background-color: green;
+  height: 100%;
+}
+tr.linesep div.currentuser {
+  background-color: lime;
+}
+tr.linesep div.task {
+  background-color: blue;
+}
+

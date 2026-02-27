@@ -1,0 +1,334 @@
+/* Allgemeines */
+p, ul, ol, li, td { 
+  font-family:Verdana, Arial,sans-serif; 
+  font-size:9pt;
+  color:#000026;
+}
+
+h1, h2, h3 {
+  font-family: Verdana, Arial, sans-serif;
+}
+h1 {
+  font-size:11pt;
+  color:#D04A00;
+}
+h2 {
+  font-size:10pt;
+  color:#D04A00;
+}
+h3 {
+  font-size:8pt;
+  color:#000026;
+  font-weight: normal;
+}
+
+hr {
+  color: #333366;
+  height: 1px;
+}
+
+
+.arrow {
+  background: url("headline_pfeil.gif") no-repeat;
+  padding-left: 12px;
+}
+ul.arrows {
+  list-style-image: url("images/headline_pfeil.gif");
+  margin: 0.5em 0 0.5em 2em;
+  padding: 0;
+}
+
+
+
+/* PELAS */
+
+.latest_link, .latest_date {
+  font-size:11px;
+}
+
+td.pelas_newstitle { 
+  font-family:Verdana,Arial,sans-serif; 
+  font-size:11pt;
+  font-weight: bold;
+  color:#D04A00;
+  text-decoration: none;
+}
+
+td.pelas_newsautor { 
+  font-family:Verdana,Arial,sans-serif; 
+  font-size:8pt;
+  color:#003500;
+  text-decoration: none;
+}
+
+td.pelas_benutzer_titel { 
+  font-family:Arial,sans-serif; 
+  font-size:9pt;
+  color:#FFFFFF;
+  text-decoration: none;
+  background-color:#333366;
+  font-weight: bold;
+}
+
+td.pelas_benutzer_inhalt { 
+  background-color: #EFF3F7;
+}
+
+td.pelas_benutzer_prefix { 
+  background-color: #D8E0F9;
+}
+
+td.commentintro  {
+  font-weight: bold;
+  background-color: #D8E0F9;
+}
+
+td.TNListe {
+  color:#FFFFFF;
+  background-color:#333366;
+}
+
+.TNLink {
+  font-family:Arial,sans-serif; 
+  font-size:9pt;
+  color:#FFFFFF;
+  text-decoration: none;
+}
+
+a.TNLink:hover {
+  text-decoration: underline;
+}
+
+td.TNListeTDB {
+  background-color: #EFF3F7;
+}
+
+td.TNListeTDA {
+  background-color: #D8E0F9;
+}
+
+td.sitzborder {
+  background-color:#666699;
+}
+
+td.sitzcontent {
+  font-family:Arial,sans-serif; 
+  font-size:9pt;
+  color:#FFFFFF;
+  text-decoration: none;
+  background-color:#333366;
+}
+
+td.header {
+  font-family:Arial,sans-serif; 
+  font-size:9pt;
+  color:#FFFFFF;
+  text-decoration: none;
+  background-color:#333366;
+  font-weight: bold;
+}
+
+td.Header_Separator {
+  background-color:#333366;
+}
+
+/* PELAS Forum */
+td.forum_titel {
+  font-family:Arial,sans-serif; 
+  font-size:9pt;
+  color:#FFFFFF;
+  text-decoration: none;
+  background-color:#333366;
+  font-weight: bold;
+}
+
+td.forum_bg1 {
+  background-color: #D8E0F9;
+}
+td.forum_bg2 {
+  background-color: #EFF3F7;
+}
+
+.forumlink {
+  font-family:Arial,sans-serif; 
+  font-size:9pt;
+  color:#FFFFFF;
+  text-decoration: none;
+}
+a.forumlink:hover {
+  text-decoration: underline;
+}
+
+
+/* News und/oder Forum */
+
+p.news {
+  margin-left:20px;
+  margin-right:25px;
+  /* margin-top: 7px; */
+}
+
+div.zitat {
+  margin-left:20px;
+  font-weight:italic;
+}
+
+p.fehler {
+  color:#DD0000;
+}
+
+.datum {
+  font-size:8pt;
+  color:#003500;
+  font-weight:normal;
+}
+
+.autor {
+  font-size:8pt;
+  color:#990000;
+  font-weight:normal;
+}
+
+/* Spezielles */
+
+.kleinertext {
+  font-size:7pt;
+}
+
+
+/* Navigation */
+
+p.navbar {
+  font-family:Arial,sans-serif; 
+  font-size:9pt;
+  color:#FFFFFF;
+  text-decoration: none;
+}
+
+td.navbar { 
+  font-family:Arial,sans-serif; 
+  font-size:9pt;
+  color:#FFFFFF;
+  text-decoration: none;
+  background-color:#333366;
+}
+
+.navlink {
+  font-family:Arial,sans-serif; 
+  font-size:9pt;
+  color:#FFFFFF;
+  text-decoration: none;
+}
+a.navlink:hover {
+  text-decoration: underline;
+}
+.nav-arrow {
+  background: url("/pfeil_tabelle.gif") no-repeat;
+  padding-left: 12px;
+}
+
+
+td.looser { 
+  font-family:Arial,sans-serif; 
+  font-size:9pt;
+  color:#FFFFFF;
+  text-decoration: none;
+  background-color:#BB0000;
+}
+
+td.newsheadline	{
+  font-family:Verdana, Arial,sans-serif;
+  font-size:11pt;
+  font-weight:bold;
+  color:#D04A00;
+}
+
+
+/* Tabellen mit Hintegrundfarbe */
+
+td.dblau {
+  background-color: #D8E0F9;
+}	
+td.hblau {
+  background-color: #EFF3F7;
+}
+td.pink {
+  background-color: #F790C8;
+}
+	
+/* Forum */
+.lastEdited {
+  font-size: 7pt;
+  color: #0000A0;
+}
+
+/* phpbb2Code */
+div.ng_quote_body {
+  border: 1px black solid;
+  width: 80%;
+  align: center;
+  position: relative;
+  left: 50px;
+  padding: 2px;
+}
+
+div.ng_code {
+  color: #FF0000;
+  border: 1px black solid;
+  width: 80%;
+  align: center;
+  position: relative;
+  left: 50px;
+  padding: 2px;
+}
+
+
+/*################################*/
+/* Neue Klassen für PELAS         */
+/*################################*/
+
+/* Attraktiv gestaltete Tabellenliste */
+
+table.liste {
+	
+}
+table.liste th {
+	color:#ffffff;
+	padding: 0.4em;
+	font-size: 0.75em;
+	background-color:#333366;
+	border-bottom: 2px solid #000000;
+}
+table.liste td {
+	padding: 0.4em;
+	font-size: 0.75em;
+	border-bottom: 1px solid #222222;
+}
+
+
+/* Mit Abstand und Überschrift formatierte (Fakten-)liste */
+
+div.factlist {
+	line-height: 1.4em;
+	margin-left:10px;
+}
+div.factlist_header {
+	color:#D04A00;
+	font-weight:bold;
+	padding-bottom: 0.8em;
+	fonz-size: 1.1em;
+}
+
+
+/* Einfach gerandeter (Tabellen-)Kasten */
+
+table.kasten {
+	border: 1px solid #000000;
+	-moz-border-radius: 5px;
+}
+table.kasten th {
+	color:#ffffff;
+	padding: 0.4em;
+	font-size: 0.75em;
+	background-color:#333366;
+}

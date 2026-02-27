@@ -1,0 +1,23 @@
+# Credentials – NEVER commit real secrets
+includes/.env
+multimadness.de/admin/.env
+.env
+
+# Smarty compiled templates & cache
+includes/smarty/templates_c/
+includes/smarty/cache/
+
+# PHPUnit
+vendor/
+.phpunit.result.cache
+coverage/
+
+# OS / editor artefacts
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*~
+
+# Docker local overrides
+docker-compose.override.yml

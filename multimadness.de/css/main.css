@@ -1,0 +1,454 @@
+/* Allgemeines */
+
+* { margin:0; font-family:Verdana,Arial,sans-serif; }
+html, body { font-size:15px; height:100%; color:#000026; position:relative; background-color:#333366; }
+img { border:0; }
+
+h1, h2, h3, .pelas_newstitle { color:#D04A00; margin-bottom:10px; font-weight:normal; }
+h1, .pelas_newstitle { font-size: 25px; }
+p, hr { margin-bottom:20px; }
+hr { color: #333366; height: 1px; }
+a { text-decoration:none; color:#000026; }
+a:hover, a:active { text-decoration:underline; }
+
+input, select { padding:5px; border-radius:4px; background-color:#f6f6fb; }
+input.button { cursor: pointer; padding:7px 20px 7px 20px; margin:10px 0 10px 0; background-color:#e9e9f6; font-size:15px; border-radius:10px; }
+input[type="submit"] { cursor: pointer; padding:7px 50px 7px 50px; margin:10px 0 10px 0; background-color:#e9e9f6; font-size:15px; border-radius:10px; }
+input[type=checkbox], input[type=radio] { margin:0px 3px 3px 0px; vertical-align:middle; width:17px; height:17px; }
+table td { padding:4px 4px 4px 4px; }
+
+.clear { clear:both; }
+.fehler { background-color:#f3d9d9; padding:10px; border:2px dashed #c90000; }
+.orange_light { color:#f19b2a; }
+
+/* Site-Struktur */
+
+#wrapper_footerdown { min-height:100%; background-color:#fff; }
+
+#header { background-color:#333366; }
+#header .inside { margin:0 auto; max-width:1200px; padding-top:10px; color:#fff; }
+
+#mainmenu { background-color:#333366; }
+#mainmenu .inside { margin:0 auto; max-width:1200px; color:#fff; }
+#mainmenu ul { padding-left:5px; }
+#mainmenu li { float:left; margin-right:30px; padding:10px 10px 10px 29px; display:block; cursor:pointer; background:url(arrow_down.png) left no-repeat; background-position:10px 15px; border-top-left-radius:10px; border-top-right-radius:10px; }
+#mainmenu .active { background-color:#e9e9f6; color:#000; }
+#mainmenu .login { float:right; padding:15px 10px 10px 29px; font-size: 12px; font-weight:bold; }
+#mainmenu .login a { color:#fff; }
+
+#submenu { width:100%; z-index:100000; position:absolute; background-color:#e9e9f6; }
+#submenu .inside { margin:0 auto; max-width:1200px; }
+#submenu .menutoggle { display:none; margin-left:10px; padding:20px 0px 0px 0px; }
+#submenu ul { float:left; padding:0px; margin-right:80px; margin-bottom:30px; }
+#submenu li { list-style-type:none; padding:5px; }
+#submenu li a { padding-left:15px; background:url(arrow_right.png) left no-repeat; color:#333366; background-position:0px 5px; text-decoration:none; font-size:0.9em; }
+#submenu li a:hover { text-decoration:underline; }
+
+#content { background-color:#fff; padding-bottom:110px;  }
+#content .inside { padding:50px 20px 40px 20px; margin:0 auto; max-width:1200px; }
+#content .left { margin-right:240px; }
+#content .right { width:200px; float:right; }
+#content .right .box { font-size:15px; padding:10px; display:block; background-color:#e9e9f6; border-radius:10px; margin-bottom:15px; }
+
+#content img.sidebar { border-radius:10px; }
+
+#content .fotoslider { width: 31.13%; float:left; padding:1.1%; }
+
+.MicrosoftMap .MapPushpinBase img { cursor:pointer; }
+
+#content .users-online { font-size:0.9em; }
+#content .users-online ul { list-style-type:none; margin-left:-20px; margin-top:-8px; text-align:left; display:block; }
+#content .users-online ul li { margin-left:0px; text-align:left; }
+#content .users-online ul li i { color:#D04A00; }
+
+#footer { background-color:#333366; height:110px; margin-top:-110px;}
+#footer .inside { margin:0 auto; max-width:1200px; padding:80px 0px 10px; color:#fff; font-size:0.9em; text-align:center; }
+#footer .inside a { color:#fff; text-decoration:none; }
+#footer .inside a:hover { text-decoration:underline; }
+
+.arrow { background:url(arrow_right.png) left no-repeat; background-position:0px 5px; padding-left: 12px; }
+ul.arrows {
+  list-style-image: url("arrow_right.png");
+  margin: 0.5em 0 0.5em 2em;
+  padding: 0;
+}
+
+/* Anmelde-Info-Liste */
+ul.status { margin-left:0; padding-left:0; }
+li.ok, li.nook, li.alert { background-position:0px 7px; padding: 3px 0px 3px 24px; list-style-type:none; }
+li.ok { background:url(icon_accept.gif) left no-repeat;  }
+li.nook { background:url(action_stop.gif) left no-repeat; }
+li.alert { background:url(icon_alert.gif) left no-repeat; }
+
+
+/* Responsive und so */
+
+#content .youtube-player-replacement { display:none; }
+
+@media (max-width: 650px) { 
+	#content .right { display:none; }
+	#content .left { margin-right:0px; }
+	#content .news_content img { display:none; }
+	#content .floats { width:100%!important; }
+	#content .floats2 { display:none; }
+	#header .banner { display:none; }
+	.modal {
+		/* display: none; /* Hidden by default */
+		position: fixed; /* Stay in place */
+		z-index: 10000; /* Sit on top */
+		padding-top: 0px!important; /* Location of the box */
+		left: 0;
+		top: 0;
+		width: 100%; /* Full width */
+		height: 100%; /* Full height */
+		overflow: auto; /* Enable scroll if needed */
+		background-color: rgb(0,0,0); /* Fallback color */
+    background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+	}
+}
+
+@media (max-width: 870px) { 
+	#content .youtube-player { display:none; }
+	#content .youtube-player-replacement { display:block; }
+}
+
+
+/* PELAS old - angepasste Teile sind oben zu finden */
+
+i.archiv.fa { font-size:30px; color:#D04A00; }
+
+.latest_link, .latest_date {
+  font-size:11px;
+}
+
+p.news_content a {
+	background:url(arrow_right.png) left no-repeat; 
+	background-position:0px 5px; 
+	padding-left: 12px; 
+}
+
+
+
+td.pelas_newsautor { 
+  font-family:Verdana,Arial,sans-serif; 
+  font-size:8pt;
+  color:#003500;
+  text-decoration: none;
+}
+
+td.pelas_benutzer_titel { 
+  font-family:Arial,sans-serif; 
+  font-size:9pt;
+  color:#FFFFFF;
+  text-decoration: none;
+  background-color:#333366;
+  font-weight: bold;
+}
+
+td.pelas_benutzer_inhalt { 
+  background-color: #EFF3F7;
+}
+
+td.pelas_benutzer_prefix { 
+  background-color: #D8E0F9;
+}
+
+td.commentintro  {
+  font-weight: bold;
+  background-color: #D8E0F9;
+}
+
+td.TNListe {
+  color:#FFFFFF;
+  background-color:#333366;
+}
+
+.TNLink {
+  font-family:Arial,sans-serif; 
+  font-size:9pt;
+  color:#FFFFFF;
+  text-decoration: none;
+}
+
+a.TNLink:hover {
+  text-decoration: underline;
+}
+
+td.TNListeTDB {
+  background-color: #EFF3F7;
+}
+
+td.TNListeTDA {
+  background-color: #D8E0F9;
+}
+
+td.sitzborder {
+  background-color:#666699;
+}
+
+td.sitzcontent {
+  font-family:Arial,sans-serif; 
+  font-size:9pt;
+  color:#FFFFFF;
+  text-decoration: none;
+  background-color:#333366;
+}
+
+td.header {
+  font-family:Arial,sans-serif; 
+  font-size:9pt;
+  color:#FFFFFF;
+  text-decoration: none;
+  background-color:#333366;
+  font-weight: bold;
+}
+
+td.Header_Separator {
+  background-color:#333366;
+}
+
+/* PELAS Forum */
+td.forum_titel {
+  font-family:Arial,sans-serif; 
+  font-size:11pt;
+  color:#FFFFFF;
+  text-decoration: none;
+  background-color:#333366;
+  font-weight: normal;
+}
+
+td.forum_bg1 {
+  background-color: #D8E0F9;
+}
+td.forum_bg2 {
+  background-color: #EFF3F7;
+}
+
+.forumlink {
+  font-family:Arial,sans-serif; 
+  font-size:12pt;
+  color:#FFFFFF;
+  text-decoration: none;
+}
+a.forumlink:hover {
+  text-decoration: underline;
+}
+
+
+/* News und/oder Forum */
+
+p.news {
+  margin-left:20px;
+  margin-right:25px;
+  /* margin-top: 7px; */
+}
+
+.video-container {
+  position: relative;
+  padding-bottom: 56.25%;
+  height: 0;
+}
+
+.video-container iframe {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
+div.zitat {
+  margin-left:20px;
+  font-weight:italic;
+}
+
+.datum {
+  font-size:8pt;
+  color:#003500;
+  font-weight:normal;
+}
+
+.autor {
+  font-size:8pt;
+  color:#990000;
+  font-weight:normal;
+}
+
+/* Spezielles */
+
+.kleinertext {
+  font-size:7pt;
+}
+
+/* Tabellen mit Hintegrundfarbe */
+
+td.dblau {
+  background-color: #D8E0F9;
+	color:#000026;
+}	
+td.hblau {
+  background-color: #EFF3F7;
+	color:#000026;
+}
+td.pink {
+  background-color: #F790C8;
+	color:#000026;
+}
+	
+/* Forum */
+.lastEdited {
+  font-size: 7pt;
+  color: #0000A0;
+}
+
+/* phpbb2Code */
+div.ng_quote_body {
+  border: 1px black solid;
+  width: 80%;
+  align: center;
+  position: relative;
+  left: 50px;
+  padding: 2px;
+}
+
+div.ng_code {
+  color: #FF0000;
+  border: 1px black solid;
+  width: 80%;
+  align: center;
+  position: relative;
+  left: 50px;
+  padding: 2px;
+}
+
+
+/*################################*/
+/* Neue Klassen für PELAS         */
+/*################################*/
+
+/* Attraktiv gestaltete Tabellenliste */
+
+table.liste {
+	
+}
+table.liste th {
+	color:#ffffff;
+	padding: 0.4em;
+	font-size: 0.75em;
+	background-color:#333366;
+	border-bottom: 2px solid #000000;
+}
+table.liste td {
+	padding: 0.4em;
+	font-size: 0.75em;
+	border-bottom: 1px solid #222222;
+}
+
+
+/* Mit Abstand und Überschrift formatierte (Fakten-)liste */
+
+div.factlist {
+	line-height: 1.4em;
+	margin-left:10px;
+}
+div.factlist_header {
+	color:#D04A00;
+	font-weight:bold;
+	padding-bottom: 0.8em;
+	fonz-size: 1.1em;
+}
+
+
+/* Einfach gerandeter (Tabellen-)Kasten */
+
+table.kasten {
+	border: 1px solid #000000;
+	-moz-border-radius: 5px;
+}
+table.kasten th {
+	color:#ffffff;
+	padding: 0.4em;
+	font-size: 0.75em;
+	background-color:#333366;
+}
+
+
+/* Cookie Banner */
+
+#eu-cookie-message{
+position: relative;
+top: 0;
+width: 100%;
+text-align: center;
+color: #fff;
+background-color: #D04A00;
+}
+#eu-cookie-message form{
+border:0;
+margin:0;
+padding:0;
+}
+#eu-cookie-message form input{
+padding: 5px 10px;
+background-color: #333366;
+border: 2px solid #333366;
+border-radius: 5px;
+cursor: pointer;
+color: #fff;
+}
+
+/* POPUP */
+.modal {
+    /* display: none; /* Hidden by default */
+    position: fixed; /* Stay in place */
+    z-index: 10000; /* Sit on top */
+    padding-top: 100px; /* Location of the box */
+    left: 0;
+    top: 0;
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    overflow: auto; /* Enable scroll if needed */
+    background-color: rgb(0,0,0); /* Fallback color */
+    background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+}
+
+.modal-content {
+    background-color: #fefefe;
+    margin: auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 60%;
+}
+
+.close {
+    color: #aaaaaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+    color: #000;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.modal-content p a {
+	background:url(arrow_right.png) left no-repeat; 
+	background-position:0px 5px; 
+	padding-left: 12px; 
+}
+
+.btnNewsletterOK {
+	font-weight:600!important;
+	background-color: green!important;	
+	color: #fff!important;
+}
+
+.btnNewsletterCancel {
+	font-weight:600!important;
+	background-color: red!important;
+	color: #fff!important;
+}
