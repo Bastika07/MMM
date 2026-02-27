@@ -46,67 +46,60 @@ include_once "getsession.php"; # Für Login-Anzeige schon mal die Session holen
 include_once 'PHPMailer/PHPMailerAutoload.php';
 
 # Unsere Seiten
-$page_info = array (
-	1	=>	"start",
-	111	=>	"start2",
-	2	=>	"news",
-	3	=>	"info",
-	4	=>	"benutzerdetails",
-	5	=>	"login",
-	6	=>	"accounting",
-	7	=>	"accounting_rechnung", # ???????????? Wird das direkt aufgerufen?
-	8	=>	"teilnehmerliste",
-	9	=>	"sitzplan",
-	10	=>	"forum",
-	11	=>	"login_edit",
-	12	=>	"forum",
-	13	=>	"sitzplan",
-	14	=>	"archiv",
-	15	=>	"archiv_upload",
-	16	=>	"geekradar",
-	17	=>	"kontaktformular",
-	18	=>	"clanverwaltung",
-	19	=>	"clandetails",
-	
-	20	=>	"turnier/turnier_list",
-	21	=>	"turnier/turnier_detail",
-	
-	22	=>	"turnier/turnier_faq",
-	23	=>	"turnier/turnier_ranking",
-	24	=>	"turnier/turnier_table",
-	25	=>	"turnier/turnier_tree",
-	26	=>	"turnier/match_detail",
-	27	=>	"turnier/team_create",
-	28	=>	"turnier/team_create2",
-	29	=>	"turnier/team_detail",
-	30	=>	"turnier/team_swap",
-
-	31	=>	"gastserver",
-	32	=>	"umfrage",
-
-	40	=>	"lokation",
-	41	=>	"netzwerk",
-	42	=>	"bedingungen",
-	43	=>	"impressum",
-	44	=>	"team",
-	45	=>	"verpflegung",
-	46	=>	"umgebungskarte",
-	47	=>	"datenschutz",
-	49  =>  "shirtshop",
-	
-	48	=>	"sponsoren",
-	99	=>	"sitzplanv2",
-	500 =>  "covid19",
-	999 	=>	"error"
-);
+$router = (new Router())
+	->add(1,   'start')
+	->add(111, 'start2')
+	->add(2,   'news')
+	->add(3,   'info')
+	->add(4,   'benutzerdetails')
+	->add(5,   'login')
+	->add(6,   'accounting')
+	->add(7,   'accounting_rechnung') # ???????????? Wird das direkt aufgerufen?
+	->add(8,   'teilnehmerliste')
+	->add(9,   'sitzplan')
+	->add(10,  'forum')
+	->add(11,  'login_edit')
+	->add(12,  'forum')
+	->add(13,  'sitzplan')
+	->add(14,  'archiv')
+	->add(15,  'archiv_upload')
+	->add(16,  'geekradar')
+	->add(17,  'kontaktformular')
+	->add(18,  'clanverwaltung')
+	->add(19,  'clandetails')
+	->add(20,  'turnier/turnier_list')
+	->add(21,  'turnier/turnier_detail')
+	->add(22,  'turnier/turnier_faq')
+	->add(23,  'turnier/turnier_ranking')
+	->add(24,  'turnier/turnier_table')
+	->add(25,  'turnier/turnier_tree')
+	->add(26,  'turnier/match_detail')
+	->add(27,  'turnier/team_create')
+	->add(28,  'turnier/team_create2')
+	->add(29,  'turnier/team_detail')
+	->add(30,  'turnier/team_swap')
+	->add(31,  'gastserver')
+	->add(32,  'umfrage')
+	->add(40,  'lokation')
+	->add(41,  'netzwerk')
+	->add(42,  'bedingungen')
+	->add(43,  'impressum')
+	->add(44,  'team')
+	->add(45,  'verpflegung')
+	->add(46,  'umgebungskarte')
+	->add(47,  'datenschutz')
+	->add(48,  'sponsoren')
+	->add(49,  'shirtshop')
+	->add(99,  'sitzplanv2')
+	->add(500, 'covid19')
+	->add(999, 'error');
 
 # Aufgerufene Seite suchen oder auf die Nr. 1 setzen:
-if (isset($_GET['page']) && array_key_exists(intval($_GET['page']), $page_info))
-	$page = intval($_GET['page']);
-else
-	$page = 1;
-	
-if (is_file("page/".$page_info[$page].".top.php")) include "page/".$page_info[$page].".top.php"; 
+$requestedPage = isset($_GET['page']) ? intval($_GET['page']) : 0;
+$page = $router->has($requestedPage) ? $requestedPage : 1;
+$pageModule = $router->resolve($page);
+
+if (is_file("page/{$pageModule}.top.php")) include "page/{$pageModule}.top.php"; 
 ?>
 <?php
 require_once "dblib.php";
@@ -189,7 +182,7 @@ Wir haben unsere Datenschutzrichtlinie aktualisiert, um euch mehr Informationen 
 
 <link rel="shortcut icon" href="favicon.ico">
 
-<?php if (is_file("page/".$page_info[$page].".head.php")) include "page/".$page_info[$page].".head.php"; ?>
+<?php if (is_file("page/{$pageModule}.head.php")) include "page/{$pageModule}.head.php"; ?>
 </head>
 
 <body>
@@ -294,7 +287,7 @@ Wir haben unsere Datenschutzrichtlinie aktualisiert, um euch mehr Informationen 
 	include("pelasfront/party_running_checker.php");
 ?>
  
-<?php if (is_file("page/".$page_info[$page].".php")) include "page/".$page_info[$page].".php"; ?>
+<?php if (is_file("page/{$pageModule}.php")) include "page/{$pageModule}.php"; ?>
        
   </div>
 </div>
