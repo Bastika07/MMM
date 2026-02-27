@@ -218,7 +218,7 @@ If your MySQL instance listens on a Unix socket instead of TCP, set
     ├── page/                   # Frontend page modules (40+ files)
     │   └── turnier/            # Tournament frontend pages
     ├── css/                    # Stylesheets
-    ├── js/                     # JavaScript (jQuery 2.1.1, lightbox, html2canvas)
+    ├── js/                     # JavaScript (jQuery 3.7.1, lightbox, html2canvas)
     ├── fonts/                  # Web fonts
     ├── img/                    # Images (logos, banners)
     ├── images/                 # Additional images
@@ -325,7 +325,7 @@ All dependencies are vendored (no package manager):
 |---|---|---|
 | PHPMailer | `includes/PHPMailer/` | Outgoing email |
 | Smarty 3 (SmartyBC) | `includes/smarty/` | Templating |
-| jQuery 2.1.1 | `multimadness.de/js/` | Frontend JS |
+| jQuery 3.7.1 | `multimadness.de/js/` | Frontend JS |
 | Lightbox | `multimadness.de/js/`, `css/` | Image gallery |
 | html2canvas | `multimadness.de/` | Client-side canvas screenshot |
 | html2pdf (TCPDF-based) | `includes/html2pdf/`, `multimadness.de/html2pdf/` | PDF generation |
@@ -428,7 +428,7 @@ Each block sets:
 
 9. **Inline HTML / mixed concerns** — Pages mix HTML, SQL, and business logic in the same file with no separation, making testing and maintenance harder.
 
-10. **Outdated frontend libraries** — jQuery 2.1.1 (EOL) and other vendored JS/CSS libraries are not receiving security updates.
+10. **Outdated frontend libraries** — other vendored JS/CSS libraries may not be receiving security updates.
 
 ### 🟢 Low / Informational
 
@@ -452,5 +452,5 @@ Each block sets:
 | ✅ | ~~Replace hard-coded absolute paths in dev/intranet `constants.php` blocks with a single `BASE_DIR` constant derived at runtime (e.g. `dirname(__DIR__)`)~~ — done |
 | ✅ | ~~Add PHPUnit test coverage for core business logic (`pelasfunctions.php`, `DB::`, tournament classes)~~ — done |
 | 🟡 | Introduce a lightweight router/framework to separate routing, controllers, and views |
-| 🟡 | Update or replace vendored frontend libraries (jQuery 2.1.1 is EOL, update to 3.x+) |
+| ✅ | Update or replace vendored frontend libraries (jQuery updated to 3.7.1) |
 | 🟢 | Clean up dead/commented-out code in `pelasfunctions.php` |

@@ -169,7 +169,7 @@ Wir haben unsere Datenschutzrichtlinie aktualisiert, um euch mehr Informationen 
 <link rel="stylesheet" type="text/css" href="css/main.css">
 <link rel="stylesheet" type="text/css" href="css/lightbox.css">
 <link rel="stylesheet" href="css/font-awesome.min.css">
-<script type="text/javascript" src="js/jquery-2.1.1.min.js"></script>
+<script type="text/javascript" src="js/jquery-3.7.1.min.js"></script>
 <script type="text/javascript" src="js/lightbox.min.js"></script>
 <script type="text/javascript">
 	$(document).ready(function(){
