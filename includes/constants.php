@@ -122,6 +122,8 @@ case "www.lan.multimadness.de":
 
 default:
 	//die("invalid SERVER_NAME: ".$_SERVER['SERVER_NAME']);
+	// localhost / XAMPP local development falls through to live config;
+	// DB credentials are read from includes/.env
 	$srv_conf = "urtyp_live_internet";
 	break;
 }
@@ -222,37 +224,37 @@ define('DB_STATISTICS', true);
 // TODO: check usage
 //define('BUNGALOWLAN', FALSE);
 
-// Konstanten fÃƒÂ¼r die NewsBilder
+// Konstanten für die NewsBilder
 define('NEWSBILD_DIR', PELASDIR.'bilder_upload/newsbild/');
 define('NEWSBILD_PATH', PELASHOST.'bilder_upload/newsbild/');
 define('NEWSBILD_VALID_FILE_PATTERN', "/^([0-9]+)_\w+\.\w{1,4}$/");
 $NEWSBILD_VALID_FILE_EXTS = array('image/jpeg', 'image/jpg', 'image/gif', 'image/png'); // gif, jpg, png
 
-// Konstanten fÃƒÂ¼r die SliderBilder
+// Konstanten für die SliderBilder
 define('SLIDER_DIR', PELASDIR.'bilder_upload/slider/');
 define('SLIDER_PATH', PELASHOST.'bilder_upload/slider/');
 define('SLIDER_VALID_FILE_PATTERN', "/^([0-9]+)_\w+\.\w{1,4}$/");
 $SLIDER_VALID_FILE_EXTS = array('image/jpeg', 'image/jpg', 'image/gif', 'image/png'); // gif, jpg, png
 
-// Konstanten fÃƒÂ¼r die Verpflegungsbilder
+// Konstanten für die Verpflegungsbilder
 define('VERPFLEGUNG_DIR', PELASDIR.'bilder_upload/verpflegung/');
 define('VERPFLEGUNG_PATH', PELASHOST.'bilder_upload/verpflegung/');
 define('VERPFLEGUNG_VALID_FILE_PATTERN', "/^([0-9]+)_\w+\.\w{1,4}$/");
 $VERPFLEGUNG_VALID_FILE_EXTS = array('image/jpeg', 'image/jpg', 'image/gif', 'image/png'); // gif, jpg, png
 
-// Konstanten fÃƒÂ¼r die Lokationbilder
+// Konstanten für die Lokationbilder
 define('LOCATION_DIR', PELASDIR.'bilder_upload/location/');
 define('LOCATION_PATH', PELASHOST.'bilder_upload/location/');
 define('LOCATION_VALID_FILE_PATTERN', "/^([0-9]+)_\w+\.\w{1,4}$/");
 $LOCATION_VALID_FILE_EXTS = array('image/jpeg', 'image/jpg', 'image/gif', 'image/png'); // gif, jpg, png
 
-// Konstanten fÃƒÂ¼r die Netzwerkbilder
+// Konstanten für die Netzwerkbilder
 define('NETZWERK_DIR', PELASDIR.'bilder_upload/netzwerk/');
 define('NETZWERK_PATH', PELASHOST.'bilder_upload/netzwerk/');
 define('NETZWERK_VALID_FILE_PATTERN', "/^([0-9]+)_\w+\.\w{1,4}$/");
 $NETZWERK_VALID_FILE_EXTS = array('image/jpeg', 'image/jpg', 'image/gif', 'image/png'); // gif, jpg, png
 
-// Konstanten fÃƒÂ¼r die Sponsorbilder
+// Konstanten für die Sponsorbilder
 define('SPONSOR_DIR', PELASDIR.'bilder_upload/sponsoring/');
 define('SPONSOR_PATH', PELASHOST.'bilder_upload/sponsoring/');
 define('SPONSOR_VALID_FILE_PATTERN', "/^([0-9]+)_\w+\.\w{1,4}$/");
