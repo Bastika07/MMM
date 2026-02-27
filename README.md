@@ -7,6 +7,8 @@ A legacy PHP-based LAN-party management system powering [multimadness.de](https:
 ## Table of Contents
 
 - [Overview](#overview)
+- [Supported Brands / Hostnames](#supported-brands--hostnames)
+- [Local Development](#local-development)
 - [Directory Structure](#directory-structure)
 - [Key Files](#key-files)
 - [Architecture](#architecture)
@@ -35,12 +37,65 @@ The system serves multiple event brands from a single codebase via a `MANDANTID`
 
 ---
 
+## Supported Brands / Hostnames
+
+The `includes/constants.php` hostname switch recognises the following production domains (all map to `urtyp_live_internet`):
+
+| Brand | Hostnames |
+|---|---|
+| MultiMadness | `multimadness.de`, `www.multimadness.de`, `madness4ever.de` |
+| NorthCon | `northcon.de`, `www.northcon.de`, `inet.northcon.de`, `admin.northcon.de` |
+| LAN Resort | `lanresort.de`, `www.lanresort.de`, `inet.lanresort.de` |
+| The Summit | `the-summit.de`, `www.the-summit.de`, `thesummit.de`, `inet.the-summit.de` |
+| The Activation | `the-activation.de`, `theactivation.de`, `www.the-activation.de` |
+| Dimension 6 | `dimension6.de`, `www.dimension6.de`, `d6-lan.de`, `ildm6.de` |
+| LAN Fortress | `lanfortress.de`, `www.lanfortress.de` |
+| eSport Arena | `esportarena.tv`, `esportarena.de` |
+| InnovaLAN (admin) | `admin.innovalan.de`, `pelas.innovalan.de`, `friends.innovalan.de` |
+
+Dev (internet) variants follow the pattern `<brand>-dev.innovalan.de`; intranet variants use `<brand>-lan.innovalan.de`. The live intranet during the party is served from `www.lan.multimadness.de` (`madnix_live`).
+
+---
+
+## Local Development
+
+### Prerequisites
+
+- [Docker Desktop](https://www.docker.com/products/docker-desktop/) (or Docker Engine + Compose plugin)
+
+### Quick Start
+
+```bash
+# 1. Copy the environment template and fill in values (or keep the defaults for local testing)
+cp includes/.env.example includes/.env
+
+# 2. Start all services (web + MariaDB + phpMyAdmin + Mailhog)
+docker compose up -d
+```
+
+| Service | URL |
+|---|---|
+| Web application | <http://localhost:8080> |
+| phpMyAdmin | <http://localhost:8081> |
+| Mailhog (SMTP UI) | <http://localhost:8025> |
+
+The `includes/` directory is mounted read-only into the container at `/var/www/includes`; `multimadness.de/` becomes the Apache document root at `/var/www/html`.
+
+Database credentials and mail settings are injected via environment variables defined in `includes/.env` (see `docker-compose.yml` for the full list). Environment variables override any hard-coded values inside `constants.php`.
+
+> **Note** – a blank database is created by default. Import a recent SQL dump to get a working dataset.
+
+---
+
 ## Directory Structure
 
 ```
 /
 ├── README.md
+├── Dockerfile                  # PHP 8.2 + Apache image for local development
+├── docker-compose.yml          # Local dev stack (web, MariaDB, phpMyAdmin, Mailhog)
 ├── includes/                   # Core libraries and shared PHP code
+│   ├── .env.example            # Environment variable template (copy to .env)
 │   ├── constants.php           # All configuration, DB credentials, constants
 │   ├── dblib.php               # MySQLi database wrapper (DB:: static class)
 │   ├── session.php             # Session creation / DB persistence
@@ -57,29 +112,63 @@ The system serves multiple event brands from a single codebase via a `MANDANTID`
 │   ├── upload.php              # File upload helpers
 │   ├── json.php                # JSON helpers
 │   ├── sitzlib.php             # Seating-plan library
+│   ├── sitzplan_generate.php   # Seating-plan SVG/HTML generator
 │   ├── coverage.php            # Attendance/coverage utilities
+│   ├── mailing_execute.php     # Newsletter/mailing execution helper
 │   ├── bugtracking.inc.php     # Bug-tracking helpers
 │   ├── t_compat.inc.php        # Backwards-compatibility shims
-│   ├── hostconfig.php          # (removed - emits die())
+│   ├── hostconfig.php          # (removed – emits die())
+│   ├── barcode.php             # Barcode generation
+│   ├── phpqrcode.php           # QR code generation
+│   ├── fpdf.php                # FPDF PDF library
+│   ├── class.ezpdf.php         # Legacy ezPDF library
+│   ├── class.pdf.php           # Legacy PDF helper
 │   ├── PHPMailer/              # PHPMailer library for outgoing email
 │   ├── smarty/                 # Smarty template engine (SmartyBC)
-│   ├── classes/                # Domain model classes (Board, Thread, User, …)
-│   ├── turnier/                # Tournament subsystem (8 classes)
-│   ├── pelasfront/             # Frontend-facing page-logic modules
+│   ├── classes/                # Domain model classes
+│   │   ├── Board.class.php
+│   │   ├── Thread.class.php
+│   │   ├── Post.class.php
+│   │   ├── User2BeamerMessage.class.php
+│   │   └── PelasSmarty / SmartyAdmin / SmartyForum / SmartyBugTrack (Smarty wrappers)
+│   ├── turnier/                # Tournament engine (16 classes + constants)
+│   │   ├── Turnier.class.php
+│   │   ├── TurnierSystem.class.php
+│   │   ├── TurnierAdmin.class.php
+│   │   ├── TurnierGroup.class.php
+│   │   ├── TurnierLiga.class.php
+│   │   ├── TurnierRanking.class.php
+│   │   ├── TurnierCoverage.class.php
+│   │   ├── TurnierPreis.class.php
+│   │   ├── TurnierExportNGL.class.php
+│   │   ├── TurnierExportWWCL.class.php
+│   │   ├── Team.class.php
+│   │   ├── TeamSystem.class.php
+│   │   ├── Match.class.php
+│   │   ├── Round.class.php
+│   │   ├── Jump.class.php
+│   │   ├── Tree.php
+│   │   └── t_constants.php
+│   ├── turnier-frontend/       # Admin-side tournament management pages
+│   ├── pelasfront/             # Frontend-facing page-logic modules (60+ files)
+│   ├── admin/                  # Shared admin helper modules
 │   ├── multimadness/           # Brand-specific overrides / assets
 │   ├── html2pdf/               # HTML-to-PDF conversion library
 │   ├── fonts/                  # Fonts used by PDF generation
+│   ├── xmlrpc/                 # XML-RPC helpers (unused/legacy)
 │   └── profiler.inc/           # Profiling helpers
 │
 └── multimadness.de/            # Web root for multimadness.de
     ├── index.php               # Front controller / router
     ├── admin/                  # Admin panel (80+ PHP scripts)
-    ├── page/                   # Frontend page modules (30+ files)
-    ├── pelasfront/             # Symlink/copy of frontend modules
+    │   └── turnier/            # Tournament admin scripts
+    ├── page/                   # Frontend page modules (40+ files)
+    │   └── turnier/            # Tournament frontend pages
     ├── css/                    # Stylesheets
     ├── js/                     # JavaScript (jQuery 2.1.1, lightbox, html2canvas)
     ├── fonts/                  # Web fonts
     ├── img/                    # Images (logos, banners)
+    ├── images/                 # Additional images
     ├── gfx/                    # Graphics / smileys
     ├── gfx_turnier/            # Tournament-specific graphics
     ├── forumicons/             # Forum icon assets
@@ -95,13 +184,20 @@ The system serves multiple event brands from a single codebase via a `MANDANTID`
 | File | Purpose |
 |---|---|
 | `multimadness.de/index.php` | Front controller: maps `?page=N` to `page/<name>.php` modules; handles cookie consent and newsletter popup |
-| `includes/constants.php` | All runtime configuration: DB credentials, mail credentials, file paths, status codes, category IDs, constants |
+| `includes/constants.php` | All runtime configuration: DB credentials, mail credentials, file paths, status codes, category IDs, constants; includes minimal `.env` loader |
 | `includes/dblib.php` | `DB::` static class wrapping MySQLi; provides `DB::connect()`, `DB::query()`, `DB::getOne()`, `DB::getAll()` etc.; also `safe()` escape helper and `BenutzerHatRecht()` permission check |
 | `includes/getsession.php` | Reads session cookie, queries `SESSION` table, populates `$nLoginID` / `$sLogin` / `$loginID` globals |
 | `includes/security.php` | Guards admin/protected pages; redirects to `login.php` if `$nLoginID` is not set |
-| `includes/pelasfunctions.php` | Business logic: invoice creation, ticket status transitions, accounting helpers |
-| `includes/turnier/` | Tournament engine: `Turnier`, `Team`, `Match`, `Ranking`, `TurnierSystem` classes |
+| `includes/pelasfunctions.php` | Business logic: invoice creation, ticket status transitions, accounting helpers, PayPal fee calculation, password hashing |
+| `includes/sitzlib.php` | Seating-plan library: seat lookup, reservation, block management |
+| `includes/turnier/` | Tournament engine: `Turnier`, `Team`, `Match`, `Round`, `Jump`, `Ranking`, `TurnierSystem`, group and liga sub-classes |
+| `includes/turnier-frontend/` | Admin-facing tournament management pages (tap, verwaltung, seeding, transfer, export, prices, admins) |
+| `includes/pelasfront/` | Frontend page-logic modules shared between web roots (accounting, archiv, forum, geekradar, sitzplan, login, …) |
 | `multimadness.de/admin/index.php` | Admin panel entry point; contains legacy `mysql_*` calls (non-functional on PHP ≥ 7) |
+| `multimadness.de/admin/controller.php` | Admin AJAX/action dispatcher |
+| `Dockerfile` | PHP 8.2 + Apache image with `mysqli` extension and `mod_rewrite` enabled |
+| `docker-compose.yml` | Local dev stack: web, MariaDB 10.11, phpMyAdmin, Mailhog |
+| `includes/.env.example` | Environment variable template; copy to `includes/.env` before first run |
 
 ---
 
@@ -135,16 +231,38 @@ Browser → multimadness.de/index.php
 
 | Page ID | Module |
 |---|---|
-| 1 | start (home) |
+| 1 / 111 | start / start2 (home – `111` is an alternate home variant) |
 | 2 | news |
+| 3 | info |
+| 4 | benutzerdetails (user profile) |
 | 5 | login / logout |
 | 6 | accounting (ticketing) |
 | 8 | teilnehmerliste (attendee list) |
-| 9/13 | sitzplan (seating) |
-| 10/12 | forum |
+| 9 / 13 | sitzplan (seating v1) |
+| 10 / 12 | forum |
+| 11 | login_edit (change password/profile) |
 | 14 | archiv (archive) |
-| 20-30 | tournament sub-pages |
-| 40-47 | static info pages |
+| 15 | archiv_upload |
+| 16 | geekradar (attendee map) |
+| 17 | kontaktformular (contact form) |
+| 18 | clanverwaltung (clan management) |
+| 19 | clandetails |
+| 20–30 | tournament sub-pages (list, detail, FAQ, ranking, table, tree, match, team create/detail/swap) |
+| 31 | gastserver (guest server registration) |
+| 32 | umfrage (poll/survey) |
+| 40 | lokation |
+| 41 | netzwerk |
+| 42 | bedingungen (T&Cs) |
+| 43 | impressum |
+| 44 | team |
+| 45 | verpflegung (catering) |
+| 46 | umgebungskarte (area map) |
+| 47 | datenschutz (privacy policy) |
+| 48 | sponsoren |
+| 49 | shirtshop |
+| 99 | sitzplanv2 (seating v2) |
+| 500 | covid19 |
+| 999 | error |
 
 ---
 
@@ -170,6 +288,14 @@ All dependencies are vendored (no package manager):
 
 All runtime configuration lives in **`includes/constants.php`**.
 
+### `.env` support
+
+`constants.php` includes a minimal `.env` file loader at the top. On startup it reads `includes/.env` (if present), registering each `KEY=VALUE` pair via `putenv()`. Environment variables already set in the process (e.g. by Docker) take precedence over the `.env` file.
+
+Copy `includes/.env.example` → `includes/.env` and fill in your values before first run. **Never commit `includes/.env` to version control** (it is already in `.gitignore`).
+
+### Environment selection
+
 The active configuration block is selected by matching `$_SERVER['SERVER_NAME']` to a known hostname. Three environments are defined:
 
 | `$srv_conf` value | When used |
@@ -186,7 +312,20 @@ Each block sets:
 
 **The `MANDANTID` (tenant/brand ID) is hard-coded in the frontend `index.php`** (`$nPartyID = 2`).
 
-### Defined Constants (selection)
+### Environment variables (full list)
+
+| Variable | Used by | Purpose |
+|---|---|---|
+| `LIVE_DB_HOST` / `LIVE_DB_NAME` / `LIVE_DB_USER` / `LIVE_DB_PASS` | `urtyp_live_internet` | Production DB connection |
+| `DEV_DB_HOST` / `DEV_DB_NAME` / `DEV_DB_USER` / `DEV_DB_PASS` | `urtyp_dev_internet` and `urtyp_dev_intranet` | Internet-facing dev + intranet dev DB connection |
+| `LAN_DB_HOST` / `LAN_DB_NAME` / `LAN_DB_USER` / `LAN_DB_PASS` | `madnix_live` (party intranet) | Live party intranet DB connection |
+| `MAIL_HOST` / `MAIL_USERNAME` / `MAIL_PASSWORD` | `constants.php` | Transactional SMTP |
+| `MAIL_HOST_NEWSLETTER` / `MAIL_USERNAME_NEWSLETTER` / `MAIL_PASSWORD_NEWSLETTER` | `constants.php` | Newsletter SMTP |
+| `BINGMAPS_KEY` | `index.php` | Bing Maps API key (geek-radar map) |
+| `LIVE_PELASDIR` | `urtyp_live_internet` | Override for the PELAS filesystem root |
+| `LIVE_SMARTY_BASE_DIR` | `urtyp_live_internet` | Override for Smarty base directory |
+
+### Defined PHP constants (selection)
 
 | Constant | Purpose |
 |---|---|
@@ -194,10 +333,18 @@ Each block sets:
 | `BINGMAPS_KEY` | Bing Maps API key used for the attendee location map |
 | `MAIL_*` | SMTP credentials for transactional mail |
 | `MAIL_*_NEWSLETTER` | SMTP credentials for newsletter mail |
-| `ACC_STATUS_*` | Accounting/ticket status codes |
-| `BOARD_*` / `BT_*` | Forum board flags and types |
-| `DESIGN_*` | Forum board display modes |
+| `ACC_STATUS_OFFEN` / `ACC_STATUS_BEZAHLT` / `ACC_STATUS_STORNIERT` | Accounting/ticket status codes (1 / 2 / 3) |
+| `ACC_ZAHLUNGSWEISE_*` | Payment method codes: Überweisung=1, PayPal=2, Bar=3 |
+| `BOARD_INLINE` / `BOARD_CLOSED` / `BOARD_HIDDEN` | Forum board flags (bitmask) |
+| `BT_FORUM` / `BT_NEWS` / `BT_TURNIERCOMMENTS` | Forum board types |
+| `DESIGN_FORUM` / `DESIGN_NEWS` / `DESIGN_NEWSCOMMENTS` / `DESIGN_COMMENTS` / `DESIGN_NEWSADMIN` | Forum board display modes |
 | `USER_ONLINE_TIMEOUT` | Seconds of inactivity before user is shown as offline (300 s) |
+| `PELASHOST` / `PELASDIR` / `BASE_URL` | URL and filesystem paths (set per hostname) |
+| `LOCATION` | `'internet'` or `'intranet'` (controls menu visibility) |
+| `SMARTY_HOME_DIR` / `SMARTY_CLASS` | Smarty library path |
+| `NEWSBILD_DIR` / `SLIDER_DIR` / `VERPFLEGUNG_DIR` / `LOCATION_DIR` / `SPONSOR_DIR` | Upload directories for image categories |
+| `UPLOADDIR` | Temp directory for file uploads (`/tmp/`) |
+| `MANDANTID` | Tenant/brand ID (hard-coded `2` in `index.php`) |
 
 ---
 
@@ -245,14 +392,14 @@ Each block sets:
 
 | Priority | Action |
 |---|---|
-| 🔴 | Move all credentials/secrets to `.env` / environment variables; add `.env` to `.gitignore` |
+| 🔴 | Move all credentials/secrets to `.env` / environment variables; `includes/.env.example` now exists — ensure production is using it |
 | 🔴 | Replace legacy `mysql_*` calls in `admin/index.php` with MySQLi / `DB::` wrapper |
 | 🔴 | Use prepared statements (MySQLi `prepare()` / `bind_param()`) for all DB queries |
 | 🟠 | Add CSRF token generation and validation to all state-changing forms |
-| 🟠 | Replace hard-coded paths with a single `BASE_DIR` constant derived at runtime |
+| 🟠 | Replace hard-coded absolute paths with a single `BASE_DIR` constant derived at runtime |
 | 🟡 | Add PHPUnit test coverage for core business logic (`pelasfunctions.php`, `DB::`, tournament classes) |
 | 🟡 | Introduce a lightweight router/framework to separate routing, controllers, and views |
-| 🟡 | Update or replace vendored frontend libraries (jQuery, lightbox) |
+| 🟡 | Update or replace vendored frontend libraries (jQuery 2.1.1 is EOL, update to 3.x+) |
 | 🟢 | Add a `.github/workflows/` CI pipeline (PHP lint + static analysis with PHPStan/Psalm) |
-| 🟢 | Add a `docker-compose.yml` for reproducible local development |
-| 🟢 | Clean up dead/commented-out code |
+| 🟢 | Clean up dead/commented-out code in `pelasfunctions.php` and `index.php` |
+| 🟢 | Fix UTF-8 encoding artefacts in `constants.php` |
