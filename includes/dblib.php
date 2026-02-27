@@ -4,6 +4,7 @@
  */
 
 require_once('constants.php');
+require_once('classes/AuthState.class.php');
 
 
 /* `mysql_pconnect()` versucht, bestehende DB-Links wieder zu verwenden.
@@ -31,14 +32,19 @@ function microtime_float() {
 /* Prüft lediglich auf Rechte für den entsprechenden Bereich
 * unabhängig von Mandanten - dies geschieht in den Templates.
 */
-function BenutzerHatRechtMandant($iRecht, $iMandant=null) {
-  global $loginID;
+function BenutzerHatRechtMandant($iRecht, $iMandant=null, ?AuthState $auth=null) {
+  if ($auth === null) {
+    global $loginID;
+    $uid = (int)$loginID;
+  } else {
+    $uid = $auth->nLoginID;
+  }
   if ($iMandant) {
     $q = 'SELECT USERID FROM RECHTZUORDNUNG WHERE USERID = ? AND RECHTID = ? AND MANDANTID = ?';
-    return (DB::getOne($q, (int)$loginID, $iRecht, (int)$iMandant) == $loginID);
+    return (DB::getOne($q, $uid, $iRecht, (int)$iMandant) == $uid);
   }
   $q = 'SELECT USERID FROM RECHTZUORDNUNG WHERE USERID = ? AND RECHTID = ?';
-  return (DB::getOne($q, (int)$loginID, $iRecht) == $loginID);
+  return (DB::getOne($q, $uid, $iRecht) == $uid);
 }
 
 /* Prüft lediglich auf Rechte für den entsprechenden Bereich
