@@ -20,6 +20,7 @@
     <td class="dblau" width="150"><b>Status</b></td>
   </tr>
   <form method="POST" action="{$smarty.server.PHP_SELF}?action=multicmd">
+  {csrf_field}
   {foreach key=turnierid item=turnier from=$party.turniere}
   {if $turnier.groupid != $groupid}
   

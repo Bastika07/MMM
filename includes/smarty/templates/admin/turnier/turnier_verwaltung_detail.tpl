@@ -7,6 +7,7 @@
 {if isset($formerr)}<p class="fehler">{$formerr}</p>{/if}
 
 <form method="post" action="{$smarty.server.PHP_SELF}?action={$action}">
+{csrf_field}
 <input type="hidden" name="form[turnierid]" value="{$turnier->turnierid}">
 <input type="hidden" name="form[partyid]" value="{$turnier->partyid}">
 

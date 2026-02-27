@@ -5,6 +5,7 @@
 <h1>Turnier Admins</h1>
 
 <form method="post" action="{$smarty.server.PHP_SELF}?action={$action}">
+{csrf_field}
 <input type="hidden" name="form[partyid]" value="{$partyid}">
 <table cellspacing="0" cellpadding="0"><tr><td class="navbar">
 <table width="100%" cellspacing="1" cellpadding="3">

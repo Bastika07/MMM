@@ -1,6 +1,7 @@
 {* Smarty *}
 
 <form method="post" action="{$filename}" name="data" enctype="multipart/form-data">
+{csrf_field}
 <input type="hidden" name="action" value="submit">
 <INPUT TYPE="hidden" name="MAX_FILE_SIZE" value="100000">
 {if isset($data)}

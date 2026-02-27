@@ -5,12 +5,13 @@
 {include file='bugTrack_header.tpl'}
 <table border="0" cellpadding="0" cellspacing="0">
 <form action='{$smarty.server.PHP_SELF}?do=update&bugId={$bugId}' method="post">
+  {csrf_field}
   <tr><td>
     <strong>IP*:</strong>
     </td><td>
     <input type="text" name="ip1" size="15" maxlength="15" value={$data.ip} readonly="readonly">
     </td>
-    <td><strong>&nbsp;&nbsp;Priorität:</strong></td>
+    <td><strong>&nbsp;&nbsp;Prioritï¿½t:</strong></td>
     <td><select name=prio>
     {section name=sec1 loop=$prio}
 	<option value="{$prio[sec1].id}"{if $prio[sec1].id eq $data.prio}selected{/if}>{$prio[sec1].name}</option>
@@ -72,7 +73,7 @@
     {/section}
     </select><br></td>
   </tr><tr>
-    <td colspan=4>* kann hier nicht geändert werden</td>
+    <td colspan=4>* kann hier nicht geï¿½ndert werden</td>
   </tr>
   <tr>
     <td colspan = 5><br>

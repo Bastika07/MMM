@@ -82,6 +82,7 @@ function clearUserData() {
 </script>
 
 <form method="post" action="" name="formular">
+{csrf_field}
 
 <div class="searchbox">
 <fieldset>
@@ -195,6 +196,7 @@ function clearUserData() {
 
 <div class="guestcheckin">
   <form method="post" action="{$filename}">
+  {csrf_field}
   <input type="hidden" name="action" value="checkinGuest">  
   <fieldset>
     <legend>Begleiter Checkin</legend>

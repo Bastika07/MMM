@@ -15,6 +15,7 @@
 {else}
   {if $warnstr}<p class="fehler">{$warnstr|escape}</p>{/if}
   <form method="post" name="create" action="?page=27&turnierid={$turnier->turnierid}">
+  {csrf_field}
   Team name: <input type="text" name="name" maxlength="24">
   <input type="submit" value="anlegen">
   </form>

@@ -26,6 +26,7 @@
 
 
 			<form enctype="multipart/form-data" method="post" action="?page=15&action=doUpload" name="data">
+			{csrf_field}
 			<input type="hidden" name="MAX_FILE_SIZE" value="50000000">
 			<TR><TD>Autor</TD><TD>{$sLogin|escape}</TD></TR>
 

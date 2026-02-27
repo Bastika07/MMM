@@ -25,6 +25,7 @@
   <td class="hblau" width="280">
   {if $action == "setligaid"}
     <form method="post" name="ligaid" action="?page=29&action=setligaid&turnierid={$turnier->turnierid}&teamid={$team->teamid}">
+    {csrf_field}
     <input type="text" name="ligaid" value="{$team->ligaid}" maxlength="10" onChange="javascript:document.forms.ligaid.submit()">
     </form></td>
     <td class="hblau" width="110" align="center"><a href="javascript:document.forms.ligaid.submit()">ID &auml;ndern</a></td>
@@ -114,6 +115,7 @@
 
 {if $tempflags.adduser}
   <form method="POST" action="?page=29&action=add&turnierid={$turnier->turnierid}&teamid={$team->teamid}">
+  {csrf_field}
   <tr><td class="dblau" width="60">Add UserID:</td>
   <td class="hblau" width="280">
   <input type="text" name="userid">
@@ -138,6 +140,7 @@
 {if $tempflags.addclan}
   <br>
   <form method="POST" action="?page=29&action=add&turnierid={$turnier->turnierid}&teamid={$team->teamid}">
+  {csrf_field}
   Clan Mitglied hinzuf&uuml;gen:&nbsp;
   <select name="userid">
   {foreach key=userid item=name from=$clan}

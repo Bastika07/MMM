@@ -9,6 +9,7 @@
 <p>Hier kann ein normales Turnier in ein  Mixed-Turnier konvertiert werden. Es wird das Zielsystem, z.B. 4 Teilnehmer pro Team, angegeben und aus den Teilnehmern werden zuf&auml;llige 4on4 Teams erstellt.</p>
 <p>Es wird vorrausgesetzt das die Teilnehmerzahl durch die Teamgr&ouml;&szlig;e teilbar ist! - Dieser Schritt kann nicht r&uuml;ckg&auml;ngig gemacht werden! Das Laden ser Seite nicht abbrechen, sonst k&öuml;nnen alle Teams verloren gehen.</p>
 <form method="post" action="{$smarty.server.PHP_SELF}?action={$action}">
+{csrf_field}
 <input type="hidden" name="turnierid" value="{$turnier->turnierid}">
 
 <table cellspacing="0" cellpadding="0">

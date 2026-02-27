@@ -3,7 +3,7 @@
   <tr>
     <td class="forum_titel"></td>
     <td class="forum_titel">Forum</td>
-    <td class="forum_titel" NOWRAP>Beiträge</td>
+    <td class="forum_titel" NOWRAP>Beitrï¿½ge</td>
     <td class="forum_titel" NOWRAP>Themen</td>
     <td class="forum_titel" NOWRAP>letzter Beitrag</td>
   </tr>  
@@ -27,6 +27,7 @@
 
 <p>
 <form method="post">
+{csrf_field}
 <input type="hidden" name="action" value="search">
 <table class="rahmen_allg" border="0" cellpadding="3" cellspacing="1">
     <tr><td class="forum_titel" colspan="2">Suche</td></tr>

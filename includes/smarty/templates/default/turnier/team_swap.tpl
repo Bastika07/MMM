@@ -15,6 +15,7 @@
 {elseif $team->teamid}
   <h1>Team tauschen</h1>
   <form name="tauschen" method="post" action="?page=30&action=swap&turnierid={$turnier->turnierid}&matchid={$match->matchid}&side={$side}">
+  {csrf_field}
   <a href="?page=29&{$turnier->turnierid}&teamid={$team->teamid}">{$team->name|escape}</a> gegen
   <select name=tauschid>{html_options options=$teams}</select>
   <input type="submit" value="tauschen">
@@ -23,6 +24,7 @@
 {else}
   <h1>Team einf&uuml;gen</h1>
   <form name="tauschen" method="post" action="?page=30&action=swap&turnierid={$turnier->turnierid}&matchid={$match->matchid}&side={$side}">
+  {csrf_field}
   <select name=tauschid>{html_options options=$teams}</select>
   <input type="submit" value="einf&uuml;egen">
   </form>

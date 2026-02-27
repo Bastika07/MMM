@@ -5,6 +5,7 @@
 <h1>Turniergruppen</h1>
 
 <form method="post" name="save" action="{$smarty.server.PHP_SELF}?action=add">
+{csrf_field}
 <table cellspacing="0" cellpadding="0" width="400"><tr><td class="navbar">
 <table width="100%" cellspacing="1" cellpadding="3">
 <tr>

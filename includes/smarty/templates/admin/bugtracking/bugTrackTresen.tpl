@@ -8,7 +8,7 @@
 <script type="text/javascript">
 <!--
 /*
-Abkürzungen zur Optimierung:
+Abkï¿½rzungen zur Optimierung:
 l: login
 n: name
 s: seat
@@ -35,12 +35,13 @@ var u = new Array();
 
 <table border="0" cellpadding="0" cellspacing="0">
 <form action='{$smarty.server.PHP_SELF}?do=addLine' method="post" name="formular">
+  {csrf_field}
   <tr><td>
     <strong>IP*:</strong>
     </td><td>
     <input type="text" name="ip" size="15" maxlength="15">
     </td>
-    <td><strong>Priorität:</strong></td>
+    <td><strong>Prioritï¿½t:</strong></td>
     <td><select name=prio>
     {section name=sec1 loop=$prio}
 	<option value="{$prio[sec1].id}">{$prio[sec1].name}</option>
@@ -66,7 +67,7 @@ var u = new Array();
 	
 	document.formular.userId.length = 0;
 	
-	// mindestens 3 Buchstaben, sonst ist das alles zu unperformant. Bottleneck: Füllen des Select-Tags
+	// mindestens 3 Buchstaben, sonst ist das alles zu unperformant. Bottleneck: Fï¿½llen des Select-Tags
 	if (inp.length > 2) {
       	  j = 0;
 	  for (var id in u) {

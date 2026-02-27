@@ -19,6 +19,7 @@
 
 
 			<form method="post" action="?page=15&action=doUploadYouTube" name="data">
+			{csrf_field}
 			<TR><TD>Autor</TD><TD>{$sLogin|escape}</TD></TR>
 
 			<TR><TD>Party</TD><TD>
