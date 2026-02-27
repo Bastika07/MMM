@@ -159,7 +159,7 @@ class TurnierRanking {
 
 		$res = DB::query($sql);
 		#$i = 0;
-		while ($row = mysql_fetch_assoc($res)) {
+		while ($row = $res->fetch_assoc()) {
 			$tmp = Match::getResult($row['team1'], $row['team2'], $row['result1'], $row['result2'], $row['flags']);
 			#echo $row['flags']." A".var_dump($row['flags'] & MATCH_TEAM1_ROT)." ";
 			if(!isset($retval[$row['team1']])) {
@@ -228,7 +228,7 @@ class TurnierRanking {
 
 		$res = DB::query($sql);
 		$i = 0;
-		while ($row = mysql_fetch_assoc($res)) {
+		while ($row = $res->fetch_assoc()) {
 			$tmp = Match::getResult($row['team1'], $row['team2'], $row['result1'], $row['result2'], $row['flags']);
 			if ($tmp == T_TEAM1) {
 				$winner = $row['team1'];
@@ -310,7 +310,7 @@ class TurnierRanking {
 		$last_place = $haupt_ranking[count($haupt_ranking)-1][pos]-2; # minus 2, da die ersten beiden platzierungen schon weiter gekommen sind
 		#die(var_dump($last_place));
 		#alle vorrunden durch gehen
-		while ($row = mysql_fetch_assoc($res)) {
+		while ($row = $res->fetch_assoc()) {
 			$ranking_temp = TurnierRanking::getRankingRunden($row['turnierid']);
 			#die ersten beiten plätze sind schon im hauptturnier
 			foreach($ranking_temp as $ranking_temp_entry) {
@@ -332,7 +332,7 @@ class TurnierRanking {
 			AND r.type = (t.flags & '".(TURNIER_SINGLE | TURNIER_DOUBLE)."')
 			AND r.size = t.teamnum";
 		$res = DB::query($sql);
-		$row = mysql_fetch_assoc($res);
+		$row = $res->fetch_assoc();
 		return $row['last'];
 	}
 }

@@ -60,18 +60,18 @@ echo "<tr><td class='forum_titel' width='20'>&nbsp;</td><td class='forum_titel' 
 if (!isset($dbh))
 	$dbh = DB::connect();
 
-	$result= mysql_db_query ($dbname, "select INHALTID, TITEL, AUTOR, AUTORNAME, DATE1 from INHALT where PARENTID = -1 and KATEGORIEID = $KATEGORIE_FORUM and MANDANTID = $nPartyID order by DATE1 desc",$dbh);
-	//echo mysql_errno().": ".mysql_error()."<BR>";
+	$result= DB::query("select INHALTID, TITEL, AUTOR, AUTORNAME, DATE1 from INHALT where PARENTID = -1 and KATEGORIEID = $KATEGORIE_FORUM and MANDANTID = $nPartyID order by DATE1 desc");
+	//echo DB::$link->errno.": ".DB::$link->error."<BR>";
 
 	$maxcounter = 1;
 	$bgClass = "forum_bg1";
-	while ($row = mysql_fetch_array($result)) {
+	while ($row = $result->fetch_array()) {
 		if ($maxcounter > $ThemenAnzahl) {
 			break;
 		}
-		$result_count= mysql_db_query ($dbname, "select COUNT(*) from INHALT where PARENTID = $row[INHALTID] and KATEGORIEID = $KATEGORIE_FORUM and MANDANTID = $nPartyID",$dbh );
-		//echo mysql_errno().": ".mysql_error()."<BR>";
-		$row_count = mysql_fetch_array($result_count);
+		$result_count= DB::query("select COUNT(*) from INHALT where PARENTID = $row[INHALTID] and KATEGORIEID = $KATEGORIE_FORUM and MANDANTID = $nPartyID");
+		//echo DB::$link->errno.": ".DB::$link->error."<BR>";
+		$row_count = $result_count->fetch_array();
 
 		echo "<tr><td class='$bgClass' width='15' height=\"28\">";
 		if ($row_count[0] >= 15) {

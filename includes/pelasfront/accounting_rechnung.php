@@ -84,7 +84,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'printTickets2')
 	
 	
 	// Aktuell nur 1 Ticket zur Zeit
-	$row = mysql_fetch_array($res);  
+	$row = $res->fetch_array();  
 	
 	
 	// Und nun den HTML-Code erzeugen, der später in ein PDF umgewandelt wird.
@@ -236,7 +236,7 @@ else if (isset($_GET['action']) && $_GET['action'] == 'printTickets')
       $pdf->ezText('Alle Deine Tickets / All your tickets:', 11);
     }
 
-    while ($row = mysql_fetch_array($res)) {   
+    while ($row = $res->fetch_array()) {   
         # Anzahl Tickets zählen, nach 3 Tickets neue Seite
         if ($printedTickets == 3) {
           $printedTickets = 0;
@@ -317,7 +317,7 @@ else if (isset($_GET['action']) && $_GET['action'] == 'printTickets')
     	  bestellId = '".intval($_GET['iBestellId'])."'
     ";
     $res = DB::query($sql);
-    $rowTemp = mysql_fetch_array($res);
+    $rowTemp = $res->fetch_array();
     
     if ($rowTemp['bestellerUserId'] != $nLoginID) {
     	echo "<p class=\"fehler\">Keine Berechtigung - no access!</p>";

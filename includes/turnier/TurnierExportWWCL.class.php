@@ -119,7 +119,7 @@ class TurnierExportWWCL {
 						if ($flags & TEAM2USER_LEADER) {
 							if ($flags & TEAM2USER_LIGAMAIL) {
 								$res = DB::query("select EMAIL from USER where USERID = '{$userid}'");
-								$row = mysql_fetch_assoc($res);
+								$row = $res->fetch_assoc();
 								$XML_tmpteam->addchild('email', $row['EMAIL']);
 							} else {
 								$XML_tmpteam->addchild('email');
@@ -187,7 +187,7 @@ class TurnierExportWWCL {
 						if ($flags & TEAM2USER_LEADER) {
 							if ($flags & TEAM2USER_LIGAMAIL) {
 								$res = DB::query("select EMAIL from USER where USERID = '{$userid}'");
-								$row = mysql_fetch_assoc($res);
+								$row = $res->fetch_assoc();
 								$XML_tmpteam->addchild('email', $row['EMAIL']);
 							} else {
 								$XML_tmpteam->addchild('email');
@@ -225,7 +225,7 @@ class TurnierExportWWCL {
 						if ($flags & TEAM2USER_LEADER) {
 							if ($flags & TEAM2USER_LIGAMAIL) {
 								$res = DB::query("select EMAIL from USER where USERID = '{$userid}'");
-								$row = mysql_fetch_assoc($res);
+								$row = $res->fetch_assoc();
 								$XML_tmpteam->addchild('email', $row['EMAIL']);
 							} else {
 								$XML_tmpteam->addchild('email');

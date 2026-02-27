@@ -21,7 +21,7 @@ $sql = "select
 $res = DB::query($sql);
 $partyPlaetze     = 0;
 $partyRestplaetze = 0;
-while ($row = mysql_fetch_array($res)) {
+while ($row = $res->fetch_array()) {
 	$partyPlaetze = $partyPlaetze + $row['anzahlVorhanden'];
 	$partyRestplaetze = $partyRestplaetze+ verfuegbareTickets($row['typId'], $aktuellePartyID);
 }
@@ -38,7 +38,7 @@ $sql = "select
 	  t.statusId = ".ACC_STATUS_BEZAHLT."
 ";
 $res = DB::query($sql);         
-$row = mysql_fetch_row($res);
+$row = $res->fetch_row();
 $partyBezahlt = $row[0];
 
 // Anzahl Session registrierte Benutzer
@@ -50,7 +50,7 @@ $partyBezahlt = $row[0];
           UNIX_TIMESTAMP(ZEITSTEMPEL) >= UNIX_TIMESTAMP() - 500 and
           MANDANTID = '$nPartyID'";
 $res = DB::query($sql);         
-$row = mysql_fetch_row($res);
+$row = $res->fetch_row();
 $anzahlSessions = $row[0];*/
 
 // Anzahl Benutzer für Mandant
@@ -61,7 +61,7 @@ $sql = "select
         where 
           MANDANTID='$nPartyID'";
 $res = DB::query($sql);         
-$row = mysql_fetch_row($res);
+$row = $res->fetch_row();
 $anzahlAccounts = $row[0];
 
 
@@ -75,7 +75,7 @@ $sql = "select
           b.boardID = c.boardID and 
           b.type IN (1, 2)";
 $res = DB::query($sql);         
-$row = mysql_fetch_row($res);
+$row = $res->fetch_row();
 $anzahlForenpostings = $row[0];
 
 $freiePlaetze = $partyPlaetze-$partyAngemeldet-$partyBezahlt;

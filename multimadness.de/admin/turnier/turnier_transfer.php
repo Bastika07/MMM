@@ -50,7 +50,7 @@ function transferTeams() {
 
 	$teamlist_platz_1 = array();
 	$teamlist_platz_2 = array();
-	while ($row = mysql_fetch_assoc($res)) {
+	while ($row = $res->fetch_assoc()) {
 		
 		$turnier_tmp = Turnier::load($row['turnierid']);
 		if (!($turnier_tmp->status == TURNIER_STAT_FINISHED)) {
@@ -67,7 +67,7 @@ function transferTeams() {
 			WHERE turnierid = '".$turnier->turnierid."' AND 
 			name = (SELECT name FROM t_team WHERE turnierid = '".$turnier_tmp->turnierid."' AND teamid = ".$ranking[0][teamid].")";
 		$res2 = DB::query($sql);
-		$teamid_hauptturnier = mysql_fetch_assoc($res2);
+		$teamid_hauptturnier = $res2->fetch_assoc();
 		array_push($teamlist_platz_1, $teamid_hauptturnier['teamid']);
 
 		##### zweitplatzierten uebernehmen
@@ -76,7 +76,7 @@ function transferTeams() {
 			WHERE turnierid = '".$turnier->turnierid."' AND 
 			name = (SELECT name FROM t_team WHERE turnierid = '".$turnier_tmp->turnierid."' AND teamid = ".$ranking[1][teamid].")";
 		$res2 = DB::query($sql);
-		$teamid_hauptturnier = mysql_fetch_assoc($res2);
+		$teamid_hauptturnier = $res2->fetch_assoc();
 		array_unshift($teamlist_platz_2, $teamid_hauptturnier['teamid']);
 	}
 

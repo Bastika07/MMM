@@ -189,7 +189,7 @@ class Userport {
 
 		$res = DB::query($sql);
 		$retval = array();
-		while ($row = mysql_fetch_assoc($res)) {
+		while ($row = $res->fetch_assoc()) {
 			$retval[$row['id']] = new Userport();
 			$retval[$row['id']]->userid = 	(int) $row['userid'];
 			$retval[$row['id']]->id = 	(int) $row['id'];
@@ -221,11 +221,11 @@ class Userport {
 		$sql = "SELECT MAX(id) as max FROM gw_userports WHERE userid = '{$this->userid}'";
 		$res = DB::query($sql);
 
-		if (mysql_num_rows($res) != 1) {
+		if ($res->num_rows != 1) {
 			$this->id = 1;
 
 		} else {
-			$row = mysql_fetch_assoc($res);
+			$row = $res->fetch_assoc();
 			$this->id = $row['max'] +1;
 		}
 
@@ -252,7 +252,7 @@ class Userport {
 	function getUserIP($userid) {
 		$sql = "SELECT IP FROM USER2IP WHERE userid = '{$userid}' LIMIT 1";
 		$res = DB::query($sql);
-		$row = mysql_fetch_assoc($res);
+		$row = $res->fetch_assoc();
 
 		return $row['IP'];
 	}

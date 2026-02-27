@@ -271,10 +271,10 @@ class Match {
 			WHERE turnierid = '{$turnierid}'
 			AND matchid = '{$matchid}'";
 		$res = DB::query($sql);
-		if (mysql_num_rows($res) < 1)
+		if ($res->num_rows < 1)
 			return TS_ERROR;
 
-		$row = mysql_fetch_assoc($res);
+		$row = $res->fetch_assoc();
 
 		$retval->turnierid	= (int)$row['turnierid'];
 		$retval->matchid	= (int)$row['matchid'];
@@ -311,10 +311,10 @@ class Match {
 		$sql = "SELECT * FROM t_match
 			WHERE threadid = '{$threadid}'";
 		$res = DB::query($sql);
-		if (mysql_num_rows($res) < 1)
+		if ($res->num_rows < 1)
 			return TS_ERROR;
 
-		$row = mysql_fetch_assoc($res);
+		$row = $res->fetch_assoc();
 
 		$retval->turnierid	= (int)$row['turnierid'];
 		$retval->matchid	= (int)$row['matchid'];
@@ -422,7 +422,7 @@ class Match {
 		$res = DB::query($sql);
 
 		$retval = array();
-		while ($row = mysql_fetch_assoc($res)) {
+		while ($row = $res->fetch_assoc()) {
 			$retval[$row['matchid']] = $row;
 			$retval[$row['matchid']]['result'] = Match::getResult($row['team1'], $row['team2'], $row['result1'], $row['result2'], $row['flags']);
 		}
@@ -449,7 +449,7 @@ class Match {
 		$res = DB::query($sql);
 
 		$retval = array();
-		while ($row = mysql_fetch_assoc($res)) {
+		while ($row = $res->fetch_assoc()) {
 			$retval[$row['matchid']] = $row;
 			$retval[$row['matchid']]['result'] = Match::getResult($row['team1'], $row['team2'], $row['result1'], $row['result2'], $row['flags']);
 		}
@@ -502,7 +502,7 @@ class Match {
 				WHERE turnierid = '{$this->turnierid}'
 				AND matchid = '{$this->matchid}'";
 			$res = DB::query($sql);
-			$row = mysql_fetch_assoc($res);
+			$row = $res->fetch_assoc();
 			$eventid = (isset($row['lastid'])) ? ($row['lastid'] +1) : 1;
 		}
 
@@ -513,7 +513,7 @@ class Match {
 			time = '".$time."',
 			userid = '{$userid}',
 			flags = '".$flags."',
-			text = '".mysql_escape_string($msg)."'";
+			text = '".DB::$link->real_escape_string($msg)."'";
 
 		DB::query($sql);
 		return TS_SUCCESS;
@@ -534,7 +534,7 @@ class Match {
 		$res = DB::query($sql);
 
 		$retval = array();
-		while ($row = mysql_fetch_assoc($res))
+		while ($row = $res->fetch_assoc())
 			$retval[$row['eventid']] = $row;
 
 		return $retval;

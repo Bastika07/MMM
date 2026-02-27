@@ -28,7 +28,7 @@ function showUsersForInvitation() {
         a.USERID = u.USERID and
         a.MANDANTID='$nPartyID'";
   $res = DB::query($q);
-  while ($row = mysql_fetch_assoc($res)) {
+  while ($row = $res->fetch_assoc()) {
     echo "user[".$row['USERID']."] = \"".$row['LOGIN']."\";\n";
   }
   echo "//-->\n";
@@ -74,12 +74,12 @@ function showGroupinvitations($nLoginID, $nPartyID){
           sitzgruppe s, sitzgruppen_einladung e
          WHERE
           e.USERID='$nLoginID' AND e.GRUPPEN_ID=s.GRUPPEN_ID AND s.MANDANTID='$nPartyID' AND  e.MANDANTID='$nPartyID'";
-  $res = mysql_query($sql);
-  if(mysql_num_rows($res)>0){
+  $res = DB::query($sql);
+  if($res->num_rows>0){
     echo "<p>Nachfolgend siehst Du alle Dir vorliegenden Einladungen. Bitte beachte, dass Du 
           nur dann eine annehmen kannst, wenn du in noch keiner Gruppe bist.</p>";
     echo "<TABLE class=\"rahmen_allg\" cellspacing=\"1\" cellpadding=\"2\"><TR width='30%'><TD class=\"navbar\">Gruppenname:</TD><TD width='60%'colspan='2' class=\"navbar\">Entscheidung</TD></TR>";       
-    while($row = mysql_fetch_row($res)){
+    while($row = $res->fetch_row()){
       if ($class == "hblau") {
         $class = "dblau";
       } else {
@@ -103,7 +103,7 @@ function showGroupMember($myID, $gruppenID, $nPartyID){
             ORDER BY REIHE,PLATZ";
   $res = DB::query($sql);
   echo "<TABLE class=\"rahmen_allg\" cellspacing=\"1\" cellpadding=\"2\"><TR width='30%'><TD class=\"TNListe\">Gruppenmitglied</TD><TD class=\"TNListe\">Reihe</TD><TD class=\"TNListe\">Platz</TD><TD  class=\"TNListe\">Tauschen</TD></TR>";       
-  while ($row = mysql_fetch_row($res)) {
+  while ($row = $res->fetch_row()) {
     if ($class == "TNListeTDB") {
       $class = "TNListeTDA";
     } else {
@@ -204,7 +204,7 @@ function doSeatGroupColumn($nLoginID, $nPartyID){
             where 
               GRUPPEN_ID='$gruppenID'";
     $res = DB::query($sql);
-    $row = mysql_fetch_row($res);
+    $row = $res->fetch_row();
              
     echo "<p> Du bist in der Gruppe <a href=sitzgruppen.php?gruppenID=$gruppenID>".db2display($row[0])."</a>. ";
     if($sitzResOffen){

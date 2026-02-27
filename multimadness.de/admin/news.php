@@ -21,14 +21,14 @@ $sql = "SELECT m.MANDANTID, m.BESCHREIBUNG
 		AND r.RECHTID = 'NEWSADMIN'";   
 $res = DB::query($sql);         
 
-while ($row = mysql_fetch_assoc($res)) {
+while ($row = $res->fetch_assoc()) {
   # Liste der Foren holen.
   $sql = 'SELECT name, boardID
           FROM forum_boards
           WHERE type = ' . BT_NEWS . '
 	  	AND mandantID = ' . $row['MANDANTID'];
   $res2 = DB::query($sql);
-  while ($row2 = mysql_fetch_assoc($res2))
+  while ($row2 = $res2->fetch_assoc())
     $boards[$row2['boardID']] = $row2['name'];
 }
 

@@ -270,10 +270,10 @@ class Team {
 
 		$sql = "SELECT * FROM t_team WHERE turnierid = '{$turnierid}' AND teamid = '{$teamid}'";
 		$res = DB::query($sql);
-		if (mysql_num_rows($res) < 1)
+		if ($res->num_rows < 1)
 			return TS_ERROR;
 
-		$row = mysql_fetch_assoc($res);
+		$row = $res->fetch_assoc();
 
 		$retval->teamid		= (int)$row['teamid'];
 		$retval->turnierid	= (int)$row['turnierid'];
@@ -288,7 +288,7 @@ class Team {
 			AND t2u.turnierid = '{$turnierid}'";
 		$res = DB::query($sql);
 
-		while ($row = mysql_fetch_assoc($res)) {
+		while ($row = $res->fetch_assoc()) {
 			$retval->userlist[$row['userid']] = (int)$row['flags'];
 			$retval->namelist[$row['userid']] = (string)$row['login'];
 
@@ -319,8 +319,8 @@ class Team {
 	 */
 	function save() {
 		$sql = "UPDATE t_team SET
-				name = '".mysql_escape_string($this->name)."',
-				ligaid = '".mysql_escape_string($this->ligaid)."',
+				name = '".DB::$link->real_escape_string($this->name)."',
+				ligaid = '".DB::$link->real_escape_string($this->ligaid)."',
 				flags = '{$this->flags}',
 				wann_geaendert = '".time()."',
 				wer_geaendert = '".COMPAT::currentID()."'
@@ -385,15 +385,15 @@ class Team {
 
 			$sql = "SELECT MAX(teamid) as lastid FROM t_team WHERE turnierid = '{$this->turnierid}'";
 			$res = DB::query($sql);
-			$row = mysql_fetch_assoc($res);
+			$row = $res->fetch_assoc();
 			$this->teamid = (isset($row['lastid'])) ? $row['lastid'] +1 : 1;
 		}
 
 		$sql = "INSERT INTO t_team SET
 				teamid = '{$this->teamid}',
 				turnierid = '{$this->turnierid}',
-				name = '".mysql_escape_string($this->name)."',
-				ligaid = '".mysql_escape_string($this->ligaid)."',
+				name = '".DB::$link->real_escape_string($this->name)."',
+				ligaid = '".DB::$link->real_escape_string($this->ligaid)."',
 				flags = '{$this->flags}',
 				wann_angelegt = '".time()."',
 				wer_angelegt = '".COMPAT::currentID()."'";
@@ -463,7 +463,7 @@ class Team {
 		$res = DB::query($sql);
 
 		$retval = array();
-		while ($row = mysql_fetch_assoc($res))
+		while ($row = $res->fetch_assoc())
 			$retval[$row['teamid']] =  $row;
 
 		return $retval;
@@ -479,7 +479,7 @@ class Team {
 	function getTeamCount($turnierid) {
 		$sql = "SELECT COUNT(teamid) as teams FROM t_team WHERE turnierid = '{$turnierid}'";
 		$res = DB::query($sql);
-		$row = mysql_fetch_assoc($res);
+		$row = $res->fetch_assoc();
 		return $row['teams'];
 	}
 
@@ -500,10 +500,10 @@ class Team {
 			AND t2u.userid = '{$userid}'";
 
 		$res = DB::query($sql);
-		if (mysql_num_rows($res) < 1)
+		if ($res->num_rows < 1)
 			return 0;
 
-		$row = mysql_fetch_assoc($res);
+		$row = $res->fetch_assoc();
 		return $row['teamid'];
 	}
 
@@ -518,10 +518,10 @@ class Team {
 	function findTeamName($turnierid, $teamname) {
 		$sql = "SELECT teamid FROM t_team WHERE turnierid = '{$turnierid}' AND name = '{$teamname}'";
 		$res = DB::query($sql);
-		if (mysql_num_rows($res) < 1)
+		if ($res->num_rows < 1)
 			return 0;
 
-		$row = mysql_fetch_assoc($res);
+		$row = $res->fetch_assoc();
 		return $row['teamid'];
 	}
 
@@ -536,10 +536,10 @@ class Team {
 	function findLigaId($turnierid, $ligaid) {
 		$sql = "SELECT teamid FROM t_team WHERE turnierid = '{$turnierid}' AND ligaid = '{$ligaid}'";
 		$res = DB::query($sql);
-		if (mysql_num_rows($res) < 1)
+		if ($res->num_rows < 1)
 			return 0;
 
-		$row = mysql_fetch_assoc($res);
+		$row = $res->fetch_assoc();
 		return $row['teamid'];
 	}
 
@@ -558,9 +558,9 @@ class Team {
 			AND (team1 = '{$teamId}' OR team2 = '{$teamId}')
 			AND (flags & '".(MATCH_READY & ~MATCH_COMPLETE)."' OR flags = '0')";
 		$res = DB::query($sql);
-		if (mysql_num_rows($res) == 0)
+		if ($res->num_rows == 0)
 			return null;
-		$row = mysql_fetch_assoc($res);
+		$row = $res->fetch_assoc();
 		return $row['matchid'];
 	}
 

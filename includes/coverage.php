@@ -17,11 +17,11 @@ function zeigeArchivliste($selectTyp, $lfdNr)
 		echo "<tr><td class=\"TNListe\" colspan=\"2\"><b>Aktuelle Bildergalerien von der Party</b></td></tr>";
 
 		$sBGC = "TNListeTDA";
-		while ($row2 = mysql_fetch_array($result2)) {
+		while ($row2 = $result2->fetch_array()) {
 			if ($nTheLFDNumber != $row2[LFDNR]) {
 				// Header für Party ausgeben
 				$result = DB::query("select NAME, BEGINN from PARTYHISTORIE where LFDNR = '".$row2[LFDNR]."' and MANDANTID = '".$selectPartyID."'");
-				$row3 = @mysql_fetch_array($result);
+				$row3 = $result->fetch_array();
 				// Leerzeile ab 2. Party
 				if ($nTheLFDNumber > 0 ) {
 					echo "<tr><td colspan=\"2\">&nbsp;</td></tr>";
@@ -30,7 +30,7 @@ function zeigeArchivliste($selectTyp, $lfdNr)
 				$nTheLFDNumber = $row2[LFDNR];
 			}
 			$result = DB::query("select LOGIN from USER where USERID = ".$row2[USERID]);
-			$row4 = @mysql_fetch_array($result);
+			$row4 = $result->fetch_array();
 
 			//### Unterschiedliche Verlinkung zB bei Kategorie Links und Turniere
 			if ($selectTyp == $KATEGORIE_ARCH_TURNIER) {
@@ -67,8 +67,8 @@ if ( !isset($selectPartyID) || !is_numeric($selectPartyID) ||
 	$selectPartyID = $nPartyID;
 
 // Checken ob Coverage für diese Party Aktiv ist
-$row = @mysql_fetch_array(DB::query("select STRINGWERT from CONFIG where MANDANTID = '$nPartyID' and PARAMETER='COVERAGE_ONLINE'"), MYSQL_ASSOC);
-//echo mysql_errno().": ".mysql_error()."<BR>";
+$row = DB::query("select STRINGWERT from CONFIG where MANDANTID = '$nPartyID' and PARAMETER='COVERAGE_ONLINE'")->fetch_assoc();
+//echo DB::$link->errno.": ".DB::$link->error."<BR>";
 $bAktiv = $row['STRINGWERT'];
 
 if ($bAktiv == 'J') {
@@ -113,8 +113,8 @@ if ($bAktiv == 'J') {
 
 
 	// 1. Neueste Party im Archiv ermitteln, es wird angenommen dass diese die richtige ist
-	$row = @mysql_fetch_array(DB::query("select max(LFDNR) as LFDmax from PARTYHISTORIE where MANDANTID = '$nPartyID'"), MYSQL_ASSOC);
-	//echo mysql_errno().": ".mysql_error()."<BR>";
+	$row = DB::query("select max(LFDNR) as LFDmax from PARTYHISTORIE where MANDANTID = '$nPartyID'")->fetch_assoc();
+	//echo DB::$link->errno.": ".DB::$link->error."<BR>";
 	$lastNr = $row['LFDmax'];
 	if ($lastNr == "") {
 		$lastNr = -1;

@@ -6,9 +6,9 @@ include_once "language.inc.php";
 
 //Aktuelle Umfrage ermitteln
 
-$result= mysql_query("select UMFRAGE_UMFRAGEID, UMFRAGE_BESCHREIBUNG,UMFRAGE_AUSWAHL_ANZAHL from UMFRAGE where UMFRAGE_MANDANTID=".intval($nPartyID)." and UMFRAGE_AKTUELL='J'");
-//echo mysql_errno().": ".mysql_error()."<BR>";
-$row = mysql_fetch_array($result);
+$result= DB::query("select UMFRAGE_UMFRAGEID, UMFRAGE_BESCHREIBUNG,UMFRAGE_AUSWAHL_ANZAHL from UMFRAGE where UMFRAGE_MANDANTID=".intval($nPartyID)." and UMFRAGE_AKTUELL='J'");
+//echo DB::$link->errno.": ".DB::$link->error."<BR>";
+$row = $result->fetch_array();
 $aktuelle_umfrage = $row['UMFRAGE_UMFRAGEID'];
 $putout = $row['UMFRAGE_BESCHREIBUNG'];
 $anzahl = $row['UMFRAGE_AUSWAHL_ANZAHL'];
@@ -23,7 +23,7 @@ $sql = "select
 	  PARAMETER = 'UMFRAGE_AKTIV' AND
 	  MANDANTID = $nPartyID";
 $result = DB::query($sql);
-$row = mysql_fetch_assoc($result);
+$row = $result->fetch_assoc();
 // checken, ob get-variable on
 if ($row['STRINGWERT'] == "N") {
 	$aktuelle_umfrage = 0;
@@ -42,18 +42,18 @@ if ($aktuelle_umfrage < 1) {
 			echo "<p>($anzahl Antworten möglich)</p>";
 	}
 
-	//$result = mysql_query("select b.UMFRAGE_BESCHREIBUNG, a.UMFVAUS_VOTENR, a.UMFVAUS_VOTEBESCHREIBUNG from UMFRAGE b, UMFVAUS a where b.UMFRAGE_UMFRAGEID=".intval($aktuelle_umfrage)." and a.UMFVAUS_UMFRAGEID = ".intval($aktuelle_umfrage)." and b.UMFRAGE_MANDANTID=".intval($nPartyID)." order by a.UMFVAUS_VOTEBESCHREIBUNG");
-	$result = mysql_query("select b.UMFRAGE_BESCHREIBUNG, a.UMFVAUS_VOTENR, a.UMFVAUS_VOTEBESCHREIBUNG from UMFRAGE b, UMFVAUS a where b.UMFRAGE_UMFRAGEID=".intval($aktuelle_umfrage)." and a.UMFVAUS_UMFRAGEID = ".intval($aktuelle_umfrage)." and b.UMFRAGE_MANDANTID=".intval($nPartyID)." order by a.UMFVAUS_VOTEORDER");
-	//echo mysql_errno().": ".mysql_error()."<BR>";
+	//$result = DB::query("select b.UMFRAGE_BESCHREIBUNG, a.UMFVAUS_VOTENR, a.UMFVAUS_VOTEBESCHREIBUNG from UMFRAGE b, UMFVAUS a where b.UMFRAGE_UMFRAGEID=".intval($aktuelle_umfrage)." and a.UMFVAUS_UMFRAGEID = ".intval($aktuelle_umfrage)." and b.UMFRAGE_MANDANTID=".intval($nPartyID)." order by a.UMFVAUS_VOTEBESCHREIBUNG");
+	$result = DB::query("select b.UMFRAGE_BESCHREIBUNG, a.UMFVAUS_VOTENR, a.UMFVAUS_VOTEBESCHREIBUNG from UMFRAGE b, UMFVAUS a where b.UMFRAGE_UMFRAGEID=".intval($aktuelle_umfrage)." and a.UMFVAUS_UMFRAGEID = ".intval($aktuelle_umfrage)." and b.UMFRAGE_MANDANTID=".intval($nPartyID)." order by a.UMFVAUS_VOTEORDER");
+	//echo DB::$link->errno.": ".DB::$link->error."<BR>";
 	$antowrten = 0;
 	if ($result) {
 		if($anzahl == 1){
-			while ($row = mysql_fetch_array($result)) {
+			while ($row = $result->fetch_array()) {
 				$antworten++;
 				echo "<input type=\"radio\" class=\"noborder\" name=\"Umfrage\" value=\"$row[UMFVAUS_VOTENR]\"> $row[UMFVAUS_VOTEBESCHREIBUNG]<br>\n";
 			}
 		} else {
-			while ($row = mysql_fetch_array($result)) {
+			while ($row = $result->fetch_array()) {
 				$antworten++;
 			echo "<input type=\"checkbox\" class=\"noborder\" name=\"Umfrage[]\" value=\"$row[UMFVAUS_VOTENR]\"> $row[UMFVAUS_VOTEBESCHREIBUNG]<br>\n";
 			}

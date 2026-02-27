@@ -20,7 +20,7 @@ class User2BeamerMessage {
               messageId = $id AND
               u.USERID = u2bm.userId";
     $res = DB::query($sql);
-    $row = mysql_fetch_assoc($res);
+    $row = $res->fetch_assoc();
     
     $message->id =             (int) $id;
     $message->mandantId =      (int) $row['mandantId'];
@@ -40,7 +40,7 @@ class User2BeamerMessage {
               SET
                 mandantId = '{$this->mandantId}', 
                 userId = '{$this->userId}', 
-                message = '".mysql_escape_string($this->message)."'
+                message = '".DB::$link->real_escape_string($this->message)."'
               WHERE
                 messageID = {$this->id}";
       return DB::query($sql);
@@ -54,9 +54,9 @@ class User2BeamerMessage {
                 user2beamer_messages
               (mandantId, userId, message, createdAt)
               VALUES
-                ('{$this->mandantId}', '{$this->userId}', '".mysql_escape_string($this->message)."', '{$this->createdAt}')";
+                ('{$this->mandantId}', '{$this->userId}', '".DB::$link->real_escape_string($this->message)."', '{$this->createdAt}')";
       $res = DB::query($sql);
-      $this->id = mysql_insert_id();
+      $this->id = DB::$link->insert_id;
     }
   }
   
@@ -73,7 +73,7 @@ class User2BeamerMessage {
     
     $messages = array();
     
-    while ($row = mysql_fetch_assoc($res)) {    
+    while ($row = $res->fetch_assoc()) {    
       $message = new User2BeamerMessage();
       $message->id =             (int) $id;
       $message->mandantId =      (int) $row['mandantId'];
@@ -102,7 +102,7 @@ class User2BeamerMessage {
     
     $messages = array();
     
-    while ($row = mysql_fetch_assoc($res)) {    
+    while ($row = $res->fetch_assoc()) {    
       $message = new User2BeamerMessage();
       $message->id =             (int) $id;
       $message->mandantId =      (int) $row['mandantId'];
@@ -131,7 +131,7 @@ class User2BeamerMessage {
     
     $messages = array();
     
-    while ($row = mysql_fetch_assoc($res)) {    
+    while ($row = $res->fetch_assoc()) {    
       $message = new User2BeamerMessage();
       $message->id =             (int) $id;
       $message->mandantId =      (int) $row['mandantId'];

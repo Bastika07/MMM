@@ -23,7 +23,7 @@ $sql = "select
 	  PARAMETER = 'SPONSOREN_AKTIV' AND
 	  MANDANTID = $nPartyID";
 $result = DB::query($sql);
-$row = mysql_fetch_assoc($result);
+$row = $result->fetch_assoc();
 // checken, ob get-variable on
 if ($row['STRINGWERT'] == "J") {
 	

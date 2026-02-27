@@ -100,7 +100,7 @@ if ($aktuellePartyID < 1) {
 		$sAddSort $sAddWhere
 	      ";
 		  
-	$result = mysql_query($sql);
+	$result = DB::query($sql);
 
 	// Gesamtanzahl der Datensätze feststellen für blättern
 	$sql = "select 
@@ -116,11 +116,11 @@ if ($aktuellePartyID < 1) {
 		  t.statusId = ".ACC_STATUS_BEZAHLT."
 		$limitString 
 	      ";
-	$result2 = mysql_query($sql);
+	$result2 = DB::query($sql);
 	if ($_GET['AktSeite'] == "") {
 		$_GET['AktSeite'] = 0;
 	}
-	$AnzahlDS_blaettern = mysql_num_rows($result2);
+	$AnzahlDS_blaettern = $result2->num_rows;
 	if ($AnzahlDS_blaettern == 0) {
 		$AnzahlDS_blaettern = 1;
 	}
@@ -152,7 +152,7 @@ if ($aktuellePartyID < 1) {
 		";
 		$res = DB::query($sql);
 		// durchloopen und Tickettypen einzeln ausgeben
-		while ($rowTemp = mysql_fetch_array($res)) {
+		while ($rowTemp = $res->fetch_array()) {
 			if ($sLang == "en") {
 				// Englische Artikelbeschreibung zeigen
 				$sText = db2display($rowTemp['beschreibung']);
@@ -195,9 +195,9 @@ if ($aktuellePartyID < 1) {
 
 
 
-		//echo mysql_errno().": ".mysql_error()."<BR>";
+		//echo DB::$link->errno.": ".DB::$link->error."<BR>";
 
-		while ($row = mysql_fetch_array($result)) {
+		while ($row = $result->fetch_array()) {
 			$tempULogin = $row['LOGIN'];
 			if (strlen($tempULogin) > 30 ) {
 				$Anzeige_Name = db2display(substr( $tempULogin, 0, 30)."...");
@@ -213,8 +213,8 @@ if ($aktuellePartyID < 1) {
 
 			echo "<TD class='TNListeTDA'>";		
 			// Clan raussuchen
-			$result2 = mysql_query("select c.CLANID, c.NAME from CLAN c, USER_CLAN uc where c.CLANID = uc.CLANID and uc.USERID=$row[USERID] and uc.MANDANTID=$nPartyID and uc.AUFNAHMESTATUS='$AUFNAHMESTATUS_OK'");
-			$row2    = mysql_fetch_array($result2);
+			$result2 = DB::query("select c.CLANID, c.NAME from CLAN c, USER_CLAN uc where c.CLANID = uc.CLANID and uc.USERID=$row[USERID] and uc.MANDANTID=$nPartyID and uc.AUFNAHMESTATUS='$AUFNAHMESTATUS_OK'");
+			$row2    = $result2->fetch_array();
 			$sClan   = db2display($row2['NAME']);
 			$nClanID = $row2['CLANID'];
 			if (strlen($sClan) > 22 ) {
@@ -237,7 +237,7 @@ if ($aktuellePartyID < 1) {
 					  MANDANTID ='$nPartyID' and
 					  REIHE     = ".$row['sitzReihe'];
 				$resTemp2 = DB::query($sql);
-				$rowTemp2 = mysql_fetch_array($resTemp2);
+				$rowTemp2 = $resTemp2->fetch_array();
 				$ebene   = $rowTemp2['EBENE'];
 				echo "<a href=\"?page=13&ebene=$ebene&locateUser=".$row['USERID']."\">";
 				echo $row['sitzReihe']."-".$row['sitzPlatz'];

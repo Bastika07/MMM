@@ -13,7 +13,7 @@ function PayPal ()
 	if (CFG::getMandantConfig("PAYPAL", $nPartyID) == "J") {
 	
 		//Namen aus DB holen
-		$rowTemp = @mysql_fetch_array(DB::query("select NAME, NACHNAME from USER where USERID='$nLoginID'"), MYSQL_ASSOC); $sRealName = $rowTemp[NAME]." ".$rowTemp[NACHNAME];
+		$rowTemp = DB::query("select NAME, NACHNAME from USER where USERID='$nLoginID'")->fetch_assoc(); $sRealName = $rowTemp[NAME]." ".$rowTemp[NACHNAME];
 	
 		echo "<p><b>".$str['paypal_infotext_header']."</b></p>\n";
 		echo "<p align=\"justify\">".$str['paypal_infotext']."</p>\n";
@@ -84,7 +84,7 @@ function ÜberweisungsDatenAnzeigen($nPartyID, $nLoginID){
 
 
 // evtl. Voranmeldung offen?
-$row = @mysql_fetch_array(DB::query("select STRINGWERT from CONFIG where PARAMETER = 'VORANMELDUNG_OFFEN' and MANDANTID = $nPartyID"), MYSQL_ASSOC);
+$row = DB::query("select STRINGWERT from CONFIG where PARAMETER = 'VORANMELDUNG_OFFEN' and MANDANTID = $nPartyID")->fetch_assoc();
 // checken, ob get-variable on
 if ($voranmeldung == "true" && $row[STRINGWERT] == "J") {
 	$bVoranmeld = 1;
@@ -93,32 +93,32 @@ if ($voranmeldung == "true" && $row[STRINGWERT] == "J") {
 }
 
 
-$row = @mysql_fetch_array(DB::query("select USERID, LOGIN, EMAIL from USER where USERID = $nLoginID"), MYSQL_ASSOC); 
+$row = DB::query("select USERID, LOGIN, EMAIL from USER where USERID = $nLoginID")->fetch_assoc(); 
 $config[USERID] = $row[USERID];
 $config[LOGIN] = $row[LOGIN];
 $config[EMAIL] = $row[EMAIL];
-$row = @mysql_fetch_array(DB::query("select STRINGWERT from CONFIG where PARAMETER = 'KONTO_NAME' and MANDANTID = $nPartyID"), MYSQL_ASSOC);
+$row = DB::query("select STRINGWERT from CONFIG where PARAMETER = 'KONTO_NAME' and MANDANTID = $nPartyID")->fetch_assoc();
 $config[KONTO_NAME] = $row[STRINGWERT];
-$row = @mysql_fetch_array(DB::query("select STRINGWERT from CONFIG where PARAMETER = 'KONTO_NUMMER' and MANDANTID = $nPartyID"), MYSQL_ASSOC);
+$row = DB::query("select STRINGWERT from CONFIG where PARAMETER = 'KONTO_NUMMER' and MANDANTID = $nPartyID")->fetch_assoc();
 $config[KONTO_NUMMER] = $row[STRINGWERT];
-$row = @mysql_fetch_array(DB::query("select STRINGWERT from CONFIG where PARAMETER = 'KONTO_BLZ' and MANDANTID = $nPartyID"), MYSQL_ASSOC);
+$row = DB::query("select STRINGWERT from CONFIG where PARAMETER = 'KONTO_BLZ' and MANDANTID = $nPartyID")->fetch_assoc();
 $config[KONTO_BLZ] = $row[STRINGWERT];
-$row = @mysql_fetch_array(DB::query("select STRINGWERT from CONFIG where PARAMETER = 'KONTO_BANK' and MANDANTID = $nPartyID"), MYSQL_ASSOC);
+$row = DB::query("select STRINGWERT from CONFIG where PARAMETER = 'KONTO_BANK' and MANDANTID = $nPartyID")->fetch_assoc();
 $config[KONTO_BANK] = $row[STRINGWERT];
-$row = @mysql_fetch_array(DB::query("select STRINGWERT from CONFIG where PARAMETER = 'EINTRITT_NORMAL' and MANDANTID = $nPartyID"), MYSQL_ASSOC);
+$row = DB::query("select STRINGWERT from CONFIG where PARAMETER = 'EINTRITT_NORMAL' and MANDANTID = $nPartyID")->fetch_assoc();
 $config[EINTRITT_NORMAL] = $row[STRINGWERT];
-$row = @mysql_fetch_array(DB::query("select STRINGWERT from CONFIG where PARAMETER = 'EINTRITT_LOGE' and MANDANTID = $nPartyID"), MYSQL_ASSOC);
+$row = DB::query("select STRINGWERT from CONFIG where PARAMETER = 'EINTRITT_LOGE' and MANDANTID = $nPartyID")->fetch_assoc();
 $config[EINTRITT_LOGE] = $row[STRINGWERT];
-$row = @mysql_fetch_array(DB::query("select STRINGWERT from CONFIG where PARAMETER = 'EINTRITT_XTRA' and MANDANTID = $nPartyID"), MYSQL_ASSOC);
+$row = DB::query("select STRINGWERT from CONFIG where PARAMETER = 'EINTRITT_XTRA' and MANDANTID = $nPartyID")->fetch_assoc();
 $config[EINTRITT_XTRA] = " ".$row[STRINGWERT];
 // Added IBAN and BIC to config Array
-$row = @mysql_fetch_array(DB::query("select STRINGWERT from CONFIG where PARAMETER = 'KONTO_IBAN' and MANDANTID = $nPartyID"), MYSQL_ASSOC);
+$row = DB::query("select STRINGWERT from CONFIG where PARAMETER = 'KONTO_IBAN' and MANDANTID = $nPartyID")->fetch_assoc();
 $config[KONTO_IBAN] = $row[STRINGWERT];
-$row = @mysql_fetch_array(DB::query("select STRINGWERT from CONFIG where PARAMETER = 'KONTO_BIC' and MANDANTID = $nPartyID"), MYSQL_ASSOC);
+$row = DB::query("select STRINGWERT from CONFIG where PARAMETER = 'KONTO_BIC' and MANDANTID = $nPartyID")->fetch_assoc();
 $config[KONTO_BIC] = $row[STRINGWERT];
-$row = @mysql_fetch_array(DB::query("select BESCHREIBUNG from MANDANT where MANDANTID = $nPartyID"), MYSQL_ASSOC);
+$row = DB::query("select BESCHREIBUNG from MANDANT where MANDANTID = $nPartyID")->fetch_assoc();
 $config[BESCHREIBUNG] = $row[BESCHREIBUNG];
-$row = @mysql_fetch_array(DB::query("select BESCHREIBUNG, EMAIL from MANDANT where MANDANTID=$nPartyID"));
+$row = DB::query("select BESCHREIBUNG, EMAIL from MANDANT where MANDANTID=$nPartyID")->fetch_array();
 $sMandant = $row[BESCHREIBUNG]; $sMandantEmail = $row[EMAIL];
 
 
@@ -129,7 +129,7 @@ if (strlen($config[BESCHREIBUNG]) > 12 ) {
 	$UBmandant = db2display($config[BESCHREIBUNG]);
 }
 
-$row = @mysql_fetch_array(DB::query("select STRINGWERT from CONFIG where PARAMETER = 'ANMELDUNG_OFFEN' and MANDANTID = $nPartyID"), MYSQL_ASSOC);
+$row = DB::query("select STRINGWERT from CONFIG where PARAMETER = 'ANMELDUNG_OFFEN' and MANDANTID = $nPartyID")->fetch_assoc();
 if (($row[STRINGWERT] == "J" || $bVoranmeld == 1 || User::hatBezahlt($nLoginID, $nPartyID)) && !$iAction) {
 	if (!$nLoginID) {
 		echo "<p>$str[pelasgebraucht] ";
@@ -137,11 +137,11 @@ if (($row[STRINGWERT] == "J" || $bVoranmeld == 1 || User::hatBezahlt($nLoginID, 
 		echo "<p><img src=\"gfx/headline_pfeil.png\" border=\"0\"> <a href=\"login.php\">$str[loginodererstellen]</a><br>";
 		echo "</p>";
 	} else {
-		$row = @mysql_fetch_array(DB::query("select STATUS from ASTATUS where MANDANTID = $nPartyID and USERID = $nLoginID"), MYSQL_ASSOC);
+		$row = DB::query("select STATUS from ASTATUS where MANDANTID = $nPartyID and USERID = $nLoginID")->fetch_assoc();
 		if (!$row[STATUS] || $row[STATUS] == $STATUS_ABGEMELDET) {
-			$row = @mysql_fetch_array(DB::query("select STRINGWERT from CONFIG where PARAMETER = 'EINTRITT_NORMAL' and MANDANTID = $nPartyID"), MYSQL_ASSOC); $config[EINTRITT_NORMAL] = $row[STRINGWERT];
-			$row = @mysql_fetch_array(DB::query("select STRINGWERT from CONFIG where PARAMETER = 'EINTRITT_LOGE' and MANDANTID = $nPartyID"), MYSQL_ASSOC); $config[EINTRITT_LOGE] = $row[STRINGWERT];
-			$row = @mysql_fetch_array(DB::query("select STRINGWERT from CONFIG where PARAMETER = 'EINTRITT_XTRA' and MANDANTID = $nPartyID"), MYSQL_ASSOC); $config[EINTRITT_XTRA] = " ".$row[STRINGWERT];
+			$row = DB::query("select STRINGWERT from CONFIG where PARAMETER = 'EINTRITT_NORMAL' and MANDANTID = $nPartyID")->fetch_assoc(); $config[EINTRITT_NORMAL] = $row[STRINGWERT];
+			$row = DB::query("select STRINGWERT from CONFIG where PARAMETER = 'EINTRITT_LOGE' and MANDANTID = $nPartyID")->fetch_assoc(); $config[EINTRITT_LOGE] = $row[STRINGWERT];
+			$row = DB::query("select STRINGWERT from CONFIG where PARAMETER = 'EINTRITT_XTRA' and MANDANTID = $nPartyID")->fetch_assoc(); $config[EINTRITT_XTRA] = " ".$row[STRINGWERT];
 			echo "<p>\n$str[klickundfertig1](".$config[EINTRITT_NORMAL]." EUR";
 
 			if ($config[EINTRITT_LOGE] > 0) {
@@ -150,7 +150,7 @@ if (($row[STRINGWERT] == "J" || $bVoranmeld == 1 || User::hatBezahlt($nLoginID, 
 			echo $config[EINTRITT_XTRA].") $str[klickundfertig2]\n</p>\n";
 			echo "<form action=\"teilnahme.php\" method=POST>";
 			echo "<p>\n<input type=\"checkbox\" name=\"check\" value=\"J\">&nbsp;$str[jaichakzeptiere1] <a href=\"bedingungen.php\">$str[jaichakzeptiere2]</a>";
-			$row = @mysql_fetch_array(DB::query("select BESCHREIBUNG from MANDANT where MANDANTID = $nPartyID"), MYSQL_ASSOC);
+			$row = DB::query("select BESCHREIBUNG from MANDANT where MANDANTID = $nPartyID")->fetch_assoc();
 			echo " $str[jaichakzeptiere3] <i>".$row[BESCHREIBUNG]."</i> $str[jaichakzeptiere4].\n</p>\n";
 			echo "<p>\n<input type=\"hidden\" name=\"PELASSESSID\" value=\"$PELASSESSID\"><input type=\"hidden\" name=\"nPartyID\" value=\"$nPartyID\"><input type=\"hidden\" name=\"iAction\" value=\"new\"><input type=\"submit\" value=\"$str[anmeldungabschliessen]\"></form>\n</p>\n";
 		} elseif ($row[STATUS] == $STATUS_ANGEMELDET) {
@@ -194,7 +194,7 @@ if (($row[STRINGWERT] == "J" || $bVoranmeld == 1 || User::hatBezahlt($nLoginID, 
     	echo "<p><img src=\"gfx/headline_pfeil.png\" border=\"0\"> <a href=\"teilnehmer.php\">$str[teilnehmerliste]</a></p>";
     	
     	$result = DB::query("select USERID from ASTATUS where USERID=$nLoginID and MANDANTID=$nPartyID");
-    	$row = mysql_fetch_array($result);
+    	$row = $result->fetch_array();
     	if ($row[USERID] > 0 ) {
     		@DB::query("update ASTATUS set STATUS = $STATUS_ANGEMELDET, WANNANGEMELDET=NOW() where USERID=$nLoginID and MANDANTID=$nPartyID");
     	} else {
@@ -208,7 +208,7 @@ if (($row[STRINGWERT] == "J" || $bVoranmeld == 1 || User::hatBezahlt($nLoginID, 
        echo "<a href=\"./teilnahme.php\">Zurück";
     }
 } else {
-	$row = mysql_fetch_array(DB::query("select STRINGWERT from CONFIG where PARAMETER = 'ANMELDUNG_OFFEN_AB' and MANDANTID = $nPartyID"), MYSQL_ASSOC);
+	$row = DB::query("select STRINGWERT from CONFIG where PARAMETER = 'ANMELDUNG_OFFEN_AB' and MANDANTID = $nPartyID")->fetch_assoc();
 	echo "<p>\n$str[astart1]: ".$row[STRINGWERT]." - $str[astart2].\n</p>\n";
 }
 

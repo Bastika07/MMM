@@ -46,9 +46,9 @@ function show_form ()
 						and r.RECHTID='".$KATEGORIEINFO[$_GET['nKategorieID']][1]."'
 			";
 			$result = DB::query($sql);
-			//echo mysql_errno().": ".mysql_error()."<BR>";
+			//echo DB::$link->errno.": ".DB::$link->error."<BR>";
 			echo "<table cellspacing=\"0\" cellpadding=\"0\" border=\"0\" width=\"100%\"><tr>";
-			while ($row = mysql_fetch_array($result)) {
+			while ($row = $result->fetch_array()) {
 				echo "<td><input type=\"checkbox\" name=\"sendToMandant[]\" value=\"$row[MANDANTID]\"> $row[BESCHREIBUNG]</td>";
 				$rowCount++;
 				if ($rowCount > 2) {
@@ -79,8 +79,8 @@ function show_form ()
 if (!isset($_POST['iBeitragstitel']) && $_GET['iAction'] == "edit") {
 	$sql = "select INHALTID, TITEL, DERINHALT from INHALT where KATEGORIEID=".intval($_GET['nKategorieID'])." and INHALTID=".intval($_GET['nInhaltID']);
 	$result = DB::query($sql);
-	//echo mysql_errno().": ".mysql_error()."<BR>";
-	$row = mysql_fetch_array($result);
+	//echo DB::$link->errno.": ".DB::$link->error."<BR>";
+	$row = $result->fetch_array();
 	$_POST['iBeitragstitel'] = $row['TITEL'];
 	$_POST['iBeitrag']       = $row['DERINHALT'];
 	show_form();
@@ -112,14 +112,14 @@ if (!isset($_POST['iBeitragstitel']) && $_GET['iAction'] == "edit") {
 				for ($i=0; $i<sizeof($_POST['sendToMandant']); $i++) {
 					$sql = "INSERT INTO INHALT (MANDANTID, TITEL, DERINHALT, AUTOR, AUTORNAME, KATEGORIEID, AKTIV, WERANGELEGT, WANNANGELEGT, WERGEAENDERT ) values (".intval($_POST['sendToMandant'][$i]).", '".safe($_POST['iBeitragstitel'])."', '".safe($itext)."', ".intval($Userid2db).", '".safe($Nick2db)."', ".intval($_GET['nKategorieID']).", '$sAktiv', ".intval($loginID)." , NOW(), ".intval($loginID)." )";
 					$result = DB::query($sql);
-					//echo mysql_errno().": ".mysql_error()."<BR>";
+					//echo DB::$link->errno.": ".DB::$link->error."<BR>";
 				}
 			}
 		} else {
 			//aendern
 			$sql = "update INHALT set TITEL='".safe($_POST['iBeitragstitel'])."', DERINHALT='".safe($itext)."', WERGEAENDERT=".intval($loginID)." where INHALTID=".intval($_GET['nInhaltID'])." and KATEGORIEID=".intval($_GET['nKategorieID']);
 			$result = DB::query($sql);
-			//echo mysql_errno().": ".mysql_error()."<BR>";
+			//echo DB::$link->errno.": ".DB::$link->error."<BR>";
 		}
 		//zurueckleiten
 		if ($ComeFrom == -1) {$NewAction = 1;} else {$NewAction = 2;}

@@ -49,7 +49,7 @@ if (isset($_GET['action']) && $_GET['action'] == "unsubscribe" && isset($_GET['c
 					NEWSLETTER_ABO_EMAIL=NULL
 				WHERE 
 					USERID = '".intval($uns_id)."'";
-		$erfolg = mysql_query($sql);
+		$erfolg = DB::query($sql);
 	}
 	# Erfolgsmeldung ausgeben
 	if ($erfolg == true)
@@ -93,7 +93,7 @@ if (isset($_GET['action']) && $_GET['action'] == "subscribe" && isset($_GET['cod
 					NEWSLETTER_ABO_EMAIL=NULL
 				WHERE 
 					USERID = '".intval($uns_id)."'";
-		$erfolg = mysql_query($sql);
+		$erfolg = DB::query($sql);
 	}
 	# Erfolgsmeldung ausgeben
 	if ($erfolg == true)
@@ -137,7 +137,7 @@ if (isset($_GET['action']) && $_GET['action'] == "subscribeRM" && isset($_GET['c
 					POPUP_DISPLAY = 0
 				WHERE 
 					USERID = '".intval($uns_id)."'";
-		$erfolg = mysql_query($sql);
+		$erfolg = DB::query($sql);
 	}
 	# Erfolgsmeldung ausgeben
 	if ($erfolg == true)
@@ -159,8 +159,8 @@ if ($nLoginID == "") {
 	if (!isset($_POST['iLogin'])) {
 
 		$result = DB::query("select * from USER where USERID = '".safe($nLoginID)."'");
-		//echo mysql_errno().": ".mysql_error()."<BR>";
-		$row = mysql_fetch_array($result);
+		//echo DB::$link->errno.": ".DB::$link->error."<BR>";
+		$row = $result->fetch_array();
 
 		$_POST['iLogin'] = $row['LOGIN'];
 		$_POST['iAlterLogin']  = $row['LOGIN'];
@@ -227,9 +227,9 @@ if ($_POST['action'] == 'upload' && $nLoginID > 0) {
 		  chmod($newfile, 0664);
 		  DB::query("UPDATE USER set BILD_VORHANDEN='J' where USERID=".intval($nLoginID));
 			$res = DB::query("select MANDANTID from ASTATUS where USERID=".intval($nLoginID));
-			while ($row = mysql_fetch_assoc($res)) {
+			while ($row = $res->fetch_assoc()) {
 				$result2 = DB::query("UPDATE CONFIG set STRINGWERT='".intval($nLoginID)."' where PARAMETER='NEUESTES_GESICHT' and MANDANTID=$row[MANDANTID]");
-				//echo mysql_errno().": ".mysql_error()."<BR>";
+				//echo DB::$link->errno.": ".DB::$link->error."<BR>";
 			}
 		}
 	}
@@ -314,7 +314,7 @@ function show_form ()
 				} else {
 					$feld = "descGerman";
 				}
-				while ($row = mysql_fetch_array($result)) {
+				while ($row = $result->fetch_array()) {
 					echo "<option value=\"".db2display(strtolower($row['isoCode']))."\"";
 
 					if ($bKeinLand == 1 && strlen($_POST['iLand']) <= 2) {
@@ -354,7 +354,7 @@ function show_form ()
 							sizeCode
 					";
 					$result = DB::query($sql);
-					while ($row = mysql_fetch_array($result)) {
+					while ($row = $result->fetch_array()) {
 						echo "<option value=\"".db2display($row['sizeCode'])."\"";
 						if ($_POST['tshirt'] == $row['sizeCode']) {
 							echo " selected";
@@ -472,7 +472,7 @@ if (!isset($_POST['speichern']) ) {
 		//DB nach Login durchstoebern
 		$result = DB::query("select LOGIN from USER where LCASE(LOGIN) = LCASE('".safe($_POST[iLogin])."')");
 		$vorhanden= "";
-		while ($row = mysql_fetch_array($result)) {
+		while ($row = $result->fetch_array()) {
 			$vorhanden = $row['LOGIN'];
 		}
 	} else {
@@ -484,9 +484,9 @@ if (!isset($_POST['speichern']) ) {
 	$iEmail = strtolower($iEmail);
 	$sql = "select LOGIN from USER where LCASE(EMAIL) = LCASE('".safe($_POST['iEmail'])."') and USERID!='".intval($nLoginID)."'";
 	$result = DB::query($sql);
-	//echo mysql_errno().": ".mysql_error()."<BR>";
+	//echo DB::$link->errno.": ".DB::$link->error."<BR>";
 	$e_vorhanden= "";
-	if (@mysql_num_rows($result)) $e_vorhanden = 1;
+	if ($result->num_rows) $e_vorhanden = 1;
 	//##############################
 	// Email checken Ende
 
@@ -502,7 +502,7 @@ $sql = 'SELECT
         LIMIT
             1';
 	$result = DB::query($sql);
-	if(mysql_num_rows($result) > 0) {
+	if($result->num_rows > 0) {
 		$captchaCheck = "1";
 	} else {
 		$captchaCheck = "-1";
@@ -595,7 +595,7 @@ $sql = 'SELECT
 
 			//Eintrag in ASTATUS und Passwort hashen
 			$result = DB::query("select USERID from USER where LOGIN = '".safe($_POST[iLogin])."'");
-			$row    = mysql_fetch_array($result);
+			$row    = $result->fetch_array();
 			if ($row['USERID'] > 0 ) {
 				$newUserid = $row['USERID'];
 				DB::query("insert into ASTATUS (MANDANTID, USERID, STATUS, WANNANGELEGT) values (".intval($nPartyID).", ".intval($newUserid).", ".intval($STATUS_NICHTANGEMELDET).", now())");
@@ -633,8 +633,8 @@ $sql = 'SELECT
 					PERSONR='".safe($_POST['iPersoNr'])."',
 					WERGEAENDERT=".intval($nLoginID )."
 				where USERID=$nLoginID");
-			//echo mysql_errno().": ".mysql_error()."<BR>";
-			if (mysql_errno() <> 0)
+			//echo DB::$link->errno.": ".DB::$link->error."<BR>";
+			if (DB::$link->errno <> 0)
 			{
 				// FAILED!
 				echo '<p class="error">Database-error. Please contact us and report this error!</p>';
@@ -675,8 +675,8 @@ $sql = 'SELECT
 						where USERID=".intval($tmpUserId);
 			$result = DB::query($sql);
 
-			//echo mysql_errno().": ".mysql_error()."<BR>";
-			if (mysql_errno() == 0) {
+			//echo DB::$link->errno.": ".DB::$link->error."<BR>";
+			if (DB::$link->errno == 0) {
 				if (safe($_POST['iNewsletterAbo']) == "1")
 				{
 					// Bestätigungs-E-Mail versenden:

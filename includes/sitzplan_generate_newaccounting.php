@@ -98,12 +98,12 @@ function GeneriereSitzplan($nPartyID, $ebene, $locateUser=0, $aktuellePartyID) {
 
     # Maximale Reihen?
     $result = DB::query("select MAX(REIHE) as MAXROW from SITZDEF where MANDANTID=$nPartyID and EBENE=$ebene");
-    $row = mysql_fetch_array($result);
+    $row = $result->fetch_array();
     $maxreihen = $row['MAXROW'];
 
     # Reihen beginnen ab?
     $result = DB::query("select MIN(REIHE) as MINROW from SITZDEF where MANDANTID=$nPartyID and EBENE=$ebene");
-    $row = mysql_fetch_array($result);
+    $row = $result->fetch_array();
     $startreihen = $row['MINROW'];
 
     ##$im = @imageCreateFromGIF('sitzplan_halle.gif');
@@ -235,7 +235,7 @@ function GeneriereReihe($im, $nPartyID, $dieReihe, $aktuellePartyID, $colorAlloc
 				  t.sitzReihe = '$rc'
 			";
 			$result = DB::query($sql); 
-			$row = mysql_fetch_array($result);
+			$row = $result->fetch_array();
 
 			if ($PlatzArray[$rc][6] == 1)
 			{
@@ -397,7 +397,7 @@ function GeneriereReihe($im, $nPartyID, $dieReihe, $aktuellePartyID, $colorAlloc
 				  uc.AUFNAHMESTATUS = '$AUFNAHMESTATUS_OK'";
 			$result2 = DB::query($sql);
 
-			$row2 = mysql_fetch_array($result2);
+			$row2 = $result2->fetch_array();
 			if ($row2['CLANID'] > 0) {
 				$sClan = '<br/>Clan: ' . db2display($row2['NAME']);
 				if (strlen($sClan) > 32 ) {

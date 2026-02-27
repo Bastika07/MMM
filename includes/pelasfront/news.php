@@ -17,7 +17,7 @@ function displayNews($sTitel, $sBeitrag, $sAutor, $sDatum, $nInhaltID) {
 	echo "<tr><td><img src=\"/gfx/lgif.gif\" width=\"0\" height=\"4\"></td></tr>";
 
 	$result_count = DB::query("select COUNT(*) from INHALT where PARENTID='$nInhaltID' and KATEGORIEID=$KATEGORIE_NEWSCOMMENT");
-	$row_count = mysql_fetch_array($result_count);
+	$row_count = $result_count->fetch_array();
 	if ($iAction != "comment" && $iAction != "add") {
 		if ($row_count[0] <= 0) {
 			echo "<tr><td align=\"right\"><a href=\"news.php?iAction=add&nInhaltID=$nInhaltID\">$str[abgeben]</a></td></tr>";
@@ -36,8 +36,8 @@ if ($iAction == "comment") {
 
 	if ($savedComment != 1) {
 		$result = DB::query("select INHALTID, TITEL, DERINHALT, AUTORNAME, WANNANGELEGT, AKTIV from INHALT where MANDANTID=$nPartyID and INHALTID='$nInhaltID'");
-		//echo mysql_errno().": ".mysql_error()."<BR>";
-		$row = mysql_fetch_array($result);
+		//echo DB::$link->errno.": ".DB::$link->error."<BR>";
+		$row = $result->fetch_array();
     if ($row['AKTIV'] == 'N' && ($nLoginID < 1 || !User::hatRecht('NEWSADMIN', $nLoginID, $nPartyID)))
 	    PELAS::fehler('Du bist nicht eingeloggt oder hast nicht die erforderlichen Rechte.');
 	  else {
@@ -56,7 +56,7 @@ if ($iAction == "comment") {
 	  else {
 	    // preview-funktion, nur wenn man eingeloggt ist und das Recht NEWSADMIN hat
 	    $result = DB::query("select INHALTID, TITEL, DERINHALT, AUTORNAME, WANNANGELEGT from INHALT where MANDANTID=$nPartyID and KATEGORIEID=$KATEGORIE_NEWS and INHALTID='$_GET[newsID]'");
-	    $row = mysql_fetch_array($result);
+	    $row = $result->fetch_array();
 	    displayNews($row["TITEL"],$row["DERINHALT"],$row["AUTORNAME"],$row["WANNANGELEGT"],$row["INHALTID"]);
 	  }
 	}	else {
@@ -69,8 +69,8 @@ if ($iAction == "comment") {
 			$show = 999999999;
 		}
 	  $result = DB::query("select INHALTID, TITEL, DERINHALT, AUTORNAME, WANNANGELEGT from INHALT where MANDANTID=$nPartyID and AKTIV='J' and KATEGORIEID=$KATEGORIE_NEWS order by WANNANGELEGT desc limit $show");
-	  //echo mysql_errno().": ".mysql_error()."<BR>";
-	  while ($row = mysql_fetch_array($result)) {
+	  //echo DB::$link->errno.": ".DB::$link->error."<BR>";
+	  while ($row = $result->fetch_array()) {
   		displayNews($row["TITEL"],$row["DERINHALT"],$row["AUTORNAME"],$row["WANNANGELEGT"],$row["INHALTID"]);
 	  }
 	  

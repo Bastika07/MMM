@@ -19,7 +19,7 @@ class TurnierGroup {
 		$res = DB::query($sql);
 
 		$groups = array();
-		while ($row = mysql_fetch_assoc($res)) {
+		while ($row = $res->fetch_assoc()) {
 			$groups[$row['groupid']] = $row;
 			$helper[] = $row;
 		}
@@ -46,7 +46,7 @@ class TurnierGroup {
 	function addGroup($name) {
 		$sql = "SELECT MAX(value) AS maxvalue FROM t_group";
 		$res = DB::query($sql);
-		$row = mysql_fetch_assoc($res);
+		$row = $res->fetch_assoc();
 		$next = $row['maxvalue'] +1;
 
 		DB::query("INSERT INTO t_group SET value = '{$next}', name = '{$name}'");
@@ -59,8 +59,8 @@ class TurnierGroup {
 	function moveGroup($groupid, $to) {
 		$sql = "SELECT * FROM t_group WHERE groupid = '{$groupid}' OR groupid = '{$to}'";
 		$res = DB::query($sql);
-		$row1 = mysql_fetch_assoc($res);
-		$row2 = mysql_fetch_assoc($res);
+		$row1 = $res->fetch_assoc();
+		$row2 = $res->fetch_assoc();
 
 		DB::query("UPDATE t_group SET value = '{$row2['value']}' WHERE groupid = '{$row1['groupid']}'");
 		DB::query("UPDATE t_group SET value = '{$row1['value']}' WHERE groupid = '{$row2['groupid']}'");

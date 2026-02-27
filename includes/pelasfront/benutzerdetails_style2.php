@@ -26,35 +26,35 @@ if (!isset($dbh))
 if (!isset($_GET['nUserID']) || !is_numeric($_GET['nUserID']) || $_GET['nUserID'] < 0) {
   PELAS::fehler('Ungültige Benutzer-ID!');
 } else {
-  $result = mysql_db_query ($dbname, "select * from USER where USERID = $nUserID",$dbh);
-  if (mysql_num_rows($result) != 1) {
+  $result = DB::query("select * from USER where USERID = $nUserID");
+  if ($result->num_rows != 1) {
     PELAS::fehler('Kein Benutzer mit dieser ID!');
   } else {
 
-$row = mysql_fetch_array($result);
+$row = $result->fetch_array();
 
 //Anmeldestatus und beschreibung.
-$anmelderesult= mysql_db_query ($dbname, "select STATUS from ASTATUS where USERID='$nUserID' AND MANDANTID='$nPartyID'",$dbh);
-$anmelderow = mysql_fetch_array($anmelderesult);
+$anmelderesult= DB::query("select STATUS from ASTATUS where USERID='$nUserID' AND MANDANTID='$nPartyID'");
+$anmelderow = $anmelderesult->fetch_array();
 $anmeldestatus = $anmelderow['STATUS'];
-$statusbeschreibung = mysql_db_query ($dbname, "select b.BESCHREIBUNG from STATUS b, ASTATUS a where a.USERID='$nUserID' and a.MANDANTID=$nPartyID and b.STATUSID=a.STATUS",$dbh);
-$rowStat = mysql_fetch_array($statusbeschreibung);
+$statusbeschreibung = DB::query("select b.BESCHREIBUNG from STATUS b, ASTATUS a where a.USERID='$nUserID' and a.MANDANTID=$nPartyID and b.STATUSID=a.STATUS");
+$rowStat = $statusbeschreibung->fetch_array();
 
 //Partynamen raussuchen
-$partynameresult= mysql_db_query ($dbname, "select BESCHREIBUNG from MANDANT where MANDANTID='$nPartyID'",$dbh);
-$partynamerow = mysql_fetch_array($partynameresult);
+$partynameresult= DB::query("select BESCHREIBUNG from MANDANT where MANDANTID='$nPartyID'");
+$partynamerow = $partynameresult->fetch_array();
 $partyname = $partynamerow['BESCHREIBUNG'];
 
 //Sitz und besuchte Parties
-//echo mysql_errno().": ".mysql_error()."<BR>";
-$sitz = mysql_db_query ($dbname, "select * from SITZ where USERID='$nUserID' and MANDANTID='$nPartyID'",$dbh);
-$besuchteParties = mysql_db_query ($dbname, "select m.REFERER, p.NAME, p.BEGINN from MANDANT m, ASTATUSHISTORIE a, PARTYHISTORIE p where m.MANDANTID=p.MANDANTID and a.USERID = '$nUserID' and a.MANDANTID = p.MANDANTID and a.LFDNR=p.LFDNR and (a.STATUS='$STATUS_BEZAHLT' or a.STATUS='$STATUS_BEZAHLT_LOGE') order by p.BEGINN desc", $dbh);
-$row_platz = mysql_fetch_array($sitz);
-//echo mysql_errno().": ".mysql_error()."<BR>";
+//echo DB::$link->errno.": ".DB::$link->error."<BR>";
+$sitz = DB::query("select * from SITZ where USERID='$nUserID' and MANDANTID='$nPartyID'");
+$besuchteParties = DB::query("select m.REFERER, p.NAME, p.BEGINN from MANDANT m, ASTATUSHISTORIE a, PARTYHISTORIE p where m.MANDANTID=p.MANDANTID and a.USERID = '$nUserID' and a.MANDANTID = p.MANDANTID and a.LFDNR=p.LFDNR and (a.STATUS='$STATUS_BEZAHLT' or a.STATUS='$STATUS_BEZAHLT_LOGE') order by p.BEGINN desc");
+$row_platz = $sitz->fetch_array();
+//echo DB::$link->errno.": ".DB::$link->error."<BR>";
 
 // Clan raussuchen
-$result2 = mysql_db_query ($dbname, "select c.CLANID, c.NAME from CLAN c, USER_CLAN uc where c.CLANID = uc.CLANID and uc.USERID='$nUserID' and uc.MANDANTID='$nPartyID' and uc.AUFNAHMESTATUS='$AUFNAHMESTATUS_OK'",$dbh);
-$row2    = mysql_fetch_array($result2);
+$result2 = DB::query("select c.CLANID, c.NAME from CLAN c, USER_CLAN uc where c.CLANID = uc.CLANID and uc.USERID='$nUserID' and uc.MANDANTID='$nPartyID' and uc.AUFNAHMESTATUS='$AUFNAHMESTATUS_OK'");
+$row2    = $result2->fetch_array();
 $sClan   = db2display($row2['NAME']);
 $nClanID = $row2['CLANID'];
 
@@ -114,7 +114,7 @@ $nClanID = $row2['CLANID'];
 	
 //Forum Beiträge
 	// Anzahl Forenpostings
-	$row2 = @mysql_fetch_array(mysql_db_query($dbname, "select count(*) cnt from forum_boards b, forum_content c where b.mandantID='$nPartyID' and c.authorID='$nUserID' and b.boardID=c.boardID", $dbh), MYSQL_ASSOC);
+	$row2 = DB::query("select count(*) cnt from forum_boards b, forum_content c where b.mandantID='$nPartyID' and c.authorID='$nUserID' and b.boardID=c.boardID")->fetch_assoc();
 	$anzahlForenpostings = $row2['cnt'];
 	echo "  <TR>";
 	echo "    <TD NOWRAP width=\"25%\">Forum Beitr&auml;ge:</TD><TD> $anzahlForenpostings</TD>";
@@ -177,7 +177,7 @@ $nClanID = $row2['CLANID'];
 	
 //Last 5 Postings Part
 
-	$result = mysql_db_query($dbname, "select FROM_UNIXTIME(c.time, '%d.%m') as DATUM, FROM_UNIXTIME(c.time, '%H:%i') as POSTTIME, c.contentID, c.title, c.parent
+	$result = DB::query("select FROM_UNIXTIME(c.time, '%d.%m') as DATUM, FROM_UNIXTIME(c.time, '%H:%i') as POSTTIME, c.contentID, c.title, c.parent
 				from forum_boards b, forum_content c 
 				where b.mandantID='$nPartyID' and 
 				b.boardID=c.boardID and 
@@ -185,7 +185,7 @@ $nClanID = $row2['CLANID'];
 				c.hidden != 1 and
 				c.authorID = $nUserID
 				order by c.time desc 
-				limit 5", $dbh);
+				limit 5");
 	echo "  <TR>";
 	echo "    <TD colspan=3 NOWRAP><b>Die 5 letzten Postings im Forum von "  .db2display($row['LOGIN']).":</b><hr noshade class=newsline></TD>";
 	echo "  </TR>";   
@@ -193,14 +193,14 @@ $nClanID = $row2['CLANID'];
 	echo "    <TD colspan=3 NOWRAP><TABLE cellpadding=1 cellspacing=0 border=0>";
 
 	$counter = 0;
-	while ($row2 = mysql_fetch_array($result)) {
+	while ($row2 = $result->fetch_array()) {
 		$counter = 1;
 		// Den Titel des Parents fischen
 		if ($row2['parent'] != "-1") {
-			$result3 = mysql_db_query($dbname, "select title, contentID
+			$result3 = DB::query("select title, contentID
 						from forum_content
-						where contentID = ".$row2['parent'], $dbh);
-			$row3 = mysql_fetch_array($result3);
+						where contentID = ".$row2['parent']);
+			$row3 = $result3->fetch_array();
 			$sTitel     = $row3['title'];
 			$nContentID = $row3['contentID'];
 		} else {
@@ -227,7 +227,7 @@ $nClanID = $row2['CLANID'];
 	echo "    <TR>";
 	echo "    <TD colspan=3 NOWRAP><TABLE cellpadding=1 cellspacing=0 border=0>";
 	$nCounter = 0;
-	while ($row=mysql_fetch_array($besuchteParties)) {
+	while ($row=$besuchteParties->fetch_array()) {
 		echo " <tr><td> <a href=\"$row[REFERER]\" target=\"_blank\">".db2display($row['NAME'])."</a> <small>(".dateDisplay2Short($row['BEGINN']).")</small></td></tr>";
 		$nCounter++;
 	}
@@ -277,7 +277,7 @@ $nClanID = $row2['CLANID'];
                where
                 MANDANTID='$nPartyID' AND REIHE = '$row_platz[REIHE]'";
       $res = DB::query($sql);
-      if($row = mysql_fetch_row($res)){
+      if($row = $res->fetch_row()){
         $ebene = $row[0];
       }
 	  }
@@ -306,7 +306,7 @@ $nClanID = $row2['CLANID'];
 							where
 								GRUPPEN_ID=$usergroup";
 			$res = DB::query($sql);
-			if(!$row = mysql_fetch_row($res)){
+			if(!$row = $res->fetch_row()){
 				PELAS::fehler('Ein Fehler ist bei der Verarbeitung der Daten aufgetreten');			
 			} else {
 				echo "<TD><a href=sitzgruppen.php?gruppenID=$usergroup>". db2display($row[0]). "</a></TD>";

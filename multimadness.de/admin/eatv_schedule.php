@@ -20,7 +20,7 @@ if (isset($action) && $action == "delete") {
 			AND r.MANDANTID = c.mandantId
 			AND c.channel = s.channel
 	";
-	if (mysql_query($sql) > 0) {
+	if (DB::query($sql) > 0) {
 		echo "<p>Successfully deleted broadcast ID ".intval($_GET['broadcastId'])."</p>";
 	} else {
 		echo "<p class='fehler'>Error deleting boradcast ID ".intval($_GET['broadcastId'])." - maybe because of insufficient permissions.</p>";
@@ -51,7 +51,7 @@ if (isset($action) && $action == "delete") {
 					'".intval($loginID)."'
 				)
 		";
-		if (mysql_query($sql)) {
+		if (DB::query($sql)) {
 			echo "<p>Successfully added your broadcast to the schedule.</p>";
 			unset($_POST);
 			header ("location: eatv_schedule.php?channel=".$_GET['channel']);
@@ -77,11 +77,11 @@ if (strlen($channel) < 1) {
 			AND r.USERID = '".intval($loginID)."'
 	";
 
-	$result = mysql_query($sql);
+	$result = DB::query($sql);
 	if ($result != false) {
 		echo "<form name='channel' action='eatv_schedule.php' method='get'>\n";
 		echo "<select name='channel'>\n";
-		while ($row = mysql_fetch_array($result) ) {
+		while ($row = $result->fetch_array() ) {
 			echo "<option value='".$row['channel']."'> ".db2display($row['longDescription'])."</option>\n";
 		}
 		echo "</select>\n";
@@ -132,11 +132,11 @@ if (strlen($channel) < 1) {
 			ORDER BY s.start desc
 	";
 
-	$result = mysql_query($sql);
+	$result = DB::query($sql);
 	$count = 0;
 	$bgc = 'hblau';
 	if ($result != false) {
-		while ($rowS = mysql_fetch_array($result) ) {
+		while ($rowS = $result->fetch_array() ) {
 			echo '<tr>';
 			echo '<td class="'.$bgc.'">'.$rowS['startF'].'</td>';
 			echo '<td class="'.$bgc.'">'.$rowS['endF'].'</td>';
@@ -196,8 +196,8 @@ if (strlen($channel) < 1) {
 			FROM eatv_game 
 			ORDER BY gameId desc
 	";
-	$resultG = mysql_query($sql);
-	while ($rowG = mysql_fetch_array($resultG) ) {
+	$resultG = DB::query($sql);
+	while ($rowG = $resultG->fetch_array() ) {
 		echo "<option value='".$rowG['gameId']."' ";
 		if (isset($_POST['gameId']) && $rowG['gameId'] == $_POST['gameId'] ) echo " selected";
 		echo "> ".db2display($rowG['description'])."</option>";

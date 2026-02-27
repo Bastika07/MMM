@@ -5,8 +5,8 @@ include_once "language.inc.php";
 if (!isset($dbh))
 	$dbh = DB::connect();
 
-	$result = mysql_db_query ($dbname, "select NUTZBAR from SESSION where SESSIONID='$PELASSESSID'", $dbh);
-	$row = mysql_fetch_array($result);
+	$result = DB::query("select NUTZBAR from SESSION where SESSIONID='$PELASSESSID'");
+	$row = $result->fetch_array();
 	if ($row[NUTZBAR] == 'J') {
 		echo "1";
 	} else {

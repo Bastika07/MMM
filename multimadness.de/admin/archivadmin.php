@@ -20,9 +20,9 @@ if ($_GET['action'] == "preview" || $_GET['action'] == "delete" || $_GET['action
 		"and r.USERID='".intval($loginID)."' ".
 		"and r.RECHTID='ARCHIVADMIN' ".
 		"and a.ARCHIVID='".intval($_GET['id'])."'";
-	$result= mysql_db_query ($dbname, $sWhere,$dbh);
-	//echo mysql_errno().": ".mysql_error()."<BR>";
-	$row = mysql_fetch_array($result);
+	$result= DB::query($sWhere);
+	//echo DB::$link->errno.": ".DB::$link->error."<BR>";
+	$row = $result->fetch_array();
 	
 	// Verzeichnisse
 	// Temporär
@@ -37,7 +37,7 @@ if ($_GET['action'] == "release") {
 	if ($row['ARCHIVID'] > 0) {
 		// Ok, Freigabe
 		// Status in DB setzen
-		mysql_db_query ($dbname, "update ARCHIV_INFO set LOCKED='no' where ARCHIVID='".$row['ARCHIVID']."'", $dbh);
+		DB::query("update ARCHIV_INFO set LOCKED='no' where ARCHIVID='".$row['ARCHIVID']."'");
 		if ($row['TYP'] != $KATEGORIE_ARCH_LINK) {
 			@exec("mv $sDirTemp ".PELASDIR."/archiv/_".$row['TYP']."/");
 		}
@@ -54,7 +54,7 @@ if ($_GET['action'] == "release") {
 	// Sperren
 	if ($row['ARCHIVID'] > 0) {
 		// Ok, Sperren
-		mysql_db_query ($dbname, "update ARCHIV_INFO set LOCKED='yes' where ARCHIVID='".$row['ARCHIVID']."'", $dbh);
+		DB::query("update ARCHIV_INFO set LOCKED='yes' where ARCHIVID='".$row['ARCHIVID']."'");
 		if ($row['TYP'] != $KATEGORIE_ARCH_LINK) {
 			@exec("mv $sLiveDir ".ARCHIV_UPLOADDIR."/_oldarchiv/");
 		}
@@ -129,7 +129,7 @@ if ($_GET['action'] == "release") {
 		<?php
 	} else {
 		// Loeschen
-		mysql_db_query ($dbname, "delete from ARCHIV_INFO where ARCHIVID='".$row['ARCHIVID']."'", $dbh);
+		DB::query("delete from ARCHIV_INFO where ARCHIVID='".$row['ARCHIVID']."'");
 		
 		// Bei Bildern, Zeitung und Viodeos Verzeichnisse löschen
 		if ($row['TYP'] == $KATEGORIE_ARCH_VIDEOS || $row['TYP'] == $KATEGORIE_ARCH_BILDER || $row['TYP'] == $KATEGORIE_ARCH_ZEITUNG) {
@@ -227,9 +227,9 @@ if ($_GET['action'] == "release") {
 		?>
 		>Alle
 		<?php
-			$result= mysql_db_query ($dbname, "select m.MANDANTID, m.BESCHREIBUNG from MANDANT m, RECHTZUORDNUNG r where r.MANDANTID=m.MANDANTID and r.USERID=".intval($loginID)." and r.RECHTID='ARCHIVADMIN'",$dbh);
-			//echo mysql_errno().": ".mysql_error()."<BR>";
-			while ($row = mysql_fetch_array($result)) {
+			$result= DB::query("select m.MANDANTID, m.BESCHREIBUNG from MANDANT m, RECHTZUORDNUNG r where r.MANDANTID=m.MANDANTID and r.USERID=".intval($loginID)." and r.RECHTID='ARCHIVADMIN'");
+			//echo DB::$link->errno.": ".DB::$link->error."<BR>";
+			while ($row = $result->fetch_array()) {
 				echo "<option value=\"$row[MANDANTID]\"";
 				if ($_POST['iMandant'] == $row[MANDANTID]) {echo " selected";}
 				echo ">$row[BESCHREIBUNG]";
@@ -308,11 +308,11 @@ if ($_GET['action'] == "release") {
 			".safe($_POST['sortierung']);
 
 	$result = DB::query($sWhere);
-	//echo mysql_errno().": ".mysql_error()."<BR>";
+	//echo DB::$link->errno.": ".DB::$link->error."<BR>";
 
 //	DB::outputQueryStatistic();
 
-	while ($row = mysql_fetch_array($result)) {
+	while ($row = $result->fetch_array()) {
 		$sDatum = $row['WANNANGELEGT'];
 		$date2Display = substr($sDatum,8,2).".".substr($sDatum,5,2).".".substr($sDatum,0,4)." ".substr($sDatum,11,2).":".substr($sDatum,14,2);
 

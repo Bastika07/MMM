@@ -96,8 +96,8 @@ if (($_GET['iAction'] == 'neu') or ($_GET['iAction'] == 'edit')) {
 	} else {
 		echo "<h1>Mandant bearbeiten</h1>";
 		if ($_POST['iPosted'] != 'yes') {
-			$result= mysql_db_query($dbname, 'SELECT * FROM MANDANT WHERE MANDANTID = ' . intval($_GET['nMandantID']), $dbh);
-			$row = mysql_fetch_array($result);
+			$result= DB::query('SELECT * FROM MANDANT WHERE MANDANTID = ' . intval($_GET['nMandantID']));
+			$row = $result->fetch_array();
 			$_POST['iBeschreibung']    = $row['BESCHREIBUNG'];
 			$_POST['iFirma']	          = $row['FIRMA'];
 			$_POST['iKontaktperson']   = $row['KONTAKTPERSON'];
@@ -124,7 +124,7 @@ if (($_GET['iAction'] == 'neu') or ($_GET['iAction'] == 'edit')) {
 		show_form_neu();
 	} else {
 		if ($_GET['iAction'] == 'neu') {
-			$result= mysql_db_query($dbname, "INSERT INTO MANDANT 
+			$result= DB::query("INSERT INTO MANDANT 
 					(BESCHREIBUNG, FIRMA, KONTAKTPERSON, STRASSE, PLZ, ORT, TELEFON, TELEFON2, FAX, EMAIL, REFERER, IRC, KOMMENTAR_INTERN, STEUERNUMMER, HANDELSREGISTER, MAILANTWORTADRESSE, WANNANGELEGT, WERANGELEGT, WERGEAENDERT) 
 					VALUES (
 					'".safe($_POST['iBeschreibung'])."', 
@@ -143,10 +143,10 @@ if (($_GET['iAction'] == 'neu') or ($_GET['iAction'] == 'edit')) {
 										 '".safe($_POST['iSteuernummer'])."', 
 										  '".safe($_POST['iHandelsregister'])."', 
 											 '".safe($_POST['iAntwort'])."', 
-											  NOW(), $loginID, $loginID) ", $dbh);
+											  NOW(), $loginID, $loginID) ");
 			echo "<p>Mandant angelegt.</p>\n";
 		} else {
-			$result= mysql_db_query($dbname, "UPDATE MANDANT SET 
+			$result= DB::query("UPDATE MANDANT SET 
 				BESCHREIBUNG='".safe($_POST['iBeschreibung'])."', 
 				FIRMA='".safe($_POST['iFirma'])."',   
 				KONTAKTPERSON='".safe($_POST['iKontaktperson'])."',   
@@ -164,9 +164,9 @@ if (($_GET['iAction'] == 'neu') or ($_GET['iAction'] == 'edit')) {
 				HANDELSREGISTER='".safe($_POST['iHandelsregister'])."', 
 				MAILANTWORTADRESSE='".safe($_POST['iAntwort'])."', 
 				WERGEAENDERT='".intval($loginID)."' 
-			where MANDANTID='".intval($_GET['nMandantID'])."'", $dbh);
+			where MANDANTID='".intval($_GET['nMandantID'])."'");
 			echo "<p>Mandant geändert.</p>\n";
-			## echo mysql_errno() . ': ' . mysql_error() . '<br/>';
+			## echo DB::$link->errno . ': ' . DB::$link->error . '<br/>';
 		}
 	}
 } else {

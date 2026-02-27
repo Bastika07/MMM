@@ -16,8 +16,8 @@ $maxCount = 50;
 $dbh = DB::connect();
 $sql = "select TITEL, DERINHALT from INHALT where INHALTID = ".intval($_GET['nInhaltID']);
 $res2 = DB::query($sql);
-$row = mysql_fetch_array($res2);
-//echo mysql_errno().": ".mysql_error()."<BR>";
+$row = $res2->fetch_array();
+//echo DB::$link->errno.": ".DB::$link->error."<BR>";
 $sTitel   = $row['TITEL'];
 $sTheText = $row['DERINHALT'];
 
@@ -27,10 +27,10 @@ $sql = "select m.MAILANTWORTADRESSE, m.BESCHREIBUNG
   where r.USERID = '".intval($loginID)."'
   and m.MANDANTID = r.MANDANTID 
   and r.RECHTID = 'MAILINGADMIN'";
-$result = mysql_query($sql);
+$result = DB::query($sql);
 
 # WICHTIG: Absender sind derzeit FEST in constants.php gesetzt!
-/* while ($row = mysql_fetch_array($result)) {
+/* while ($row = $result->fetch_array()) {
     $absender[] = array (
     	'EMAIL' => $row['MAILANTWORTADRESSE'],
     	'BESCHREIBUNG' => $row['BESCHREIBUNG']
@@ -80,7 +80,7 @@ function sendeEmail($email, $sTitel, $sEmpfaengerNick, $sTheText, $nUserID, $mai
 							body = '".safe($sTheText)."',
 							wann_angelegt = NOW()";
 							
-		return mysql_query($sql);
+		return DB::query($sql);
 		
 		
 		# New Mailer! -> OFF!
@@ -204,18 +204,18 @@ if (isset($_POST['iGo']) && $_POST['iGo'] == "yes") {
 		if ($status == true)
 				echo "<p>Testmail verschickt.</p>";
 			else 
-				echo "<p>Testmail konnte nicht eingereiht werden. Bitte beachten, dass nur eine Testmail pro Mailing und Empfänger verschickt werden kann: </p>".htmlspecialchars(mysql_error());
+				echo "<p>Testmail konnte nicht eingereiht werden. Bitte beachten, dass nur eine Testmail pro Mailing und Empfänger verschickt werden kann: </p>".htmlspecialchars(DB::$link->error);
 		echo "<p><a href=\"rundmail2.php?nKategorieID=$KATEGORIE_MAILING&nInhaltID=".intval($_GET['nInhaltID'])."\">Zur&uuml;ck zur Auswahl</a></p>";
    } 
    else
    {
 		// ATTENTION! Adressen auslesen
 
-		$result = mysql_query("$sWhere limit ".intval($_GET['counter']).", $maxCount");
-		//echo mysql_errno().": ".mysql_error()."<BR>";
+		$result = DB::query("$sWhere limit ".intval($_GET['counter']).", $maxCount");
+		//echo DB::$link->errno.": ".DB::$link->error."<BR>";
 
 		$counter2 = 0;
-		while ($row = mysql_fetch_array($result)) {
+		while ($row = $result->fetch_array()) {
 			//echo htmlentities("mail($email, $betreff, $inhalt, \"From: MultiMadness <mailer@multimadness.de>\nReply-To: MultiMadness Team <team@multimadness.de>\nX-Mailer: PHP/\".phpversion().\"\nX-Priority: 3\nReturn-Path: <team@multimadness.de>\");")."<br><br>";
 			$email           = $row['EMAIL'];
 			$sEmpfaengerNick = $row['LOGIN'];
@@ -242,8 +242,8 @@ if (isset($_POST['iGo']) && $_POST['iGo'] == "yes") {
 		} else {
 			echo "<p>Alle Emails verschickt.</p>";
 			echo "<p><a href=\"redaktionsverwaltung.php?nKategorieID=$KATEGORIE_MAILING&nInhaltID=".intval($_GET['nInhaltID'])."\" target=\"_parent\">Zur&uuml;ck zur Verwaltung</a></p>";
-			$row = mysql_query("update INHALT set AKTIV='J', DATE1=NOW() where INHALTID = ".intval($_GET['nInhaltID']));
-			//echo mysql_errno().": ".mysql_error()."<BR>";
+			$row = DB::query("update INHALT set AKTIV='J', DATE1=NOW() where INHALTID = ".intval($_GET['nInhaltID']));
+			//echo DB::$link->errno.": ".DB::$link->error."<BR>";
 		}
    }
    //echo "<meta http-equiv='Refresh' content='0; URL=rundmail.php3?counter=$counter&iGo=yes&wer=$wer'>";   
@@ -303,9 +303,9 @@ else
 	<tr><td width=100>Mandant</td><td>
 	<select name=iMandant size=1>
 	<?php
-			$result= mysql_db_query ($dbname, "select m.MANDANTID, m.BESCHREIBUNG from MANDANT m, RECHTZUORDNUNG r where r.MANDANTID=m.MANDANTID and r.USERID=".intval($loginID)." and r.RECHTID='MAILINGADMIN'",$dbh);
-			//echo mysql_errno().": ".mysql_error()."<BR>";
-			while ($row = mysql_fetch_array($result)) {
+			$result= DB::query("select m.MANDANTID, m.BESCHREIBUNG from MANDANT m, RECHTZUORDNUNG r where r.MANDANTID=m.MANDANTID and r.USERID=".intval($loginID)." and r.RECHTID='MAILINGADMIN'");
+			//echo DB::$link->errno.": ".DB::$link->error."<BR>";
+			while ($row = $result->fetch_array()) {
 				echo "<option value=\"$row[MANDANTID]\"";
 				if (isset($_POST['iMandant']) && $_POST['iMandant'] == $row['MANDANTID']) {echo " selected";}
 				echo ">$row[BESCHREIBUNG]";

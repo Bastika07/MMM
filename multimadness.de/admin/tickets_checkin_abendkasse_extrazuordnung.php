@@ -76,7 +76,7 @@ if ($iId < 1) {
 	
 	$resTempBestellung = DB::query($sql);
 	
-while ($rowBestellung = mysql_fetch_array($resTempBestellung)) {
+while ($rowBestellung = $resTempBestellung->fetch_array()) {
 // Bestellung für Bestellung
 	
 	for ($i = 1; $i <= $rowBestellung['anzahl']; $i++) {
@@ -94,7 +94,7 @@ while ($rowBestellung = mysql_fetch_array($resTempBestellung)) {
 		";
 
 		$resTemp = DB::query($sql);
-		$row = mysql_fetch_array($resTemp);
+		$row = $resTemp->fetch_array();
 
 		echo '<tr class="'.$class.'"><td>';
 
@@ -120,7 +120,7 @@ while ($rowBestellung = mysql_fetch_array($resTempBestellung)) {
 			u.USERID   = t.userId
 		";
 		$resTempTickets = DB::query($sql);
-		while ($rowTempTickets = mysql_fetch_array($resTempTickets)) {
+		while ($rowTempTickets = $resTempTickets->fetch_array()) {
 			echo "<option value='".$rowTempTickets['ticketId']."'";
 			if ($row['ticketId'] == $rowTempTickets['ticketId']) {
 				echo "selected";

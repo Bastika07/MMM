@@ -32,22 +32,22 @@ $aktuellePartyID = PELAS::mandantAktuelleParty($nPartyID);
 if (!isset($_GET['nUserID']) || !is_numeric($_GET['nUserID']) || $_GET['nUserID'] < 0) {
   PELAS::fehler('Ungültige Benutzer-ID!');
 } else {
-  $result = mysql_query("select * from USER where USERID = '".intval($_GET['nUserID'])."'");
-  if (mysql_num_rows($result) != 1) {
+  $result = DB::query("select * from USER where USERID = '".intval($_GET['nUserID'])."'");
+  if ($result->num_rows != 1) {
     PELAS::fehler('Kein Benutzer mit dieser ID!');
   } else {
 
-	$benutzerInfo = mysql_fetch_array($result);
+	$benutzerInfo = $result->fetch_array();
 
 	//########################
 	// Altes Accounting
-	$statusbeschreibung = mysql_query("select b.BESCHREIBUNG from STATUS b, ASTATUS a where a.USERID='".intval($_GET['nUserID'])."' and a.MANDANTID=".intval($nPartyID)." and b.STATUSID=a.STATUS");
-	$rowStat = mysql_fetch_array($statusbeschreibung);
-	$sitz = mysql_query("select * from SITZ where USERID='".intval($_GET['nUserID'])."' and MANDANTID='".intval($nPartyID)."' AND RESTYP='$SITZ_RESERVIERT'");
-	$row_platz = mysql_fetch_array($sitz);
+	$statusbeschreibung = DB::query("select b.BESCHREIBUNG from STATUS b, ASTATUS a where a.USERID='".intval($_GET['nUserID'])."' and a.MANDANTID=".intval($nPartyID)." and b.STATUSID=a.STATUS");
+	$rowStat = $statusbeschreibung->fetch_array();
+	$sitz = DB::query("select * from SITZ where USERID='".intval($_GET['nUserID'])."' and MANDANTID='".intval($nPartyID)."' AND RESTYP='$SITZ_RESERVIERT'");
+	$row_platz = $sitz->fetch_array();
 	//########################
 	
-	$besuchteParties = mysql_query("
+	$besuchteParties = DB::query("
 	select m.REFERER, p.NAME, p.BEGINN 
 	from MANDANT m, ASTATUSHISTORIE a, PARTYHISTORIE p 
 	where m.MANDANTID=p.MANDANTID 
@@ -68,7 +68,7 @@ if (!isset($_GET['nUserID']) || !is_numeric($_GET['nUserID']) || $_GET['nUserID'
 	order by p.BEGINN desc");
 
 	// Clan raussuchen
-	$result2 = mysql_query("
+	$result2 = DB::query("
 		select c.CLANID, c.NAME 
 		from CLAN c, USER_CLAN uc 
 		where c.CLANID = uc.CLANID 
@@ -76,7 +76,7 @@ if (!isset($_GET['nUserID']) || !is_numeric($_GET['nUserID']) || $_GET['nUserID'
 		and uc.MANDANTID='".intval($nPartyID)."' 
 		and uc.AUFNAHMESTATUS='$AUFNAHMESTATUS_OK'
 	");
-	$row2    = mysql_fetch_array($result2);
+	$row2    = $result2->fetch_array();
 	$sClan   = db2display($row2['NAME']);
 	$nClanID = $row2['CLANID'];
 
@@ -156,7 +156,7 @@ if (!isset($_GET['nUserID']) || !is_numeric($_GET['nUserID']) || $_GET['nUserID'
 					   where
 					    MANDANTID='".intval($nPartyID)."' AND REIHE = '$row_platz[REIHE]'";
 				  $res = DB::query($sql);
-				  if($row = mysql_fetch_row($res)){
+				  if($row = $res->fetch_row()){
 				    $ebene = $row[0];
 				  }  
 				}
@@ -195,10 +195,10 @@ if (!isset($_GET['nUserID']) || !is_numeric($_GET['nUserID']) || $_GET['nUserID'
 					  t.statusId  = '".ACC_STATUS_BEZAHLT."' and
 					  p.mandantId = '".intval($nPartyID)."'
 				";
-				$res = mysql_query($sql);
+				$res = DB::query($sql);
 			
 				$counter = 0;
-				while ($rowTemp = mysql_fetch_array($res)) {
+				while ($rowTemp = $res->fetch_array()) {
 					if ($counter >= 1) {
 						echo "<br>";
 					}
@@ -213,7 +213,7 @@ if (!isset($_GET['nUserID']) || !is_numeric($_GET['nUserID']) || $_GET['nUserID'
 						  MANDANTID ='".intval($nPartyID)."' and
 						  REIHE     = '".$rowTemp['sitzReihe']."'";
 					$resTemp2 = DB::query($sql);
-					$rowTemp2 = mysql_fetch_array($resTemp2);
+					$rowTemp2 = $resTemp2->fetch_array();
 					$ebene   = $rowTemp2['EBENE'];
 					echo " <a href=\"?page=9&ebene=$ebene&locateUser=".$rowTemp['userId']."\">";
 					echo $rowTemp['sitzReihe']."-".$rowTemp['sitzPlatz'];
@@ -430,14 +430,14 @@ if (!isset($_GET['nUserID']) || !is_numeric($_GET['nUserID']) || $_GET['nUserID'
 				order by
 					p.terminVon desc
 				";
-			$res = mysql_query($sql);
-			while ($rowTemp=mysql_fetch_array($res)) {
+			$res = DB::query($sql);
+			while ($rowTemp=$res->fetch_array()) {
 				echo " <tr><td> <a href=\"$rowTemp[REFERER]\" target=\"_blank\">".db2display($rowTemp['beschreibung'])."</a> <small>(".dateDisplay2Short($rowTemp['terminVon']).")</small></td></tr>";
 				$nCounter++;
 			}
 		
 			// Nun die alten Partys
-			while ($row=mysql_fetch_array($besuchteParties)) {
+			while ($row=$besuchteParties->fetch_array()) {
 				echo " <tr><td> <a href=\"$row[REFERER]\" target=\"_blank\">".db2display($row['NAME'])."</a> <small>(".dateDisplay2Short($row['BEGINN']).")</small></td></tr>";
 				$nCounter++;
 			}
@@ -467,8 +467,8 @@ if (!isset($_GET['nUserID']) || !is_numeric($_GET['nUserID']) || $_GET['nUserID'
 		order by
 			p.partyId desc
 		";
-		$res = mysql_query($sql);
-		while ($rowTemp=mysql_fetch_array($res)) {
+		$res = DB::query($sql);
+		while ($rowTemp=$res->fetch_array()) {
 				echo "<img vpsace='5' hspace='5' src='".db2display($rowTemp['supporterPassPicBig'])."' title='Supporterpässe: ".$rowTemp['anzahl']." Stück'> &nbsp; ";
 		}
 ?>

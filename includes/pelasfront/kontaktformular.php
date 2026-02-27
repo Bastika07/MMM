@@ -19,7 +19,7 @@ if ($nLoginID < 1) {
       ."ORDER BY zeit DESC\n"
       ."LIMIT 0, 1\n";
   if ($res = DB::query($q)) {
-    $row = mysql_fetch_row($res);
+    $row = $res->fetch_row();
     $timeDif = ceil((time() - $row[0])/60);
   }
   
@@ -41,7 +41,7 @@ if ($nLoginID < 1) {
     sendMail($text, $_GET['nUserID'], $nLoginID);
   } else {
     $result = DB::query("select * from USER where USERID=".intval($_GET['nUserID']));
-    $row = mysql_fetch_array($result);
+    $row = $result->fetch_array();
 
     echo "<form method=\"post\" action=\"?page=17&nUserID=".intval($_GET['nUserID'])."\">\n";
     echo "<table border=\"0\" cellpadding=\"3\" cellspacing=\"1\">\n";
@@ -74,8 +74,8 @@ function sendMail($text, $to, $from) {
       ."from USER\n"
       ."where USERID=".$to;
       
-  if ($res = mysql_query($q)) {
-    $row = mysql_fetch_assoc($res);
+  if ($res = DB::query($q)) {
+    $row = $res->fetch_assoc();
     $subject = "Nachricht bezüglich ".PELAS::mandantByID($nPartyID);
     $msg = "Hallo ".$row['LOGIN'].",\n"
           ."".User::name($from)." möchte dir folgende Nachricht zukommen lassen\n"

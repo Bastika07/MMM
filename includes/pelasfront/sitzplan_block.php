@@ -108,7 +108,7 @@ if(isset($_GET['reihe']) && isset($_GET['platz']) && checkTierForRow($nPartyID, 
              where
               REIHE='".$_GET['reihe']."' AND PLATZ='".$_GET['platz']."' AND MANDANTID='$nPartyID'";
     $res = DB::query($sql);
-    if(mysql_num_rows($res)>0){
+    if($res->num_rows>0){
       Pelas::fehler('Dieser Sitzplatz ist bereits belegt');
     }
     else{
@@ -119,7 +119,7 @@ if(isset($_GET['reihe']) && isset($_GET['platz']) && checkTierForRow($nPartyID, 
              where
               REIHE='".$_GET['reihe']."' AND PLATZ='".$_GET['platz']."' AND MANDANTID='$nPartyID'";
       $res = DB::query($sql);
-      $row = mysql_fetch_row($res);
+      $row = $res->fetch_row();
       $q = "SELECT 
             STATUS
             FROM 
@@ -131,7 +131,7 @@ if(isset($_GET['reihe']) && isset($_GET['platz']) && checkTierForRow($nPartyID, 
                          $STATUS_COMFORT_8PERS, $STATUS_PREMIUM_4PERS, $STATUS_PREMIUM_6PERS, 
                           $STATUS_ZUGEORDNET, $STATUS_VIP_2PERS)";
       $res = DB::query($q);
-      $row2 = mysql_fetch_row($res);
+      $row2 = $res->fetch_row();
       if(($row[0]=='platz'&&USER::hatBezahlt())||($row[0]=='logenplatz'&&$row2[0]==$STATUS_BEZAHLT_LOGE)){
       //Checken ob User schon in einer Sitzgruppe ist
         if(!checkUserSeatGroup($nPartyID, $nLoginID)){
@@ -288,7 +288,7 @@ if(isset($_GET['reihe']) && isset($_GET['platz']) && checkTierForRow($nPartyID, 
                       d.EBENE='".$_GET['block']."' AND  d.REIHE=z.REIHE AND m.USERID=z.USERID 
                       AND s.GRUPPEN_ID=m.GRUPPEN_ID GROUP BY GRUPPEN_NAME";
            $res = DB::query($sql);
-           while ($row = mysql_fetch_row($res)){
+           while ($row = $res->fetch_row()){
               if (isset($class) && $class == "dblau") {
                 $class = "hblau";
               } else {
@@ -301,7 +301,7 @@ if(isset($_GET['reihe']) && isset($_GET['platz']) && checkTierForRow($nPartyID, 
                        where
                         GRUPPEN_ID=$row[1]";
               $res2 = DB::query($sql2);      
-              $row2 = mysql_fetch_row($res2);
+              $row2 = $res2->fetch_row();
               $memberCount = $row2[0];
               echo"<TR onMouseOver=\"javascript:groupOver($row[1])\" onMouseOut=\"javascript:groupOut($row[1])\"><TD class=$class><a href=sitzgruppen.php?gruppenID=$row[1] id=\"group_$row[1]\">".db2display($row[0])."</a></TD><TD class=$class align=center>$memberCount</TD></TR>";
             }                      
@@ -400,7 +400,7 @@ function generateSitzplan2($mandantId, $ebene) {
 //            WHERE
 //              s.MANDANTID = '$mandantId' AND s.GRUPPEN_ID=m.GRUPPEN_ID AND m.USERID = '$nLoginID'";
 //     $res = DB::query($sql);
-//     $row = mysql_fetch_row($res);
+//     $row = $res->fetch_row();
 //     $ownGroupId = $row[0];
     $sql = "SELECT
               GRUPPEN_ID
@@ -410,7 +410,7 @@ function generateSitzplan2($mandantId, $ebene) {
               MANDANTID = '$mandantId' AND
               USERID = '$nLoginID'";
      $res = DB::query($sql);
-     $row = mysql_fetch_row($res);
+     $row = $res->fetch_row();
      $ownGroupId = $row[0];
   }  
   
@@ -438,7 +438,7 @@ function generateSitzplan2($mandantId, $ebene) {
   $res = DB::query($sql);
   $matrix = array();
   $userIds = array();
-  while ($row = mysql_fetch_assoc($res)) {
+  while ($row = $res->fetch_assoc()) {
     if (isset($row['USERID'])) {
       // Hier sitzt ein User      
       // Userid in Array für Javascript-Ausgabe
@@ -500,7 +500,7 @@ function generateSitzplan2($mandantId, $ebene) {
             sm.GRUPPEN_ID = s.GRUPPEN_ID";
   $res = DB::query($sql);
   $groups = array();
-  while ($row = mysql_fetch_assoc($res)) {
+  while ($row = $res->fetch_assoc()) {
     if (!isset($groups[$row['GRUPPEN_ID']])) {
       $groups[$row['GRUPPEN_ID']]['name'] = $row['GRUPPEN_NAME'];
       $groups[$row['GRUPPEN_ID']]['userIds'] = array();

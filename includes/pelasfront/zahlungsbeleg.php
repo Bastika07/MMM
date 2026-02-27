@@ -11,13 +11,13 @@ if (!isset($dbh))
 // Astatus und pers. Daten
 $sql = "select a.STATUS, a.RABATTSTUFE, a.WANNBEZAHLT, a.STATUS,u.STRASSE, u.PLZ, u.ORT, u.NAME, u.NACHNAME from USER u, ASTATUS a where a.USERID=u.USERID and a.USERID=$nLoginID and a.MANDANTID=$nPartyID";
 $res = DB::query($sql);
-$rowUser = mysql_fetch_assoc($res);
-//echo mysql_errno().": ".mysql_error()."<BR>";
+$rowUser = $res->fetch_assoc();
+//echo DB::$link->errno.": ".DB::$link->error."<BR>";
 
 // Daten zur Party
 $sql = "select BESCHREIBUNG, FIRMA, STRASSE, PLZ, ORT, STEUERNUMMER from MANDANT where MANDANTID=$nPartyID";
 $res = DB::query($sql);
-$rowMandant = mysql_fetch_assoc($res);
+$rowMandant = $res->fetch_assoc();
 
 // Eintrittspreise und Rabatte holen
 $nEintrittNormal = CFG::getMandantConfig('EINTRITT_NORMAL', $nPartyID);
@@ -34,11 +34,11 @@ if ($rowUser['RABATTSTUFE'] > 0) {
 	// Rabatt ermitteln
 
 	//Welche Rabatte werden angeboten?
-	$row = @mysql_fetch_array(mysql_db_query($dbname, "select STRINGWERT from CONFIG where PARAMETER = 'RABATT5' and MANDANTID = $nPartyID", $dbh), MYSQL_ASSOC);
+	$row = DB::query("select STRINGWERT from CONFIG where PARAMETER = 'RABATT5' and MANDANTID = $nPartyID")->fetch_assoc();
 	$Rabatt5 = $row[STRINGWERT];
-	$row = @mysql_fetch_array(mysql_db_query($dbname, "select STRINGWERT from CONFIG where PARAMETER = 'RABATT10' and MANDANTID = $nPartyID", $dbh), MYSQL_ASSOC);
+	$row = DB::query("select STRINGWERT from CONFIG where PARAMETER = 'RABATT10' and MANDANTID = $nPartyID")->fetch_assoc();
 	$Rabatt10 = $row[STRINGWERT];
-	$row = @mysql_fetch_array(mysql_db_query($dbname, "select STRINGWERT from CONFIG where PARAMETER = 'RABATT15' and MANDANTID = $nPartyID", $dbh), MYSQL_ASSOC);
+	$row = DB::query("select STRINGWERT from CONFIG where PARAMETER = 'RABATT15' and MANDANTID = $nPartyID")->fetch_assoc();
 	$Rabatt15 = $row[STRINGWERT];
 
 	if ($rowUser['RABATTSTUFE'] == 5) {

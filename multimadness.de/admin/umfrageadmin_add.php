@@ -68,7 +68,7 @@ if ($iMandantID < 1) {
 	        INSERT INTO UMFRAGE (UMFRAGE_NAME, UMFRAGE_MANDANTID, UMFRAGE_BESCHREIBUNG, UMFRAGE_AUSWAHL_ANZAHL)
 		VALUES ('".safe($_POST['iName'])."', ".intval($iMandantID).", '".safe($_POST['iBeschreibung'])."', ".safe($_POST['iAuswahlanzahl']).")
 		");
-	    if (mysql_errno() == 0) {
+	    if (DB::$link->errno == 0) {
 		echo '<p class="confirm">Deine Umfrage wurde erfasst. Du kannst Sie nun bearbeiten und dann freischalten.</p>' . "\n";
 		echo "<p><a href=\"umfrageadmin.php?iMandantID=$iMandantID\">Zur Umfrageverwaltung</a></p>\n";
 	    } else {

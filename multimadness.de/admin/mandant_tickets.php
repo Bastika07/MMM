@@ -28,8 +28,8 @@ function show_form_ticket_aendern() {
     <td>Party</td>
     <td>
 <?php
-	$result = mysql_db_query($dbname, "select partyId, beschreibung, terminVon from party where mandantId = '".intval($_GET['iMandantID'])."' and partyId = '".intval($_GET['iPartyID'])."' order by terminVon desc", $dbh);
-	$row = mysql_fetch_array($result);
+	$result = DB::query("select partyId, beschreibung, terminVon from party where mandantId = '".intval($_GET['iMandantID'])."' and partyId = '".intval($_GET['iPartyID'])."' order by terminVon desc");
+	$row = $result->fetch_array();
 	echo db2display($row['beschreibung']) . ' - ' . dateDisplay2Short($row['terminVon']);
 	echo "</td></tr>\n";
 	echo "<tr class=\"row-1\"><td>Ticket/Artikel</td><td><input type=\"text\" name=\"iKurzbeschreibung\" size=\"40\" maxlength=\"250\" value=\"".htmlspecialchars($_POST['iKurzbeschreibung'] ?? '', ENT_QUOTES | ENT_HTML5, 'UTF-8')."\"/> *</td></tr>\n";
@@ -38,8 +38,8 @@ function show_form_ticket_aendern() {
 	echo "<tr class=\"row-0\"><td>Anzahl</td><td><input type=\"text\" name=\"iAnzahl\" size=\"30\" maxlength=\"10\" value=\"".htmlspecialchars($_POST['iAnzahl'] ?? '', ENT_QUOTES | ENT_HTML5, 'UTF-8')."\"/> *</td></tr>\n";
 	echo "<tr class=\"row-1\"><td>Translation</td><td><select name=\"iTranslation\">";
 	echo "<option value=\"NULL\">(keine)</option>";
-	$result= mysql_db_query($dbname, 'SELECT STATUSID, BESCHREIBUNG FROM STATUS order by STATUSID', $dbh);
-	while ($row = mysql_fetch_array($result)) {
+	$result= DB::query('SELECT STATUSID, BESCHREIBUNG FROM STATUS order by STATUSID');
+	while ($row = $result->fetch_array()) {
 		echo '  <option value="' . $row['STATUSID'] . '"';
 		if (($_POST['iTranslation'] == $row['STATUSID'])) {
 		    echo ' selected="selected"';
@@ -91,8 +91,8 @@ if ($_GET['iMandantID'] < 1) {
 	if ($_POST['iPosted'] != 'yes') {
 	    if ($_GET['action'] == 'edit') {
 		# Wenn Ã„nderungsmodus, dann Variablen füllen.
-		$result= mysql_db_query ($dbname, "SELECT * FROM acc_ticket_typ WHERE typID = '".intval($_GET['iTypID'])."'", $dbh);
-		$row = mysql_fetch_array($result);
+		$result= DB::query("SELECT * FROM acc_ticket_typ WHERE typID = '".intval($_GET['iTypID'])."'");
+		$row = $result->fetch_array();
 		$_POST['iKurzbeschreibung'] = $row['kurzbeschreibung'];
 		$_POST['iBeschreibung'] = $row['beschreibung'];
 		$_POST['iPreis'] = $row['preis'];
@@ -150,9 +150,9 @@ if ($_GET['iMandantID'] < 1) {
 			WHERE typId = '".intval($_GET['iTypID'])."'
 			";
 	    }
-	    $tempVar = mysql_db_query($dbname,$sSql,$dbh);
-	    if (mysql_errno() > 0) {
-		echo 'Fehler: '.mysql_errno().': '.mysql_error()." beim einf&uuml;gen/ &auml;ndern in Tabelle acc_ticket_typ - Abbruch!<BR>";
+	    $tempVar = DB::query($sSql);
+	    if (DB::$link->errno > 0) {
+		echo 'Fehler: '.DB::$link->errno.': '.DB::$link->error." beim einf&uuml;gen/ &auml;ndern in Tabelle acc_ticket_typ - Abbruch!<BR>";
 		die;
 	    }
 	    echo "<p>Ticket/ Artikel angelegt/ ge&auml;ndert.</p>";
@@ -161,8 +161,8 @@ if ($_GET['iMandantID'] < 1) {
     } else {
 	# Tickets pro Party anzeigen.
 	echo "<h1>Tickets und Artikel anzeigen</h1>\n";
-	$result = mysql_db_query($dbname, "SELECT * FROM party WHERE mandantId = '".intval($_GET['iMandantID'])."' ORDER BY terminBis DESC", $dbh);
-	while ($rowParty = mysql_fetch_array($result)) {
+	$result = DB::query("SELECT * FROM party WHERE mandantId = '".intval($_GET['iMandantID'])."' ORDER BY terminBis DESC");
+	while ($rowParty = $result->fetch_array()) {
 		
       echo "<form name=\"partyselect\" method=\"post\" action=\"mandant_tickets.php?iMandantID=".intval($_GET['iMandantID'])."&iPartyID=".$rowParty[partyId]."\">";
 	    echo "<p><table cellspacing=\"0\" cellpadding=\"0\" width=\"1000\">\n";
@@ -171,10 +171,10 @@ if ($_GET['iMandantID'] < 1) {
 	    echo "<tr><td class=\"navbar\" colspan=\"7\"><b>".db2display($rowParty['beschreibung'])." - ".dateDisplay2Short($rowParty['terminVon'])." bis ".dateDisplay2Short($rowParty['terminBis'])."</b></td></tr>\n";
 	    echo "<tr><td class=\"dblau\"><b>Sel.</b></td><td class=\"dblau\"><b>ID</b></td><td class=\"dblau\"><b>Artikel</b></td><td class=\"dblau\"><b>Beschreibung</b></td><td class=\"dblau\"><b>Preis</b></td><td class=\"dblau\"><b>Anzahl</b></td><td class=\"dblau\"><b>Translation</b></td></tr>\n";
 
-	    $result2 = mysql_db_query($dbname, "SELECT * FROM acc_ticket_typ WHERE partyId = '$rowParty[partyId]' ORDER BY translation DESC", $dbh);
+	    $result2 = DB::query("SELECT * FROM acc_ticket_typ WHERE partyId = '$rowParty[partyId]' ORDER BY translation DESC");
 	    $sKlasse = 'dblau';
 	    $counter = 0;
-	    while ($row = mysql_fetch_array($result2)) {
+	    while ($row = $result2->fetch_array()) {
 		if ($sKlasse == 'hblau') {
 		    $sKlasse = 'dblau';
 		} else {
@@ -191,8 +191,8 @@ if ($_GET['iMandantID'] < 1) {
 		  <td class=\"$sKlasse\">$row[anzahlVorhanden]</td>
 		  <td class=\"$sKlasse\">";
 		if ($row['translation'] > 0) {
-		    $resultTemp= mysql_db_query($dbname, "SELECT BESCHREIBUNG FROM STATUS WHERE STATUSID = $row[translation]", $dbh);
-		    $rowTemp = mysql_fetch_array($resultTemp);
+		    $resultTemp= DB::query("SELECT BESCHREIBUNG FROM STATUS WHERE STATUSID = $row[translation]");
+		    $rowTemp = $resultTemp->fetch_array();
 		    echo db2display($rowTemp['BESCHREIBUNG']);
 		} else {
 		    echo '(keine)';

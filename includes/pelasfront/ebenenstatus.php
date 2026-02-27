@@ -25,7 +25,7 @@ function getEbenenStatus($ebene)
             $addSql
             (type = 'platz' or type = 'logenplatz')";
   $res = DB::query($sql);
-  $row = mysql_fetch_array($res);  
+  $row = $res->fetch_array();  
   $sitzeEbene = $row['zahl'];
   
   $sql = "select
@@ -42,7 +42,7 @@ function getEbenenStatus($ebene)
             s.PLATZ = d.platz and
             s.RESTYP = '$SITZ_RESERVIERT'";
   $res = DB::query($sql);
-  $row = mysql_fetch_array($res);
+  $row = $res->fetch_array();
   $belegungEbene = $row['zahl'];
   
   echo "$belegungEbene/$sitzeEbene";

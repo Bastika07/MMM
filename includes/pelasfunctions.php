@@ -16,28 +16,28 @@ include "language.inc.php";
 //	    
 //	  $config = Array();
 //	  
-//		$row = @mysql_fetch_array(DB::query("select USERID, LOGIN, EMAIL from USER where USERID = $nLoginID"), MYSQL_ASSOC); 
+//		$row = DB::query("select USERID, LOGIN, EMAIL from USER where USERID = $nLoginID")->fetch_assoc(); 
 //		$config[USERID] = $row[USERID];
 //		$config[LOGIN] = $row[LOGIN];
 //		$config[EMAIL] = $row[EMAIL];
-//		$row = @mysql_fetch_array(DB::query("select STRINGWERT from CONFIG where PARAMETER = 'KONTO_NAME' and MANDANTID = $nPartyID"), MYSQL_ASSOC);
+//		$row = DB::query("select STRINGWERT from CONFIG where PARAMETER = 'KONTO_NAME' and MANDANTID = $nPartyID")->fetch_assoc();
 //		$config[KONTO_NAME] = $row[STRINGWERT];
-//		$row = @mysql_fetch_array(DB::query("select STRINGWERT from CONFIG where PARAMETER = 'KONTO_NUMMER' and MANDANTID = $nPartyID"), MYSQL_ASSOC);
+//		$row = DB::query("select STRINGWERT from CONFIG where PARAMETER = 'KONTO_NUMMER' and MANDANTID = $nPartyID")->fetch_assoc();
 //		$config[KONTO_NUMMER] = $row[STRINGWERT];
-//		$row = @mysql_fetch_array(DB::query("select STRINGWERT from CONFIG where PARAMETER = 'KONTO_BLZ' and MANDANTID = $nPartyID"), MYSQL_ASSOC);
+//		$row = DB::query("select STRINGWERT from CONFIG where PARAMETER = 'KONTO_BLZ' and MANDANTID = $nPartyID")->fetch_assoc();
 //		$config[KONTO_BLZ] = $row[STRINGWERT];
-//		$row = @mysql_fetch_array(DB::query("select STRINGWERT from CONFIG where PARAMETER = 'KONTO_BANK' and MANDANTID = $nPartyID"), MYSQL_ASSOC);
+//		$row = DB::query("select STRINGWERT from CONFIG where PARAMETER = 'KONTO_BANK' and MANDANTID = $nPartyID")->fetch_assoc();
 //		$config[KONTO_BANK] = $row[STRINGWERT];
-//		$row = @mysql_fetch_array(DB::query("select STRINGWERT from CONFIG where PARAMETER = 'EINTRITT_NORMAL' and MANDANTID = $nPartyID"), MYSQL_ASSOC);
+//		$row = DB::query("select STRINGWERT from CONFIG where PARAMETER = 'EINTRITT_NORMAL' and MANDANTID = $nPartyID")->fetch_assoc();
 //		$config[EINTRITT_NORMAL] = $row[STRINGWERT];
-//		$row = @mysql_fetch_array(DB::query("select STRINGWERT from CONFIG where PARAMETER = 'EINTRITT_LOGE' and MANDANTID = $nPartyID"), MYSQL_ASSOC);
+//		$row = DB::query("select STRINGWERT from CONFIG where PARAMETER = 'EINTRITT_LOGE' and MANDANTID = $nPartyID")->fetch_assoc();
 //		$config[EINTRITT_LOGE] = $row[STRINGWERT];
-//		$row = @mysql_fetch_array(DB::query("select STRINGWERT from CONFIG where PARAMETER = 'EINTRITT_XTRA' and MANDANTID = $nPartyID"), MYSQL_ASSOC);
+//		$row = DB::query("select STRINGWERT from CONFIG where PARAMETER = 'EINTRITT_XTRA' and MANDANTID = $nPartyID")->fetch_assoc();
 //		$config[EINTRITT_XTRA] = " ".$row[STRINGWERT];
 //		// Added IBAN and BIC to config Array
-//		$row = @mysql_fetch_array(DB::query("select STRINGWERT from CONFIG where PARAMETER = 'KONTO_IBAN' and MANDANTID = $nPartyID"), MYSQL_ASSOC);
+//		$row = DB::query("select STRINGWERT from CONFIG where PARAMETER = 'KONTO_IBAN' and MANDANTID = $nPartyID")->fetch_assoc();
 //		$config[KONTO_IBAN] = $row[STRINGWERT];
-//		$row = @mysql_fetch_array(DB::query("select STRINGWERT from CONFIG where PARAMETER = 'KONTO_BIC' and MANDANTID = $nPartyID"), MYSQL_ASSOC);
+//		$row = DB::query("select STRINGWERT from CONFIG where PARAMETER = 'KONTO_BIC' and MANDANTID = $nPartyID")->fetch_assoc();
 //		$config[KONTO_BIC] = $row[STRINGWERT];
 //	}
 //}
@@ -90,10 +90,10 @@ if (!function_exists('zeigeRechnung')) {
 		";
 
 		$result_benutzer = DB::query($sql);
-		//echo mysql_errno().": ".mysql_error()."<BR>";
-		$row = mysql_fetch_array($result_benutzer);
+		//echo DB::$link->errno.": ".DB::$link->error."<BR>";
+		$row = $result_benutzer->fetch_array();
 		
-		if (mysql_num_rows($result_benutzer)) {
+		if ($result_benutzer->num_rows) {
 			
 			$bodySize = 11;
 	
@@ -139,11 +139,11 @@ if (!function_exists('zeigeRechnung')) {
 				  y.typId     = b.ticketTypId
 			";
 			$result_ticket = DB::query($sql);
-			//echo mysql_errno().": ".mysql_error()."<BR>";
+			//echo DB::$link->errno.": ".DB::$link->error."<BR>";
 			
 			$summe = 0;
 			$data = array();
-			while ($rowTicket = mysql_fetch_array($result_ticket)) {
+			while ($rowTicket = $result_ticket->fetch_array()) {
 				$data[] = 
 				  array('Anzahl'=>$rowTicket['anzahl'],
 				  	'Ticket/ Beschreibung'=>utf8_decode($rowTicket['kurzbeschreibung']),
@@ -168,7 +168,7 @@ if (!function_exists('zeigeRechnung')) {
 				from acc_zahlungsweise
 				where zahlungsweiseId = '".$row['zahlungsweiseId']."'";
 			$result_zahlungsweise = DB::query($sql);
-			$rowZahlung = mysql_fetch_array($result_zahlungsweise);
+			$rowZahlung = $result_zahlungsweise->fetch_array();
 						
 			$pdf->ezText("Betrag erhalten am ".dateDisplay2Short($row['wannBezahlt'])." per ".utf8_decode($rowZahlung['desc_german']),$bodySize);
 
@@ -219,7 +219,7 @@ if (!function_exists('BestellungFreischalten')) {
 
 	// NEU 16.10.2012: Immer neue Tickets anlegen, alte immer storniert lassen!
 
-			while ($rowTemp = mysql_fetch_array($resBestellung)) {
+			while ($rowTemp = $resBestellung->fetch_array()) {
 
 				// Alle Bestelldatensätze durch	
 				if ($rowTemp['translation'] > 0 && $rowTemp['translation'] != $STATUS_ZUORDBAR) {
@@ -264,7 +264,7 @@ if (!function_exists('BestellungFreischalten')) {
  									from acc_tickets
 									where partyId = ".intval($aktuellePartyID);
 								$resId = DB::query($sql);
-								$rowId = mysql_fetch_array($resId);
+								$rowId = $resId->fetch_array();
 								$ticketId = $rowId['ticketId'];
 								$newTicketId = $ticketId + 1;
 
@@ -298,7 +298,7 @@ if (!function_exists('BestellungFreischalten')) {
 								$resId = DB::query($sql);
 							}
 
-						} while (mysql_errno() == 1062);
+						} while (DB::$link->errno == 1062);
 					}
 				}
 			}
@@ -372,8 +372,8 @@ if (!function_exists('sendeBestellBestaetigung'))
 		    b.bestellId   = '".intval($bestellId)."' and
 		    b.partyId     = '".intval($partyId)."'";
 		$result_benutzer = DB::query($sql);
-		//echo mysql_errno().": ".mysql_error()."<BR>";
-		$rowBenutzer = mysql_fetch_array($result_benutzer);
+		//echo DB::$link->errno.": ".DB::$link->error."<BR>";
+		$rowBenutzer = $result_benutzer->fetch_array();
 		
 		// Welche Sprache? Wenn sLang gesetzt ist, dann bestimmt der browser
 		// TODO: Erstmal nur ein includen, wenn der Browser eine gesetzt hat zum testen
@@ -432,7 +432,7 @@ if (!function_exists('sendeBestellBestaetigung'))
 		$email .= "$str[acc_anz_art_pr_su]\n";
 		$email .= "-------------------------------------------------------------------------\n";
 		$summe = 0;
-		while ($rowBestellung = mysql_fetch_array($result_bestellung)) {
+		while ($rowBestellung = $result_bestellung->fetch_array()) {
 			$email .= " ".str_pad($rowBestellung['anzahl'], 2)."x ";
 			$email .= str_pad($rowBestellung['kurzbeschreibung'], 50);
 			$email .= str_pad((sprintf("%01.2f", $rowBestellung['preis'])), 7);
@@ -510,7 +510,7 @@ function verfuegbareTickets($typId, $aktuellePartyID)
 		and partyId = '$aktuellePartyID'";
 	$res2 = DB::query($sql);
 	$bestellteTickets = 0;
-	while ($rowTemp2 = mysql_fetch_array($res2)) {
+	while ($rowTemp2 = $res2->fetch_array()) {
 		$bestellteTickets = $bestellteTickets + $rowTemp2['anzahl'];
 	}
 	
@@ -520,7 +520,7 @@ function verfuegbareTickets($typId, $aktuellePartyID)
 		and typId = '$typId'
 	";
 	$res3 = DB::query($sql);
-	$rowTemp3 = mysql_fetch_array($res3);
+	$rowTemp3 = $res3->fetch_array();
 	
 	return $rowTemp3['anzahlVorhanden'] - $bestellteTickets;
 }
@@ -587,8 +587,8 @@ if (!function_exists('showOpenBill'))
 		    b.partyId     = p.partyId and
 		    ".$sWhere;
 		$result_benutzer = DB::query($sql);
-		//echo mysql_errno().": ".mysql_error()."<BR>";
-		$rowBenutzer = mysql_fetch_array($result_benutzer);
+		//echo DB::$link->errno.": ".DB::$link->error."<BR>";
+		$rowBenutzer = $result_benutzer->fetch_array();
 
 	  $q = "select
 		  b.*,
@@ -608,7 +608,7 @@ if (!function_exists('showOpenBill'))
 		  ".$sWhere;
 	  if ($res = DB::query($q)) {
 	    
-	    if (mysql_num_rows($res) > 0) {
+	    if ($res->num_rows > 0) {
 	      echo "<p><table cellspacing=\"1\" cellpadding=\"2\">";
  	      echo "<tr><td class=\"dblau\">$str[acc_bestno]&nbsp; &nbsp; </td><td class=\"hblau\">".PELAS::formatBestellNr($rowBenutzer['partyId'], $rowBenutzer['bestellId'])."</td></tr>\n";
 	      echo "<tr><td class=\"dblau\">$str[acc_besteller]</td><td class=\"hblau\">".db2display($rowBenutzer['NAME'])." ".db2display($rowBenutzer['NACHNAME'])."</td></tr>\n";
@@ -623,7 +623,7 @@ if (!function_exists('showOpenBill'))
 		    <tr><td class=\"header\">$str[anzahl]</td><td class=\"header\">$str[ticketart]</td><td class=\"header\">$str[preis]</td><td class=\"header\">$str[summe]</td></tr>\n";
 	    $color = "hblau";
 	    $summe = 0;
-	    while ($row = mysql_fetch_assoc($res)) {
+	    while ($row = $res->fetch_assoc()) {
 	      echo "<tr><td class=\"$color\">".$row['anzahl']."</td>";
 	      echo "<td class=\"$color\">".db2display($row['kurzbeschreibung'])."<br><small>".db2display($row['beschreibung'])."</small></td>";
 	      echo "<td class=\"$color\">".sprintf("%01.2f", $row['derPreis'])." EUR</td>";
@@ -665,7 +665,7 @@ if (!function_exists('SendeAnmeldeMail'))
 		DB::connect();
 
 	
-		$row = @mysql_fetch_array(DB::query("select * from MANDANT where MANDANTID = $nPartyID"), MYSQL_ASSOC); 
+		$row = DB::query("select * from MANDANT where MANDANTID = $nPartyID")->fetch_assoc(); 
 			$config[BESCHREIBUNG] = $row[BESCHREIBUNG]; 
 			$config[IRC] = $row[IRC];
 			
@@ -679,32 +679,32 @@ if (!function_exists('SendeAnmeldeMail'))
 			$Mandant[EMAIL] = $row[EMAIL];
 			$Mandant[REFERER] = $row[REFERER];
 			
-		$row = @mysql_fetch_array(DB::query("select USERID, LOGIN, EMAIL from USER where USERID = $nLoginID"), MYSQL_ASSOC); 
+		$row = DB::query("select USERID, LOGIN, EMAIL from USER where USERID = $nLoginID")->fetch_assoc(); 
 			$config[USERID] = $row[USERID];
 			$config[LOGIN] = $row[LOGIN];
 			$config[EMAIL] = $row[EMAIL];
-		$row = @mysql_fetch_array(DB::query("select STRINGWERT from CONFIG where PARAMETER = 'KONTO_NAME' and MANDANTID = $nPartyID"), MYSQL_ASSOC);
+		$row = DB::query("select STRINGWERT from CONFIG where PARAMETER = 'KONTO_NAME' and MANDANTID = $nPartyID")->fetch_assoc();
 			$config[KONTO_NAME] = $row[STRINGWERT];
-		$row = @mysql_fetch_array(DB::query("select STRINGWERT from CONFIG where PARAMETER = 'KONTO_NUMMER' and MANDANTID = $nPartyID"), MYSQL_ASSOC);
+		$row = DB::query("select STRINGWERT from CONFIG where PARAMETER = 'KONTO_NUMMER' and MANDANTID = $nPartyID")->fetch_assoc();
 			$config[KONTO_NUMMER] = $row[STRINGWERT];
-		$row = @mysql_fetch_array(DB::query("select STRINGWERT from CONFIG where PARAMETER = 'KONTO_BLZ' and MANDANTID = $nPartyID"), MYSQL_ASSOC);
+		$row = DB::query("select STRINGWERT from CONFIG where PARAMETER = 'KONTO_BLZ' and MANDANTID = $nPartyID")->fetch_assoc();
 			$config[KONTO_BLZ] = $row[STRINGWERT];
-		$row = @mysql_fetch_array(DB::query("select STRINGWERT from CONFIG where PARAMETER = 'KONTO_BANK' and MANDANTID = $nPartyID"), MYSQL_ASSOC);
+		$row = DB::query("select STRINGWERT from CONFIG where PARAMETER = 'KONTO_BANK' and MANDANTID = $nPartyID")->fetch_assoc();
 			$config[KONTO_BANK] = $row[STRINGWERT];
-		$row = @mysql_fetch_array(DB::query("select STRINGWERT from CONFIG where PARAMETER = 'EINTRITT_NORMAL' and MANDANTID = $nPartyID"), MYSQL_ASSOC);
+		$row = DB::query("select STRINGWERT from CONFIG where PARAMETER = 'EINTRITT_NORMAL' and MANDANTID = $nPartyID")->fetch_assoc();
 			$config[EINTRITT_NORMAL] = $row[STRINGWERT];
-		$row = @mysql_fetch_array(DB::query("select STRINGWERT from CONFIG where PARAMETER = 'EINTRITT_LOGE' and MANDANTID = $nPartyID"), MYSQL_ASSOC);
+		$row = DB::query("select STRINGWERT from CONFIG where PARAMETER = 'EINTRITT_LOGE' and MANDANTID = $nPartyID")->fetch_assoc();
 			$config[EINTRITT_LOGE] = $row[STRINGWERT];
-		$row = @mysql_fetch_array(DB::query("select STRINGWERT from CONFIG where PARAMETER = 'EINTRITT_XTRA' and MANDANTID = $nPartyID"), MYSQL_ASSOC);
+		$row = DB::query("select STRINGWERT from CONFIG where PARAMETER = 'EINTRITT_XTRA' and MANDANTID = $nPartyID")->fetch_assoc();
 			$config[EINTRITT_XTRA] = " ".$row[STRINGWERT];
 		// Added IBAN and BIC to config Array
-		$row = @mysql_fetch_array(DB::query("select STRINGWERT from CONFIG where PARAMETER = 'KONTO_IBAN' and MANDANTID = $nPartyID"), MYSQL_ASSOC);
+		$row = DB::query("select STRINGWERT from CONFIG where PARAMETER = 'KONTO_IBAN' and MANDANTID = $nPartyID")->fetch_assoc();
 			$config[KONTO_IBAN] = $row[STRINGWERT];
-		$row = @mysql_fetch_array(DB::query("select STRINGWERT from CONFIG where PARAMETER = 'KONTO_BIC' and MANDANTID = $nPartyID"), MYSQL_ASSOC);
+		$row = DB::query("select STRINGWERT from CONFIG where PARAMETER = 'KONTO_BIC' and MANDANTID = $nPartyID")->fetch_assoc();
 			$config[KONTO_BIC] = $row[STRINGWERT];
 		
 		
-		$row = @mysql_fetch_array(DB::query("select BESCHREIBUNG, EMAIL from MANDANT where MANDANTID=$nPartyID"));
+		$row = DB::query("select BESCHREIBUNG, EMAIL from MANDANT where MANDANTID=$nPartyID")->fetch_array();
 		$sMandant = $row[BESCHREIBUNG];
 		$sMandantEmail = $row[EMAIL];
 	
@@ -758,7 +758,7 @@ if (!function_exists('SendeAnmeldeMail'))
 		// angemeldet?
 		$q = "select count(*) from ASTATUS a, USER u where (a.STATUS=$STATUS_ANGEMELDET or a.STATUS=$STATUS_BEZAHLT or a.STATUS=$STATUS_BEZAHLT_LOGE) and a.MANDANTID = $nPartyID and a.USERID=u.USERID";
 		$res = DB::query($q);
-		$row = mysql_fetch_array($res);
+		$row = $res->fetch_array();
 		$AnzahlDS = $row[0];
 		if ($AnzahlDS == 0) {
 			$AnzahlDS = 1;
@@ -767,13 +767,13 @@ if (!function_exists('SendeAnmeldeMail'))
 		//Wie viele bezahlt?
 		$q = "select count(*) from ASTATUS where (STATUS=$STATUS_BEZAHLT or STATUS=$STATUS_BEZAHLT_LOGE) and MANDANTID = $nPartyID";
 		$res = DB::query($q);
-		$row = mysql_fetch_array($res);
+		$row = $res->fetch_array();
 		$AnzahlDSbezahlt = $row[0];
 		
 		//Wie viele Plaetze insgesamt?
 		$q = "select STRINGWERT from CONFIG where MANDANTID=$nPartyID and PARAMETER='TEILNEHMER'";
 		$res = DB::query($q);
-		$row = mysql_fetch_array($res);
+		$row = $res->fetch_array();
 		$partyPlaetze = $row[STRINGWERT];
 		
 		//Und an den Bot senden
@@ -796,7 +796,7 @@ if (!function_exists('SendePelasMail'))
 		// Nickname raussuchen zuvor
 		$q = "select LOGIN from USER where USERID = '$fromUser'";
 		$res = DB::query($q);
-		$row = mysql_fetch_array($res);
+		$row = $res->fetch_array();
 		$fromUserNick = $row['LOGIN'];
 		
 		// Einfügen in die Mailtabelle
@@ -814,7 +814,7 @@ if (!function_exists('SendePelasMail'))
 				'$bodyInhalt'
 			) ";
 		$res = DB::query($q);
-		return mysql_errno();
+		return DB::$link->errno;
 	}
 }
 

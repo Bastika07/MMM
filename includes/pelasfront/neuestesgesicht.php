@@ -3,13 +3,13 @@ require_once "dblib.php";
 include_once "format.php";
 include_once "language.inc.php";
 
-$result = mysql_query("select STRINGWERT from CONFIG where PARAMETER='NEUESTES_GESICHT' and MANDANTID=$nPartyID");
+$result = DB::query("select STRINGWERT from CONFIG where PARAMETER='NEUESTES_GESICHT' and MANDANTID=$nPartyID");
 if ($result) {
-	$row = mysql_fetch_array($result);
+	$row = $result->fetch_array();
 	$nGesichtID = $row[0];
 	if ($nGesichtID != "") {
-		$result = mysql_query("select USERID, LOGIN, PLZ, ORT, LAND from USER where USERID=$nGesichtID");
-		$row = mysql_fetch_array($result);
+		$result = DB::query("select USERID, LOGIN, PLZ, ORT, LAND from USER where USERID=$nGesichtID");
+		$row = $result->fetch_array();
 			if ($result) {
 				if ($sStyle == "northcon") {
 					// verkleinerter Avatar und mehr Infos links daneben

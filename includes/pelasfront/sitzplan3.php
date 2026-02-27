@@ -242,7 +242,7 @@ function getTicketByRowAndSeat($row, $seat, $mandantId, $partyId) {
 		        mandantId = $mandantId AND
 		        partyId = $partyId";
 	$result = DB::query($sql);
-  $ticket = mysql_fetch_assoc($result);
+  $ticket = $result->fetch_assoc();
   return $ticket;
 }
 
@@ -302,7 +302,7 @@ function getTicket($ticketId, $mandantId, $partyId) {
 		        mandantId = $mandantId AND
 		        partyId = $partyId";
 	$result = DB::query($sql);
-  $ticket = mysql_fetch_assoc($result);
+  $ticket = $result->fetch_assoc();
   return $ticket;
 }
 
@@ -366,7 +366,7 @@ function generateOverview($dstFileName, $dstHtmlFileName, $vorlageImageFile, $eb
 		  EBENE='$ebene'";
 	$result = DB::query($sql);
 	$platzArray = array();
-	while ($row = mysql_fetch_array($result)) {
+	while ($row = $result->fetch_array()) {
 		$platzArray[$row['REIHE']] = $row;
 	}
 
@@ -377,12 +377,12 @@ function generateOverview($dstFileName, $dstHtmlFileName, $vorlageImageFile, $eb
 
 	//Maximale Reihen
 	$result = DB::query("select MAX(REIHE) as MAXROW from SITZDEF where MANDANTID=$nPartyID and EBENE=$ebene");
-	$row = mysql_fetch_array($result);
+	$row = $result->fetch_array();
 	$maxreihen = $row['MAXROW'];
 
 	//Reihen starten ab
 	$result = DB::query("select MIN(REIHE) as MINROW from SITZDEF where MANDANTID=$nPartyID and EBENE=$ebene");
-	$row = mysql_fetch_array($result);
+	$row = $result->fetch_array();
 	$startreihen = $row['MINROW'];
 	//# Daten Ende
 	//#############################
@@ -457,7 +457,7 @@ function getRows($rowNumbers, $mandantId) {
   				  	s.REIHE IN (".implode(',', $rowNumbers).") AND
   				  	s.mandantId = $mandantId";				  	
   	$result = DB::query($sql);
-  	while ($row = mysql_fetch_assoc($result)) {
+  	while ($row = $result->fetch_assoc()) {
   	  $rows[$row['REIHE']] = $row;
   	}
   	return $rows;  
@@ -505,7 +505,7 @@ function getAllSeats($nPartyID, $ebene) {
             s.EBENE = '$ebene'";
 	$result = DB::query($sql);
 	$seats = array();
-	while ($row = mysql_fetch_assoc($result)) {
+	while ($row = $result->fetch_assoc()) {
 	  $seats[$row['sitzReihe']][$row['sitzPlatz']] = array('user' => $row['LOGIN'], 'userId' => $row['userId'], 'ownerId' => $row['ownerId']);	
 	}
 	return $seats;
@@ -525,7 +525,7 @@ function getUsersTickets($nPartyID, $userId) {
 				    ticketId";
 	$result = DB::query($sql);
 	$tickets = array();
-	while ($row = mysql_fetch_assoc($result)) {
+	while ($row = $result->fetch_assoc()) {
 	  $row['ticketId'] = PELAS::formatTicketNr($row['ticketId']);
 	  $tickets[] = $row;
 	}
@@ -602,7 +602,7 @@ function calculateSeatCoordinates($currentRow, $currentSeat, $tischBreite, $tisc
 
 function getTischTiefe($nPartyID) {
   	$result = DB::query("select STRINGWERT from CONFIG where PARAMETER='SITZTIEFE' and MANDANTID=$nPartyID");
-  	$row = mysql_fetch_array($result);
+  	$row = $result->fetch_array();
   	$tTempTiefe = $row['STRINGWERT'];
   	if ($tTempTiefe > 0) {
   		$tischTiefe = $tTempTiefe;
@@ -614,7 +614,7 @@ function getTischTiefe($nPartyID) {
   
   function getTischBreite($nPartyID) {
   	$result = DB::query("select STRINGWERT from CONFIG where PARAMETER='SITZBREITE' and MANDANTID=$nPartyID");
-  	$row = mysql_fetch_array($result);
+  	$row = $result->fetch_array();
   	$tTempBreite = $row['STRINGWERT'];
   	if ($tTempBreite > 0) {
   		$tischBreite = $tTempBreite;
@@ -627,7 +627,7 @@ function getTischTiefe($nPartyID) {
   function getTischBreiteLoge($nPartyID) {
   	//Breite der Loge
   	$result = DB::query("select STRINGWERT from CONFIG where PARAMETER='LOGE_SITZBREITE' and MANDANTID=$nPartyID");
-  	$row = mysql_fetch_array($result);
+  	$row = $result->fetch_array();
   	$tTempBreite = $row['STRINGWERT'];
   	if ($tTempBreite > 0) {
   		$tischBreiteLoge = $tTempBreite;

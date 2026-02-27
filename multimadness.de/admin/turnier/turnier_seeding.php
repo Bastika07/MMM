@@ -251,7 +251,7 @@ function showSeeding() {
 
 	} else {
 		$mandantid = COMPAT::getMandantFromParty($turnier->partyid);
-		$row = mysql_fetch_assoc(DB::query("SELECT REFERER FROM MANDANT WHERE MANDANTID = '{$mandantid}'"));
+		$row = DB::query("SELECT REFERER FROM MANDANT WHERE MANDANTID = '{$mandantid}'")->fetch_assoc();
 		$frontend = $row['REFERER'];
 	}
 

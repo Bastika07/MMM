@@ -14,7 +14,7 @@ $sql = "select
           MANDANTID = $nPartyID and 
           PARAMETER='TEILNEHMER'";
 $res = DB::query($sql);         
-$row = mysql_fetch_row($res);
+$row = $res->fetch_row();
 $partyPlaetze = $row[0];
 
 // Anzahl bezahlt
@@ -26,7 +26,7 @@ $sql = "select
           STATUS IN ($STATUS_BEZAHLT_LOGE, $STATUS_BEZAHLT) and 
           MANDANTID = $nPartyID";
 $res = DB::query($sql);         
-$row = mysql_fetch_row($res);
+$row = $res->fetch_row();
 $partyBezahlt = $row[0];
 
 // Anzahl angemeldet
@@ -38,7 +38,7 @@ $sql = "select
           STATUS = $STATUS_ANGEMELDET and 
           MANDANTID = $nPartyID";
 $res = DB::query($sql);         
-$row = mysql_fetch_row($res);
+$row = $res->fetch_row();
 $partyAngemeldet = $row[0];
 
 
@@ -51,7 +51,7 @@ $sql = "select
           UNIX_TIMESTAMP(ZEITSTEMPEL) >= UNIX_TIMESTAMP() - 500 and
           MANDANTID = '$nPartyID'";
 $res = DB::query($sql);         
-$row = mysql_fetch_row($res);
+$row = $res->fetch_row();
 $anzahlSessions = $row[0];
 
 // Anzahl Benutzer für Mandant
@@ -62,7 +62,7 @@ $sql = "select
         where 
           MANDANTID='$nPartyID'";
 $res = DB::query($sql);         
-$row = mysql_fetch_row($res);
+$row = $res->fetch_row();
 $anzahlAccounts = $row[0];
 
 
@@ -76,7 +76,7 @@ $sql = "select
           b.boardID = c.boardID and 
           b.type IN (1, 2)";
 $res = DB::query($sql);         
-$row = mysql_fetch_row($res);
+$row = $res->fetch_row();
 $anzahlForenpostings = $row[0];
 
 

@@ -58,7 +58,7 @@ function showBestellschein()
 	$color   = "hblau";
 	$counter = 0;
 	$summe   = 0;
-	while ($rowTemp = mysql_fetch_array($res)) {
+	while ($rowTemp = $res->fetch_array()) {
 		
 		$ticketsVerfuegbar = verfuegbareTickets($rowTemp['typId'], $aktuellePartyID);
 		
@@ -120,7 +120,7 @@ function PayPal ($summe, $bestellId, $party)
 
 	
 	//Namen aus DB holen
-	$rowTemp = @mysql_fetch_array(mysql_db_query($dbname, "select NAME, NACHNAME from USER where USERID='$nLoginID'", $dbh), MYSQL_ASSOC); $sRealName = $rowTemp[NAME]." ".$rowTemp[NACHNAME];
+	$rowTemp = DB::query("select NAME, NACHNAME from USER where USERID='$nLoginID'")->fetch_assoc(); $sRealName = $rowTemp[NAME]." ".$rowTemp[NACHNAME];
 
 	/* Gebühren hinzurechnen */
 	$summeMit = $summe + PELAS::PayPalGebuehr($summe);
@@ -217,7 +217,7 @@ if ($_GET['action'] == "select") {
 	";
 	
 	$resTemp = DB::query($sql);
-	$rowTemp = mysql_fetch_array($resTemp);
+	$rowTemp = $resTemp->fetch_array();
 	
 	if ($rowTemp['bestellerUserId'] != $nLoginID) {
 		echo '<p class="fehler">Keine Berechtigung auf den ausgewählten Artikel!</p>';
@@ -284,7 +284,7 @@ if ($_GET['action'] == "select") {
 					  y.partyId  = '".intval($aktuellePartyID)."'
 				";
 				$res = DB::query($sql);
-				if (!mysql_num_rows($res)) {
+				if (!$res->num_rows) {
 					echo "<p class=\"fehler\">$str[acc_keinrecht]</p>";
 				} else {
 					// prüfen ob User vorher schon zugeordnet
@@ -299,7 +299,7 @@ if ($_GET['action'] == "select") {
 						  statusId = '".ACC_STATUS_BEZAHLT."'
 					";
 					$res = DB::query($sql);
-					if (!mysql_num_rows($res)) {
+					if (!$res->num_rows) {
 						// TODO: Zuordnung durchführen
 						$sql = "update
 							  acc_tickets
@@ -323,8 +323,8 @@ if ($_GET['action'] == "select") {
 							  ticketId = '".intval($_GET['ticketId'])."'
 						";
 						$res = DB::query($sql);
-						if (mysql_num_rows($res)) {
-							$rowTemp = mysql_fetch_array($res);
+						if ($res->num_rows) {
+							$rowTemp = $res->fetch_array();
 							$tempReihe = $rowTemp['sitzReihe'];
 							if ($tempReihe > 0) {
 								//include_once "sitzlib.php";
@@ -363,10 +363,10 @@ if ($_GET['action'] == "select") {
 			  t.statusId = ".ACC_STATUS_BEZAHLT."
 		";
 		$res = DB::query($sql);
-		if (!mysql_num_rows($res)) {
+		if (!$res->num_rows) {
 			echo "<p class=\"fehler\">$str[acc_keinrecht]</p>";
 		} else {
-			$rowTemp = mysql_fetch_array($res);
+			$rowTemp = $res->fetch_array();
 			echo "<p><table cellspacing=\"1\" cellpadding=\"2\" border=\"0\">\n
 				<tr><td class=\"header\" colspan=\"2\">$str[acc_aktuellez] ".PELAS::formatTicketNr($_GET['ticketId'])."</td></tr>\n";
 			echo "<tr><td class=\"dblau\" width=\"90\">User-ID</td><td width=\"260\" class=\"hblau\">".$rowTemp['USERID']."</td></tr>";
@@ -426,9 +426,9 @@ if ($_GET['action'] == "select") {
 						  u.LOGIN
 					";
 					$res = DB::query($sql);
-					if (mysql_num_rows($res)){
+					if ($res->num_rows){
 						$sOutput .= "<select name=\"iUserNeu\">";
-						while ($row2 = mysql_fetch_array($res)) {
+						while ($row2 = $res->fetch_array()) {
 							$sOutput .= "<option value=\"".$row2['USERID']."\" ";
 							  if ($iUserNeu == $row2['USERID']) {
 							    $sOutput .= "selected";
@@ -526,7 +526,7 @@ if ($_GET['action'] == "select") {
 		$res = DB::query($sql);
 		$counter = 0;
 		$color   = "blau";
-		while ($rowTemp = mysql_fetch_array($res)) {
+		while ($rowTemp = $res->fetch_array()) {
 			if ($color == "hblau") {
 				$color = "dblau";
 			} else {
@@ -562,7 +562,7 @@ if ($_GET['action'] == "select") {
 				and b.partyId = ".$aktuellePartyID;
 
 			$res = DB::query($sql);
-			while ($rowTemp = mysql_fetch_array($res)) {
+			while ($rowTemp = $res->fetch_array()) {
 				if ($posted != "yes") {
 				// Prefill Form-Data if not posted
 					$GLOBALS["anzId".$rowTemp['ticketTypId']] = $rowTemp['anzahl'];
@@ -584,7 +584,7 @@ if ($_GET['action'] == "select") {
 				USERID    = '$nLoginID'
 		";
 		$res = DB::query($sql);
-		$rowTemp = mysql_fetch_array($res);
+		$rowTemp = $res->fetch_array();
 		if ($rowTemp['vorhanden'] < 1) {
 			// Nicht vorhanden, einfügen!
 			$sql = "insert into ASTATUS (
@@ -615,7 +615,7 @@ if ($_GET['action'] == "select") {
 			and b.partyId = ".$aktuellePartyID;
 		
 		$res = DB::query($sql);
-		$rowTemp = mysql_fetch_array($res);
+		$rowTemp = $res->fetch_array();
 		if ($rowTemp['vorhanden'] > 0 && $action == "order") {
 			// es existiert noch eine offene Bestellung für diese Party
 			echo "<p class=\"fehler\">$str[acc_err_bestoffen]</p>";
@@ -644,7 +644,7 @@ if ($_GET['action'] == "select") {
 				$counter = 0;
 				$nichtVerfuegbar = 0;
 				$zuViele         = 0;
-				while ($rowTemp = mysql_fetch_array($res)) {
+				while ($rowTemp = $res->fetch_array()) {
 					$bestellAnzahl = $_POST["anzId".$rowTemp['typId']];
 					$counter = $counter + $bestellAnzahl;	
 					
@@ -690,12 +690,12 @@ if ($_GET['action'] == "select") {
 							and b.bestellerUserId = '$nLoginID'
 							and b.partyId = ".$aktuellePartyID;
 						$resAnz = DB::query($sql);
-						$rowTempId = mysql_fetch_array($resAnz);
+						$rowTempId = $resAnz->fetch_array();
 						$newBestellId = $rowTempId['bestellId'];
 					}
 					
 					// durchloopen und wenn Artikel gewählt in bestellung einfügen / updaten
-					while ($rowTemp = mysql_fetch_array($res)) {
+					while ($rowTemp = $res->fetch_array()) {
 						$bestellAnzahl = $_POST["anzId".$rowTemp['typId']];
 						
 						if ($action == "order" && $bestellAnzahl > 0) {
@@ -703,12 +703,12 @@ if ($_GET['action'] == "select") {
 							// wird. In diesem Fall gibt es einen DB-Fehler
 							do {								
 								// Bestellid holen, wenn noch nicht gesetzt oder ein DB-Fehler vorliegt
-								if ($newBestellId < 1 || mysql_errno() == 1062) {
+								if ($newBestellId < 1 || DB::$link->errno == 1062) {
 									$sql = "select max(bestellId) as bestellId
 										from acc_bestellung
 										where partyId = ".$aktuellePartyID;
 									$resId = DB::query($sql);
-									$rowId = mysql_fetch_array($resId);
+									$rowId = $resId->fetch_array();
 									$bestellId = $rowId['bestellId'];
 									$newBestellId = $bestellId + 1;
 								}
@@ -743,7 +743,7 @@ if ($_GET['action'] == "select") {
 									)
 								";
 								$resId = DB::query($sql);
-							} while (mysql_errno() == 1062);
+							} while (DB::$link->errno == 1062);
 							
 							// Die zugehörigen Ticket in der Tickettabelle anlegen
 							// NEU: Bei Bestellung anlegen werden die Tickets nicht mehr mit angelegt!
@@ -762,7 +762,7 @@ if ($_GET['action'] == "select") {
 								and b.bestellerUserId = '$nLoginID'
 								and b.partyId = ".$aktuellePartyID;
 							$resAnz = DB::query($sql);
-							if (mysql_num_rows($resAnz) > 0) {
+							if ($resAnz->num_rows > 0) {
 								// Datensatz vorhanden
 								if ($bestellAnzahl > 0) {
 									// Datensatz aktualisieren mit UPDATE
@@ -939,7 +939,7 @@ if (39) {
 		";
 		$resTicketsZugeordnet = DB::query($sql);
 		
-		if (mysql_num_rows($resTickets) > 0 || mysql_num_rows($resTicketsZugeordnet) > 0) {
+		if ($resTickets->num_rows > 0 || $resTicketsZugeordnet->num_rows > 0) {
 			$bTicketsVorhanden = 1;
 		} else {
 			$bTicketsVorhanden = 0;
@@ -954,7 +954,7 @@ if (39) {
 			and b.bestellerUserId = '$nLoginID'
 			and b.partyId = ".$aktuellePartyID;
 		$res = DB::query($sql);
-		$rowTemp = mysql_fetch_array($res);
+		$rowTemp = $res->fetch_array();
 		if ($rowTemp['vorhanden'] > 0) {
 			$bBestellungVorhanden = 1;
 		} else {
@@ -970,7 +970,7 @@ if (39) {
 			and b.status = '".ACC_STATUS_OFFEN."'
 			and b.partyId = ".$aktuellePartyID;
 		$res = DB::query($sql);
-		$rowTemp = mysql_fetch_array($res);
+		$rowTemp = $res->fetch_array();
 		if ($rowTemp['vorhanden'] > 0) {
 			$bOffeneBestellungVorhanden = 1;
 		} else {
@@ -1002,7 +1002,7 @@ if (39) {
 				<tr><td class=\"header\">$str[acc_ticketnr]</td><td class=\"header\">$str[acc_beschr]</td><td class=\"header\">$str[status]</td><td class=\"header\">$str[acc_zuordnung]</td><td class=\"header\">$str[sitzplatz]</td><td class=\"header\">&nbsp;</td></tr>\n";
 			$color   = "hblau";
 			$counter = 0;
-			while ($row = mysql_fetch_array($resTickets)) {
+			while ($row = $resTickets->fetch_array()) {
 				echo "<tr><td class=\"$color\">".PELAS::formatTicketNr($row['ticketId'])."</td>";
 				echo "<td class=\"$color\">".db2display($row['kurzbeschreibung'])."<br><small>".db2display($row['beschreibung'])."</small></td>";
 				echo "<td class=\"$color\">";
@@ -1035,7 +1035,7 @@ if (39) {
 						  MANDANTID ='$nPartyID' and
 						  REIHE     = '".$row['sitzReihe']."'";
 					$resTemp = DB::query($sql);
-					$rowTemp = mysql_fetch_array($resTemp);
+					$rowTemp = $resTemp->fetch_array();
 					$ebene   = $rowTemp['EBENE'];
 					echo "<a href=\"?page=13?ebene=$ebene&iTicket=".$row['ticketId']."&locateUser=".$row['USERID']."\">";
 					echo $row['sitzReihe']."-".$row['sitzPlatz'];
@@ -1071,7 +1071,7 @@ if (39) {
 			}
 
 			$infotext = 0;
-			while ($row = mysql_fetch_array($resTicketsZugeordnet)) {
+			while ($row = $resTicketsZugeordnet->fetch_array()) {
 				echo "<tr><td class=\"$color\">".PELAS::formatTicketNr($row['ticketId'])." *</td>";
 				echo "<td class=\"$color\">".db2display($row['kurzbeschreibung'])."<br><small>".db2display($row['beschreibung'])."</small></td>";
 				echo "<td class=\"$color\">".db2display($row['StatusText'])."</td>";
@@ -1148,15 +1148,15 @@ if (39) {
 			  b.wannBezahlt
 			";
 		$resArtikel = DB::query($sql);
-		//echo mysql_errno().": ".mysql_error()."<BR>";
+		//echo DB::$link->errno.": ".DB::$link->error."<BR>";
 		
-		if (mysql_num_rows($resArtikel) > 0) {
+		if ($resArtikel->num_rows > 0) {
 			// Artikeltabelle nur anzeigen wenn welche vorhanden
 			echo "<table cellspacing=\"1\" cellpadding=\"2\" border=\"0\" >\n	
 				<tr><td class=\"header\">$str[anzahl]</td><td class=\"header\">$str[acc_artikel]</td><td class=\"header\">$str[status], $str[acc_zuordnung]</td></tr>\n";
 			$color   = "hblau";
 			$counter = 0;
-			while ($row = mysql_fetch_array($resArtikel)) {
+			while ($row = $resArtikel->fetch_array()) {
 				echo "<tr><td class=\"$color\">".$row['anzahl']."</td>";
 				echo "<td class=\"$color\">".db2display($row['kurzbeschreibung'])."<br><small>".db2display($row['beschreibung'])."</small></td>";
 				echo "<td class=\"$color\">";
@@ -1184,7 +1184,7 @@ if (39) {
 							";
 							
 							$resTemp = DB::query($sql);
-							$rowTemp = mysql_fetch_array($resTemp);
+							$rowTemp = $resTemp->fetch_array();
 							
 							// Verfügbare Tickets
 							$sql = "select 
@@ -1201,7 +1201,7 @@ if (39) {
 							echo "<nobr>Ticket ";
 							echo '<select name="ticketId">\n';
 							echo "<option value='-1' selected>(-)</option>\n";	
-							while ($rowTempTickets = mysql_fetch_array($resTempTickets)) {
+							while ($rowTempTickets = $resTempTickets->fetch_array()) {
 								echo "<option value='".$rowTempTickets['ticketId']."'";
 								if ($rowTemp['ticketId'] == $rowTempTickets['ticketId']) {
 									echo "selected";

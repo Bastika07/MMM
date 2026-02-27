@@ -35,10 +35,10 @@ if ($nPartyID < 1) {
 }
 
 // Reservierung offen?
-$row = @mysql_fetch_array(mysql_db_query($dbname, "select STRINGWERT from CONFIG where PARAMETER = 'SITZPLATZRES_OFFEN' and MANDANTID = $nPartyID", $dbh), MYSQL_ASSOC);
+$row = DB::query("select STRINGWERT from CONFIG where PARAMETER = 'SITZPLATZRES_OFFEN' and MANDANTID = $nPartyID")->fetch_assoc();
 // checken, ob get-variable on
 if ($row['STRINGWERT'] == "N") {
-	$row = @mysql_fetch_array(mysql_db_query($dbname, "select STRINGWERT from CONFIG where PARAMETER = 'SITZPLATZRES_OFFEN_AB' and MANDANTID = $nPartyID", $dbh), MYSQL_ASSOC);
+	$row = DB::query("select STRINGWERT from CONFIG where PARAMETER = 'SITZPLATZRES_OFFEN_AB' and MANDANTID = $nPartyID")->fetch_assoc();
 	$bResOffen = 0;
 	$sResOffenAb = $row["STRINGWERT"];
 } else {
@@ -54,18 +54,18 @@ if ($iAction >= 1 && $nLoginID >= 1) {
 
 		//Checken, ob Auswahl fuer Clanmates!
 		if ($clanMate >= 1) {
-			$row = mysql_fetch_array(mysql_db_query($dbname, "select CLANID from USER_CLAN where MANDANTID = $nPartyID and USERID = $clanMate", $dbh), MYSQL_ASSOC);
-			//echo mysql_errno().": ".mysql_error()."<BR>";
+			$row = DB::query("select CLANID from USER_CLAN where MANDANTID = $nPartyID and USERID = $clanMate")->fetch_assoc();
+			//echo DB::$link->errno.": ".DB::$link->error."<BR>";
 			$derClan = $row[CLANID];
 			if ($derClan > 0) {
 				//checken, ob eingeloggter User auch gleicher Clan
-				$row = mysql_fetch_array(mysql_db_query($dbname, "select CLANID from USER_CLAN where MANDANTID = $nPartyID and USERID = $nLoginID", $dbh), MYSQL_ASSOC);
+				$row = DB::query("select CLANID from USER_CLAN where MANDANTID = $nPartyID and USERID = $nLoginID")->fetch_assoc();
 				if ($row[CLANID] == $derClan) {
 					//ist Clanmate auch bezahlt?
-					$row = mysql_fetch_array(mysql_db_query($dbname, "select STATUS from ASTATUS where MANDANTID = $nPartyID and USERID = $clanMate", $dbh), MYSQL_ASSOC);
-					//echo mysql_errno().": ".mysql_error()."<BR>";
+					$row = DB::query("select STATUS from ASTATUS where MANDANTID = $nPartyID and USERID = $clanMate")->fetch_assoc();
+					//echo DB::$link->errno.": ".DB::$link->error."<BR>";
 					//Eingeloggter User bezahlt?
-					$row2 = mysql_fetch_array(mysql_db_query($dbname, "select STATUS from ASTATUS where MANDANTID = $nPartyID and USERID = $nLoginID", $dbh), MYSQL_ASSOC);
+					$row2 = DB::query("select STATUS from ASTATUS where MANDANTID = $nPartyID and USERID = $nLoginID")->fetch_assoc();
 					if (($row[STATUS] == $STATUS_BEZAHLT || $row[STATUS] == $STATUS_BEZAHLT_LOGE) and ($row2[STATUS] == $STATUS_BEZAHLT || $row2[STATUS] == $STATUS_BEZAHLT_LOGE)) {
 						//##### TODO: CHecken, ob sauber genug
 						//einfach die Loginid auf den Mate umsetzen
@@ -79,17 +79,17 @@ if ($iAction >= 1 && $nLoginID >= 1) {
 			}
 		}
 
-		$row[1] = mysql_fetch_array(mysql_db_query($dbname, "select STATUS from ASTATUS where MANDANTID = $nPartyID and USERID = $nLoginID", $dbh), MYSQL_ASSOC);
-		$row[2] = mysql_fetch_array(mysql_db_query($dbname, "select ISTLOGE from SITZDEF where MANDANTID = $nPartyID and REIHE = $reihe and LAENGE >= $tisch", $dbh), MYSQL_ASSOC);
-		$row[3] = mysql_fetch_array(mysql_db_query($dbname, "select USERID, RESTYP from SITZ where MANDANTID = $nPartyID and REIHE = $reihe and PLATZ = $tisch", $dbh), MYSQL_ASSOC);
-		$result = mysql_db_query($dbname, "select REIHE, PLATZ from SITZ where MANDANTID = $nPartyID and USERID = $nLoginID and RESTYP = 1", $dbh);
-		$res[1] = mysql_num_rows($result);
-		$row[4] = mysql_fetch_array($result);
-		$res[2] = mysql_num_rows(mysql_db_query($dbname, "select REIHE, PLATZ from SITZ where MANDANTID = $nPartyID and USERID = $nLoginID and RESTYP = 2", $dbh));
-		//echo mysql_errno().": ".mysql_error()."<BR>";
+		$row[1] = DB::query("select STATUS from ASTATUS where MANDANTID = $nPartyID and USERID = $nLoginID")->fetch_assoc();
+		$row[2] = DB::query("select ISTLOGE from SITZDEF where MANDANTID = $nPartyID and REIHE = $reihe and LAENGE >= $tisch")->fetch_assoc();
+		$row[3] = DB::query("select USERID, RESTYP from SITZ where MANDANTID = $nPartyID and REIHE = $reihe and PLATZ = $tisch")->fetch_assoc();
+		$result = DB::query("select REIHE, PLATZ from SITZ where MANDANTID = $nPartyID and USERID = $nLoginID and RESTYP = 1");
+		$res[1] = $result->num_rows;
+		$row[4] = $result->fetch_array();
+		$res[2] = DB::query("select REIHE, PLATZ from SITZ where MANDANTID = $nPartyID and USERID = $nLoginID and RESTYP = 2")->num_rows;
+		//echo DB::$link->errno.": ".DB::$link->error."<BR>";
 		
 		// Alte Ebene raussuchen
-		$resTemp = mysql_fetch_array(mysql_db_query($dbname, "select sd.EBENE from SITZDEF sd, SITZ s where sd.MANDANTID = '$nPartyID' and s.MANDANTID = '$nPartyID' and s.USERID = '$nLoginID' and s.REIHE=sd.REIHE", $dbh), MYSQL_ASSOC);
+		$resTemp = DB::query("select sd.EBENE from SITZDEF sd, SITZ s where sd.MANDANTID = '$nPartyID' and s.MANDANTID = '$nPartyID' and s.USERID = '$nLoginID' and s.REIHE=sd.REIHE")->fetch_assoc();
 		if ($resTemp['EBENE'] > 0) {
 			$nAlteEbene = $resTemp['EBENE'];
 		} else {
@@ -105,14 +105,14 @@ if ($iAction >= 1 && $nLoginID >= 1) {
 					if ($row[3][USERID] <= 1) // Platz leer
 					{
 					// Abteilung für Loge umsetzen - FUNKTIONIERT
-						mysql_db_query($dbname, "update SITZ set REIHE = $reihe, PLATZ = $tisch, WERGEAENDERT = $realLoginID where MANDANTID = $nPartyID and USERID = $nLoginID and RESTYP = 1 and REIHE = ". $row[4][REIHE]." and PLATZ = ". $row[4][PLATZ], $dbh);
+						DB::query("update SITZ set REIHE = $reihe, PLATZ = $tisch, WERGEAENDERT = $realLoginID where MANDANTID = $nPartyID and USERID = $nLoginID and RESTYP = 1 and REIHE = ". $row[4][REIHE]." and PLATZ = ". $row[4][PLATZ]);
 						logging($realLoginID, $nLoginID, 1, 'set', $reihe, $tisch);
 						$generate = TRUE;
 					}
 					elseif ($row[3][USERID] == $nLoginID && $row[3][RESTYP] == 1) // Eigener Platz & reserviert
 					{
 					// Abteilung für Loge reservierung aufheben - FUNKTIONIERT
-						mysql_db_query($dbname, "delete from SITZ where MANDANTID = $nPartyID and USERID = $nLoginID and REIHE = ". $reihe." and PLATZ = ". $tisch." LIMIT 1", $dbh);
+						DB::query("delete from SITZ where MANDANTID = $nPartyID and USERID = $nLoginID and REIHE = ". $reihe." and PLATZ = ". $tisch." LIMIT 1");
 						logging($realLoginID, $nLoginID, 1, 'unset', $reihe, $tisch);
 						$generate = TRUE;
 					}
@@ -121,8 +121,8 @@ if ($iAction >= 1 && $nLoginID >= 1) {
 						if ($row[3][RESTYP] == 2) // Platz vorgemerkt
 						{
 						// Abteilung für vormerkung überschreiben - FUNKTIONIERT
-							mysql_db_query($dbname, "delete from SITZ where MANDANTID = $nPartyID and REIHE = ". $reihe." and PLATZ = ". $tisch." LIMIT 1", $dbh);
-							mysql_db_query($dbname, "update SITZ set REIHE = $reihe, PLATZ = $tisch, WERGEAENDERT = $realLoginID where MANDANTID = $nPartyID and USERID = $nLoginID and RESTYP = 1 and REIHE = ". $row[4][REIHE]." and PLATZ = ". $row[4][PLATZ], $dbh);
+							DB::query("delete from SITZ where MANDANTID = $nPartyID and REIHE = ". $reihe." and PLATZ = ". $tisch." LIMIT 1");
+							DB::query("update SITZ set REIHE = $reihe, PLATZ = $tisch, WERGEAENDERT = $realLoginID where MANDANTID = $nPartyID and USERID = $nLoginID and RESTYP = 1 and REIHE = ". $row[4][REIHE]." and PLATZ = ". $row[4][PLATZ]);
 							logging($realLoginID, $nLoginID, 1, 'set', $reihe, $tisch);
 							$generate = TRUE;
 						}
@@ -133,15 +133,15 @@ if ($iAction >= 1 && $nLoginID >= 1) {
 					if ($row[3][RESTYP] == 2) // Platz vorgemerkt
 					{
 					// Abteilung für Loge vormerkung überschreiben - FUNKTIONIERT
-						mysql_db_query($dbname, "delete from SITZ where MANDANTID = $nPartyID and REIHE = ". $reihe." and PLATZ = ". $tisch." LIMIT 1", $dbh);
-						mysql_db_query($dbname, "insert into SITZ (MANDANTID, REIHE, PLATZ, USERID, RESTYP, WERGEAENDERT) values ($nPartyID, $reihe, $tisch, $nLoginID, 1, $realLoginID)", $dbh);
+						DB::query("delete from SITZ where MANDANTID = $nPartyID and REIHE = ". $reihe." and PLATZ = ". $tisch." LIMIT 1");
+						DB::query("insert into SITZ (MANDANTID, REIHE, PLATZ, USERID, RESTYP, WERGEAENDERT) values ($nPartyID, $reihe, $tisch, $nLoginID, 1, $realLoginID)");
 						logging($realLoginID, $nLoginID, 1, 'set', $reihe, $tisch);
 						$generate = TRUE;
 					}
 					elseif ($row[3][RESTYPE] != 1) // Platz frei
 					{
 					// Abteilung für Loge reservieren - FUNKTIONIERT
-						mysql_db_query($dbname, "insert into SITZ (MANDANTID, REIHE, PLATZ, USERID, RESTYP, WERGEAENDERT) values ($nPartyID, $reihe, $tisch, $nLoginID, 1, $realLoginID)", $dbh);
+						DB::query("insert into SITZ (MANDANTID, REIHE, PLATZ, USERID, RESTYP, WERGEAENDERT) values ($nPartyID, $reihe, $tisch, $nLoginID, 1, $realLoginID)");
 						logging($realLoginID, $nLoginID, 1, 'set', $reihe, $tisch);
 						$generate = TRUE;
 					}
@@ -152,7 +152,7 @@ if ($iAction >= 1 && $nLoginID >= 1) {
 				if ($row[3][USERID] == $nLoginID && $row[3][RESTYP] == 2) // Eigene Vormerkung
 				{
 				// Abteilung für Loge vormerkung aufheben - FUNKTIONIERT
-					mysql_db_query($dbname, "delete from SITZ where MANDANTID = $nPartyID and USERID = $nLoginID and REIHE = ". $reihe." and PLATZ = ". $tisch." LIMIT 1", $dbh);
+					DB::query("delete from SITZ where MANDANTID = $nPartyID and USERID = $nLoginID and REIHE = ". $reihe." and PLATZ = ". $tisch." LIMIT 1");
 					logging($realLoginID, $nLoginID, 2, 'set', $reihe, $tisch);
 					$generate = TRUE;
 				}
@@ -161,7 +161,7 @@ if ($iAction >= 1 && $nLoginID >= 1) {
 					if ($row[3][USERID] < 1) // Noch frei
 					{
 					// Abteilung für Loge vormerken - FUNKTIONIERT
-						mysql_db_query($dbname, "insert into SITZ (MANDANTID, REIHE, PLATZ, USERID, RESTYP, WERGEAENDERT) values ($nPartyID, $reihe, $tisch, $nLoginID, 2, $realLoginID)", $dbh);
+						DB::query("insert into SITZ (MANDANTID, REIHE, PLATZ, USERID, RESTYP, WERGEAENDERT) values ($nPartyID, $reihe, $tisch, $nLoginID, 2, $realLoginID)");
 						logging($realLoginID, $nLoginID, 2, 'set', $reihe, $tisch);
 						$generate = TRUE;
 					}
@@ -177,15 +177,15 @@ if ($iAction >= 1 && $nLoginID >= 1) {
 					if ($row[3][USERID] <= 1) // Platz leer
 					{
 					// Abteilung für Loge umsetzen - FUNKTIONIERT
-						mysql_db_query($dbname, "update SITZ set REIHE = $reihe, PLATZ = $tisch, WERGEAENDERT = $realLoginID where MANDANTID = $nPartyID and USERID = $nLoginID and RESTYP = 1 and REIHE = ". $row[4][REIHE]." and PLATZ = ". $row[4][PLATZ], $dbh);
-						//echo mysql_errno().": ".mysql_error()."<BR>";
+						DB::query("update SITZ set REIHE = $reihe, PLATZ = $tisch, WERGEAENDERT = $realLoginID where MANDANTID = $nPartyID and USERID = $nLoginID and RESTYP = 1 and REIHE = ". $row[4][REIHE]." and PLATZ = ". $row[4][PLATZ]);
+						//echo DB::$link->errno.": ".DB::$link->error."<BR>";
 						logging($realLoginID, $nLoginID, 1, 'set', $reihe, $tisch);
 						$generate = TRUE;
 					}
 					elseif ($row[3][USERID] == $nLoginID && $row[3][RESTYP] == 1) // Eigener Platz & reserviert
 					{
 					// Abteilung für Loge reservierung aufheben - FUNKTIONIERT
-						mysql_db_query($dbname, "delete from SITZ where MANDANTID = $nPartyID and USERID = $nLoginID and REIHE = ". $reihe." and PLATZ = ". $tisch." LIMIT 1", $dbh);
+						DB::query("delete from SITZ where MANDANTID = $nPartyID and USERID = $nLoginID and REIHE = ". $reihe." and PLATZ = ". $tisch." LIMIT 1");
 						logging($realLoginID, $nLoginID, 1, 'unset', $reihe, $tisch);
 						$generate = TRUE;
 					}
@@ -194,9 +194,9 @@ if ($iAction >= 1 && $nLoginID >= 1) {
 						if ($row[3][RESTYP] == 2) // Platz vorgemerkt
 						{
 						// Abteilung für vormerkung überschreiben - FUNKTIONIERT
-							mysql_db_query($dbname, "delete from SITZ where MANDANTID = $nPartyID and REIHE = ". $reihe." and PLATZ = ". $tisch." LIMIT 1", $dbh);
+							DB::query("delete from SITZ where MANDANTID = $nPartyID and REIHE = ". $reihe." and PLATZ = ". $tisch." LIMIT 1");
 							logging(-1, $nLoginID, 2, 'unset', $reihe, $tisch);
-							mysql_db_query($dbname, "update SITZ set REIHE = $reihe, PLATZ = $tisch, WERGEAENDERT = $realLoginID where MANDANTID = $nPartyID and USERID = $nLoginID and RESTYP = 1 and REIHE = ". $row[4][REIHE]." and PLATZ = ". $row[4][PLATZ], $dbh);
+							DB::query("update SITZ set REIHE = $reihe, PLATZ = $tisch, WERGEAENDERT = $realLoginID where MANDANTID = $nPartyID and USERID = $nLoginID and RESTYP = 1 and REIHE = ". $row[4][REIHE]." and PLATZ = ". $row[4][PLATZ]);
 							logging($realLoginID, $nLoginID, 1, 'set', $reihe, $tisch);
 							$generate = TRUE;
 						}
@@ -207,15 +207,15 @@ if ($iAction >= 1 && $nLoginID >= 1) {
 					if ($row[3][RESTYP] == 2) // Platz vorgemerkt
 					{
 					// Abteilung für Loge vormerkung überschreiben - FUNKTIONIERT
-						mysql_db_query($dbname, "delete from SITZ where MANDANTID = $nPartyID and REIHE = ". $reihe." and PLATZ = ". $tisch." LIMIT 1", $dbh);
-						mysql_db_query($dbname, "insert into SITZ (MANDANTID, REIHE, PLATZ, USERID, RESTYP, WERGEAENDERT) values ($nPartyID, $reihe, $tisch, $nLoginID, 1, $realLoginID)", $dbh);
+						DB::query("delete from SITZ where MANDANTID = $nPartyID and REIHE = ". $reihe." and PLATZ = ". $tisch." LIMIT 1");
+						DB::query("insert into SITZ (MANDANTID, REIHE, PLATZ, USERID, RESTYP, WERGEAENDERT) values ($nPartyID, $reihe, $tisch, $nLoginID, 1, $realLoginID)");
 						logging($realLoginID, $nLoginID, 1, 'set', $reihe, $tisch);
 						$generate = TRUE;
 					}
 					elseif (!$row[3][RESTYPE]) // Platz frei
 					{
 					// Abteilung für Loge reservieren - FUNKTIONIERT
-						mysql_db_query($dbname, "insert into SITZ (MANDANTID, REIHE, PLATZ, USERID, RESTYP, WERGEAENDERT) values ($nPartyID, $reihe, $tisch, $nLoginID, 1, $realLoginID)", $dbh);
+						DB::query("insert into SITZ (MANDANTID, REIHE, PLATZ, USERID, RESTYP, WERGEAENDERT) values ($nPartyID, $reihe, $tisch, $nLoginID, 1, $realLoginID)");
 						logging($realLoginID, $nLoginID, 1, 'set', $reihe, $tisch);
 						$generate = TRUE;
 					}
@@ -226,7 +226,7 @@ if ($iAction >= 1 && $nLoginID >= 1) {
 				if ($row[3][USERID] == $nLoginID && $row[3][RESTYP] == 2) // Eigene Vormerkung
 				{
 				// Abteilung für Loge vormerkung aufheben - FUNKTIONIERT
-					mysql_db_query($dbname, "delete from SITZ where MANDANTID = $nPartyID and USERID = $nLoginID and REIHE = ". $reihe." and PLATZ = ". $tisch." LIMIT 1", $dbh);
+					DB::query("delete from SITZ where MANDANTID = $nPartyID and USERID = $nLoginID and REIHE = ". $reihe." and PLATZ = ". $tisch." LIMIT 1");
 					logging($realLoginID, $nLoginID, 2, 'unset', $reihe, $tisch);
 					$generate = TRUE;
 				}
@@ -235,7 +235,7 @@ if ($iAction >= 1 && $nLoginID >= 1) {
 					if ($row[3][USERID] < 1) // Noch frei
 					{
 					// Abteilung für Loge vormerken - FUNKTIONIERT
-						mysql_db_query($dbname, "insert into SITZ (MANDANTID, REIHE, PLATZ, USERID, RESTYP, WERGEAENDERT) values ($nPartyID, $reihe, $tisch, $nLoginID, 2, $realLoginID)", $dbh);
+						DB::query("insert into SITZ (MANDANTID, REIHE, PLATZ, USERID, RESTYP, WERGEAENDERT) values ($nPartyID, $reihe, $tisch, $nLoginID, 2, $realLoginID)");
 						logging($realLoginID, $nLoginID, 2, 'set', $reihe, $tisch);
 						$generate = TRUE;
 					}
@@ -261,9 +261,9 @@ if ($nLoginID < 1) {
 	$login = -1;
 	$aStatus = -1;
 } else {
-	$row = mysql_fetch_array(mysql_db_query($dbname, "select LOGIN from USER where USERID = $nLoginID", $dbh), MYSQL_ASSOC);
+	$row = DB::query("select LOGIN from USER where USERID = $nLoginID")->fetch_assoc();
 	$login = db2display($row['LOGIN']);
-	$row = mysql_fetch_array(mysql_db_query($dbname, "select STATUS from ASTATUS where MANDANTID = $nPartyID and USERID = $nLoginID",$dbh), MYSQL_ASSOC);
+	$row = DB::query("select STATUS from ASTATUS where MANDANTID = $nPartyID and USERID = $nLoginID")->fetch_assoc();
 	$aStatus = $row['STATUS'];
 }
 ?>
@@ -317,19 +317,19 @@ function gores(Reihe,Platz)
 			echo "<form name=\"theaction\">";
 			//#####################################
 			//Clanmates?
-			$row2 = mysql_fetch_array(mysql_db_query($dbname, "select c.NAME, uc.CLANID from USER_CLAN uc, CLAN c where c.MANDANTID = $nPartyID and c.CLANID = uc.CLANID and uc.USERID = $nLoginID and uc.MANDANTID = $nPartyID and uc.AUFNAHMESTATUS=$AUFNAHMESTATUS_OK", $dbh), MYSQL_ASSOC);
-			//echo mysql_errno().": ".mysql_error()."<BR>";
+			$row2 = DB::query("select c.NAME, uc.CLANID from USER_CLAN uc, CLAN c where c.MANDANTID = $nPartyID and c.CLANID = uc.CLANID and uc.USERID = $nLoginID and uc.MANDANTID = $nPartyID and uc.AUFNAHMESTATUS=$AUFNAHMESTATUS_OK")->fetch_assoc();
+			//echo DB::$link->errno.": ".DB::$link->error."<BR>";
 			$inClan   = $row2['CLANID'];
 			$clanName = $row2['NAME'];
 			if ($inClan > 0) {
 				//User hat einen Clan, Memberliste anzeigen
 				echo "<p>Auswahl f&uuml;r Clanreservierung &quot;".db2display($clanName)."&quot;: &nbsp; ";
-				$result = mysql_db_query ($dbname, "select u.LOGIN, u.USERID from USER u, USER_CLAN uc, ASTATUS a where a.MANDANTID=$nPartyID and a.USERID=u.USERID and (a.STATUS=$STATUS_BEZAHLT or a.STATUS=$STATUS_BEZAHLT_LOGE) and uc.AUFNAHMESTATUS = $AUFNAHMESTATUS_OK and u.USERID = uc.USERID and uc.CLANID = $inClan and uc.MANDANTID = $nPartyID", $dbh);
+				$result = DB::query("select u.LOGIN, u.USERID from USER u, USER_CLAN uc, ASTATUS a where a.MANDANTID=$nPartyID and a.USERID=u.USERID and (a.STATUS=$STATUS_BEZAHLT or a.STATUS=$STATUS_BEZAHLT_LOGE) and uc.AUFNAHMESTATUS = $AUFNAHMESTATUS_OK and u.USERID = uc.USERID and uc.CLANID = $inClan and uc.MANDANTID = $nPartyID");
 				echo "<select name=\"clanmate\">";
-				while ($row2=mysql_fetch_array($result)) {
+				while ($row2=$result->fetch_array()) {
 					
 					// Sitzplatz raussuchen
-					$row_seat_temp = mysql_fetch_array(mysql_db_query($dbname, "select REIHE, PLATZ from SITZ where USERID='$row2[USERID]' and MANDANTID='$nPartyID'", $dbh), MYSQL_ASSOC); 
+					$row_seat_temp = DB::query("select REIHE, PLATZ from SITZ where USERID='$row2[USERID]' and MANDANTID='$nPartyID'")->fetch_assoc(); 
 					$nReihe = $row_seat_temp['REIHE'];
 					$nPlatz = $row_seat_temp['PLATZ'];
 					

@@ -15,8 +15,8 @@ function displayNews($sTitel, $sBeitrag, $sAutor, $sDatum, $nInhaltID) {
 
 	echo "<tr><td><img src=\"/gfx/lgif.gif\" width=\"0\" height=\"4\"></td></tr>";
 
-	$result_count= mysql_db_query ($dbname, "select COUNT(*) from INHALT where PARENTID='$nInhaltID' and KATEGORIEID=$KATEGORIE_NEWSCOMMENT", $dbh);
-	$row_count = mysql_fetch_array($result_count);
+	$result_count= DB::query("select COUNT(*) from INHALT where PARENTID='$nInhaltID' and KATEGORIEID=$KATEGORIE_NEWSCOMMENT");
+	$row_count = $result_count->fetch_array();
 	if ($iAction != "comment" && $iAction != "add") {
 		if ($row_count[0] <= 0) {
 			echo "<tr><td align=\"right\"><a href=\"news.php?iAction=add&nInhaltID=$nInhaltID#checkpoint\">$str[abgeben]</a></td></tr>";
@@ -34,9 +34,9 @@ if ($iAction == "comment") {
 		if (!isset($dbh))
 			$dbh = DB::connect();
 		$nInhaltID = intval($nInhaltID);
-		$result = mysql_db_query ($dbname, "select INHALTID, TITEL, DERINHALT, AUTORNAME, WANNANGELEGT from INHALT where MANDANTID=$nPartyID and AKTIV='J' and INHALTID='$nInhaltID'", $dbh);
-		//echo mysql_errno().": ".mysql_error()."<BR>";
-		$row = mysql_fetch_array($result);
+		$result = DB::query("select INHALTID, TITEL, DERINHALT, AUTORNAME, WANNANGELEGT from INHALT where MANDANTID=$nPartyID and AKTIV='J' and INHALTID='$nInhaltID'");
+		//echo DB::$link->errno.": ".DB::$link->error."<BR>";
+		$row = $result->fetch_array();
 
 		displayNews($row["TITEL"],$row["DERINHALT"],$row["AUTORNAME"],$row["WANNANGELEGT"],$row["INHALTID"]);
 
@@ -51,17 +51,17 @@ if ($iAction == "comment") {
 	if (!isset($dbh))
 		$dbh = DB::connect();
 
-	$result = mysql_db_query ($dbname, "select INHALTID, TITEL, DERINHALT, AUTORNAME, WANNANGELEGT from INHALT where MANDANTID=$nPartyID and AKTIV='J' and KATEGORIEID=$KATEGORIE_NEWS order by WANNANGELEGT desc limit 1", $dbh);
-	//echo mysql_errno().": ".mysql_error()."<BR>";
-	$row = mysql_fetch_array($result);
+	$result = DB::query("select INHALTID, TITEL, DERINHALT, AUTORNAME, WANNANGELEGT from INHALT where MANDANTID=$nPartyID and AKTIV='J' and KATEGORIEID=$KATEGORIE_NEWS order by WANNANGELEGT desc limit 1");
+	//echo DB::$link->errno.": ".DB::$link->error."<BR>";
+	$row = $result->fetch_array();
 	
 	displayNews($row["TITEL"],$row["DERINHALT"],$row["AUTORNAME"],$row["WANNANGELEGT"],$row["INHALTID"]);
 	
 	echo "</table><table width=\"100%\" cellpadding=\"8\"><tr><td valign=\"top\">";
 	
-	$result = mysql_db_query ($dbname, "select INHALTID, TITEL, DERINHALT, AUTORNAME, WANNANGELEGT from INHALT where MANDANTID=$nPartyID and AKTIV='J' and KATEGORIEID=$KATEGORIE_NEWS order by WANNANGELEGT desc limit 1,10", $dbh);
-	//echo mysql_errno().": ".mysql_error()."<BR>";
-	while ($row = mysql_fetch_array($result)) {
+	$result = DB::query("select INHALTID, TITEL, DERINHALT, AUTORNAME, WANNANGELEGT from INHALT where MANDANTID=$nPartyID and AKTIV='J' and KATEGORIEID=$KATEGORIE_NEWS order by WANNANGELEGT desc limit 1,10");
+	//echo DB::$link->errno.": ".DB::$link->error."<BR>";
+	while ($row = $result->fetch_array()) {
 		echo "<table cellspacing=\"0\" cellpadding=\"0\" border=\"0\"><tr><td class=\"pelas_newstitle_small\"><a class=\"newslink\" href=\"news.php?iAction=comment&nInhaltID=$row[INHALTID]#checkpoint\">$row[TITEL]</a></td></tr>";
 		echo "<tr><td class=\"pelas_newsautor\"><img src=\"gfx/headline_pfeil.png\" border=\"0\"> ".dateDisplay2($row[WANNANGELEGT])." $str[von] ";
 		if ($row[AUTOR] > 0) {
@@ -71,8 +71,8 @@ if ($iAction == "comment") {
 		}
 		echo "</td></tr><tr><td class=\"PelasSmallComment\">";
 
-		$result_count= mysql_db_query ($dbname, "select COUNT(*) from INHALT where PARENTID=$row[INHALTID] and KATEGORIEID=$KATEGORIE_NEWSCOMMENT", $dbh);
-		$row_count = mysql_fetch_array($result_count);
+		$result_count= DB::query("select COUNT(*) from INHALT where PARENTID=$row[INHALTID] and KATEGORIEID=$KATEGORIE_NEWSCOMMENT");
+		$row_count = $result_count->fetch_array();
 		if ($row_count[0] <= 0) {
 			echo "<a href=\"news.php?iAction=add&nInhaltID=$row[INHALTID]#checkpoint\">$str[abgeben]</a>";
 		} else {
@@ -90,13 +90,13 @@ if ($iAction == "comment") {
 	echo "<td><a href=\"http://www.powertech-electronics.de\" target=\"_blank\"><img src=\"/gfx/hauptsponsor_pixelview.jpg\" width=\"112\" height=\"150\" border=\"0\" alt=\"$str[hauptsponsor] Pixelview\"></a></td></tr>";
 	echo "</table><br>";
 
-	$result= mysql_db_query ($dbname, "select STRINGWERT from CONFIG where PARAMETER='NEUESTES_GESICHT' and MANDANTID=$nPartyID",$dbh);
+	$result= DB::query("select STRINGWERT from CONFIG where PARAMETER='NEUESTES_GESICHT' and MANDANTID=$nPartyID");
 	if ($result) {
-		$row = mysql_fetch_array($result);
+		$row = $result->fetch_array();
 		$nGesichtID = $row[0];
 		if ($nGesichtID != "") {
-			$result2= mysql_db_query ($dbname, "select USERID, LOGIN, PLZ, Ort from USER where USERID='$nGesichtID'",$dbh);
-			$row2 = mysql_fetch_array($result2);
+			$result2= DB::query("select USERID, LOGIN, PLZ, Ort from USER where USERID='$nGesichtID'");
+			$row2 = $result2->fetch_array();
 				echo "<table cellspacin=\"0\" cellpadding=\"1\" border=\"0\"><tr><td valign=\"top\" align=\"right\"><b>$str[neuestesgesicht]</b><br>";
 				echo "<br><a href=\"benutzerdetails.php?nUserID=$row2[USERID]\">$row2[LOGIN]</a><br>";
 				echo "$str[aus] $row2[PLZ] $row2[Ort]<br>";

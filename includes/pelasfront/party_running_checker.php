@@ -28,9 +28,9 @@ $sql = "select
 			AND p.terminVon <= NOW()
 			AND NOW() <= p.terminBis";
 
-//$res = @mysql_query($sql);
+//$res = DB::query($sql);
 if ($res)
-	if ($row = mysql_fetch_assoc($res))
+	if ($row = $res->fetch_assoc())
 		if ($row['anzahl'] > 0) {
 			# Warnmeldung ausgeben
 			?>

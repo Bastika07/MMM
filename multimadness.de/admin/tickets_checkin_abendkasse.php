@@ -55,7 +55,7 @@ if ($_GET['iMandantID'] < 1) {
 		WHERE partyId = '".intval($aktuellePartyID)."'
 		  AND ticketId = '".safe($_POST['iTickets'])."'";
 	$res = DB::query($sql);
-	$row = mysql_fetch_array($res);
+	$row = $res->fetch_array();
 	if ($row['statusId'] != ACC_STATUS_BEZAHLT) {
 	    echo '<p class="fehler">Gew&auml;hltes Ticket ist nicht bezahlt.</p>' . "\n";
 	} else {
@@ -78,7 +78,7 @@ if ($_GET['iMandantID'] < 1) {
 		WHERE partyId = ".intval($aktuellePartyID)."
 		AND ticketId = '".intval($_POST['iTickets'])."'";
 	$res = DB::query($sql);
-	$rowBez = mysql_fetch_array($res);
+	$rowBez = $res->fetch_array();
 
 	# Gültigkeit der UserId prüfen.
 	$sql = "SELECT USERID
@@ -96,10 +96,10 @@ if ($_GET['iMandantID'] < 1) {
 		  AND p.mandantId = '".intval($_GET['iMandantID'])."'
 		  AND p.aktiv = 'J'";
 	$resZuordnung = DB::query($sql);
-	if (mysql_num_rows($resUser) < 1) {
+	if ($resUser->num_rows < 1) {
 	    echo '<p class="fehler">Zuzuordnende Benutzer-ID ' . intval($_POST['iZuordnung_UserId']) . " unbekannt.</p>\n";
-	} elseif (mysql_num_rows($resZuordnung) > 0) {
-	    $row = mysql_fetch_array($resZuordnung);
+	} elseif ($resZuordnung->num_rows > 0) {
+	    $row = $resZuordnung->fetch_array();
 	    echo '<p class="fehler">Benutzer-ID ' . intval($_POST['iZuordnung_UserId']) . ' ist bereits dem Ticket Nr. ' . PELAS::FormatTicketNr($row['ticketId']) . " zugeordnet.</p>\n";
 	} elseif ($rowBez['statusId'] != ACC_STATUS_BEZAHLT) {
 	    echo '<p class="fehler">Gew&auml;hltes Ticket ist nicht bezahlt.</p>' . "\n";
@@ -200,7 +200,7 @@ if ($_GET['iMandantID'] < 1) {
 				p.mandantId = '".intval($_GET['iMandantID'])."'
 		";
 	$resTemp = DB::query($sql);
-	$rowTemp = mysql_fetch_array($resTemp);
+	$rowTemp = $resTemp->fetch_array();
 	if ($rowTemp['bestellId'] > 0) {
 		$addOut = "(".substr($rowTemp['kurzbeschreibung'], 0, 24).")";
 	}

@@ -65,7 +65,7 @@ class COMPAT {
 			";
 
 		$res = DB::query($sql);
-		$row = mysql_fetch_assoc($res);
+		$row = $res->fetch_assoc();
 		return $row['mandantId'];
 	}
 
@@ -83,7 +83,7 @@ class COMPAT {
 			and r.RECHTID = '{$right}'";
 		$res = DB::query($sql);
 		$retval = array();
-		while ($row = mysql_fetch_assoc($res))
+		while ($row = $res->fetch_assoc())
 			$retval[$row['USERID']] = $row['LOGIN'];
 
 		return $retval;
@@ -115,7 +115,7 @@ class COMPAT {
 
 		$res = DB::query($sql);
 		$retVal= array();
-		while ($row = mysql_fetch_assoc($res))
+		while ($row = $res->fetch_assoc())
 			$retVal[$row['mandantid']] = $row;
 
 		return $retVal;
@@ -148,10 +148,10 @@ class COMPAT {
 		$res = DB::query($sql);
 
 		// user ist in keinem clan
-		if (mysql_num_rows($res) == 0)
+		if ($res->num_rows == 0)
 			return array();
 
-		$row = mysql_fetch_assoc($res);
+		$row = $res->fetch_assoc();
 
 		$sql = "select c.USERID, u.LOGIN
 			from USER_CLAN c
@@ -161,7 +161,7 @@ class COMPAT {
 			and c.AUFNAHMESTATUS = 2";
 		$res = DB::query($sql);
 		$retval = array();
-		while ($row = mysql_fetch_assoc($res))
+		while ($row = $res->fetch_assoc())
 			$retval[$row['USERID']] = $row['LOGIN'];
 
 		return $retval;
@@ -198,8 +198,8 @@ class COMPAT {
 			  t.partyId   = '$partyid'
 			";
 		$res = DB::query($sql);
-		$row = mysql_fetch_assoc($res);
-		if (mysql_num_rows($res) == 0)
+		$row = $res->fetch_assoc();
+		if ($res->num_rows == 0)
 			return "";
 
 		return array('reihe' => $row['sitzReihe'], 'platz' => $row['sitzPlatz'], 'ebene' => $row['EBENE']);

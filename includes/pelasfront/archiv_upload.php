@@ -123,7 +123,7 @@ function doUpload() {
             ."(MANDANTID, PARTYID, TYP, USERID, KOMMENTAR, BESCHREIBUNG, LINK, WANNANGELEGT) "
             ."values ('".MANDANTID."', '$iParty', 'img', '$nLoginID', '".safe($iName)."', '".safe($iKommentar)."', '', NOW())";
       DB::query($sql);
-      $archivid = mysql_insert_id();
+      $archivid = DB::$link->insert_id;
 
       $uploadfile = UPLOADDIR.'archiv'.$archivid.'.upload';
       $archiv_dst = ARCHIV_UPLOADDIR."$archivid/";

@@ -17,7 +17,7 @@ $sql = "SELECT
 				WHERE
 					MANDANTID = $mandantId";
 $res = DB::query($sql);
-while ($row = mysql_fetch_assoc($res)) {
+while ($row = $res->fetch_assoc()) {
 	for ($i = 1; $i <= $row['LAENGE']; $i++)
 		$ebenen[$row['EBENE']][$row['REIHE']][$i] = '[frei]';
 }
@@ -36,8 +36,8 @@ $sql = "SELECT
 			  st.REIHE = sd.REIHE
 			  and st.RESTYP=1";
 $res = DB::query($sql);
-echo mysql_error();
-while ($row = mysql_fetch_assoc($res)) {
+echo DB::$link->error;
+while ($row = $res->fetch_assoc()) {
 	$ebenen[$row['EBENE']][$row['REIHE']][$row['PLATZ']] = $row['LOGIN'];
 }  
 		

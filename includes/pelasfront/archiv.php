@@ -33,12 +33,12 @@ if (($selectPartyID < 1 && $selectPartyID != -1) || $selectPartyID > 10000000) {
 
 	if ($selectPartyID == -1) {
 		// Übersicht aller Parties anzeigen
-		$result = mysql_query("select MANDANTID, BESCHREIBUNG from MANDANT");
-		//echo mysql_errno().": ".mysql_error()."<BR>";
+		$result = DB::query("select MANDANTID, BESCHREIBUNG from MANDANT");
+		//echo DB::$link->errno.": ".DB::$link->error."<BR>";
 		echo "<table class=\"rahmen_allg\" cellpadding=\"$cCellp\" cellspacing=\"1\" border=\"0\" width=\"$cTableSize\">";
 		echo "<tr><td class=\"TNListe\"><b>DAS Party Archiv</b></td></tr>";
 		$sBGC = "TNListeTDA";
-		while ($row = @mysql_fetch_array($result)) {
+		while ($row = $result->fetch_array()) {
 			echo "<TR><TD class=\"$sBGC\"><a href=\"?page=14&selectPartyID=$row[MANDANTID]\">".db2display($row['BESCHREIBUNG'])."</a></TD></tr>";
 			if ($sBGC == "TNListeTDA") {
 				$sBGC = "TNListeTDB";
@@ -57,8 +57,8 @@ if (($selectPartyID < 1 && $selectPartyID != -1) || $selectPartyID > 10000000) {
 				//######################################################
 				// Übersichtsliste der gewählten Kategorie anzeigen
 
-				$result = mysql_query("select BESCHREIBUNG from MANDANT where MANDANTID = '$selectPartyID'");
-				$row0 = @mysql_fetch_array($result);
+				$result = DB::query("select BESCHREIBUNG from MANDANT where MANDANTID = '$selectPartyID'");
+				$row0 = $result->fetch_array();
 				echo "<h2>".db2display($row0['BESCHREIBUNG'])." : ".$KATEGORIEINFO[$selectTyp][0]."</h2>";
 
 				if ($selectTyp == $KATEGORIE_ARCH_BILDER) {
@@ -81,11 +81,11 @@ if (($selectPartyID < 1 && $selectPartyID != -1) || $selectPartyID > 10000000) {
 					ORDER BY LFDNR DESC , KOMMENTAR
 					";
 					
-					$result2 = mysql_query($sql);
+					$result2 = DB::query($sql);
 				} elseif ($selectTyp == $KATEGORIE_ARCH_VIDEOS) {
 						// Bei Videos das alte und neue Archiv zusammen fassen. Typ 6 sind Videos. Die Laufende Nummer und PartyID aus den
 						// Beiden Archivtabelle bekomtm man nicht zusammen. Die Convertierung des Datums ist für die Korrekte Sortierung nötig.
-						$result2 = mysql_query("
+						$result2 = DB::query("
 						(
 						SELECT convert(p.terminVon, unsigned integer) as LFDNR, USERID, LINK, ARCHIVID, KOMMENTAR, TYP, p.PARTYID
 						FROM ARCHIV a join party p on a.partyid = p.partyid
@@ -105,7 +105,7 @@ if (($selectPartyID < 1 && $selectPartyID != -1) || $selectPartyID > 10000000) {
 						");
 				} elseif ($selectTyp == $KATEGORIE_ARCH_TURNIER) {
 					// Bei Turnierergebnissen das alte und neue Archiv zusammen fassen. Typ 9 sind Turniere. Party ID 15 ist noch im alten Archiv daher oben ausschließen
-					$result2 = mysql_query("
+					$result2 = DB::query("
 					(
 					SELECT convert( terminVon, unsigned integer ) AS LFDNR, 2 AS USERID, '' AS LINK, '' AS ARCHIVID, '' AS KOMMENTAR, 'turnier' AS TYP, PARTYID
 					FROM party
@@ -122,22 +122,22 @@ if (($selectPartyID < 1 && $selectPartyID != -1) || $selectPartyID > 10000000) {
 					ORDER BY LFDNR DESC , KOMMENTAR
 					");
 				} else {
-					$result2 = mysql_query ("select * from ARCHIV_INFO where PARTYID = '$selectPartyID' and TYP='$selectTyp' and LOCKED='no' order by LFDNR desc, KOMMENTAR");
+					$result2 = DB::query("select * from ARCHIV_INFO where PARTYID = '$selectPartyID' and TYP='$selectTyp' and LOCKED='no' order by LFDNR desc, KOMMENTAR");
 				}
 
 				$nTheLFDNumber= 0;
 				echo "<p><table class=\"rahmen_allg\" cellspacing=\"1\" cellpadding=\"$cCellp\" border=\"0\" width=\"$cTableSize\">";
 				$sBGC = "TNListeTDA";
-				while ($row2 = mysql_fetch_array($result2)) {
+				while ($row2 = $result2->fetch_array()) {
 					if ($nTheLFDNumber != $row2['LFDNR']) {
 						// Header für Party ausgeben
 						if ( $row2['TYP'] == 'img' or $row2['TYP'] == 'youtube' or $row2['TYP'] == 'turnier') {
-							$result = mysql_query ("select BESCHREIBUNG as NAME, terminVon as BEGINN, TEILNEHMER from party where PartyID = ".$row2['PARTYID']." and MANDANTID = ".$selectPartyID);
+							$result = DB::query("select BESCHREIBUNG as NAME, terminVon as BEGINN, TEILNEHMER from party where PartyID = ".$row2['PARTYID']." and MANDANTID = ".$selectPartyID);
 						//die("select NAME, terminVon, TEILNEHMER from PARTY where PartyID = ".$row2['PARTYID']." and MANDANTID = ".$selectPartyID);
 						} else {
-							$result = mysql_query ("select NAME, BEGINN, TEILNEHMER from PARTYHISTORIE where LFDNR = ".$row2['LFDNR']." and MANDANTID = ".$selectPartyID);
+							$result = DB::query("select NAME, BEGINN, TEILNEHMER from PARTYHISTORIE where LFDNR = ".$row2['LFDNR']." and MANDANTID = ".$selectPartyID);
 						}
-						$row3 = @mysql_fetch_array($result);
+						$row3 = $result->fetch_array();
 						// Leerzeile ab 2. Party
 						if ($nTheLFDNumber > 0 ) {
 							echo "<tr><td colspan=\"2\">&nbsp;</td></tr>";
@@ -146,8 +146,8 @@ if (($selectPartyID < 1 && $selectPartyID != -1) || $selectPartyID > 10000000) {
 						echo "<tr><td class=\"TNListe\" width=70%>Titel</td><td class=\"TNListe\" width=30%>Autor</td></tr>";
 						$nTheLFDNumber = $row2['LFDNR'];
 					}
-					$result = mysql_query ("select LOGIN from USER where USERID = ".$row2['USERID']);
-					$row4 = @mysql_fetch_array($result);
+					$result = DB::query("select LOGIN from USER where USERID = ".$row2['USERID']);
+					$row4 = $result->fetch_array();
 
 					//### Unterschiedliche Verlinkung zB bei Kategorie Links und Turniere
 					if ($selectTyp == $KATEGORIE_ARCH_TURNIER) {
@@ -214,12 +214,12 @@ if (($selectPartyID < 1 && $selectPartyID != -1) || $selectPartyID > 10000000) {
 				
 				//################################
 				// Detailansicht für Kategorie
-				$result = mysql_query("select LFDNR, LINK, USERID, LOCKED, AUFLOESUNG, KOMMENTAR from ARCHIV_INFO where ARCHIVID = '$archivID'");
-				$row3 = @mysql_fetch_array($result);
-				$result = mysql_query("select LOGIN from USER where USERID = ".$row3['USERID']);
-				$row2 = @mysql_fetch_array($result);
-				$result = mysql_query("select NAME, BEGINN, TEILNEHMER from PARTYHISTORIE where LFDNR = ".$row3['LFDNR']." and MANDANTID = '".$selectPartyID."'");
-				$row4 = @mysql_fetch_array($result);
+				$result = DB::query("select LFDNR, LINK, USERID, LOCKED, AUFLOESUNG, KOMMENTAR from ARCHIV_INFO where ARCHIVID = '$archivID'");
+				$row3 = $result->fetch_array();
+				$result = DB::query("select LOGIN from USER where USERID = ".$row3['USERID']);
+				$row2 = $result->fetch_array();
+				$result = DB::query("select NAME, BEGINN, TEILNEHMER from PARTYHISTORIE where LFDNR = ".$row3['LFDNR']." and MANDANTID = '".$selectPartyID."'");
+				$row4 = $result->fetch_array();
 				echo "<h2>".db2display($row4['NAME'])." : ".$KATEGORIEINFO[$selectTyp][0]."</h2>";
 				echo "<p>Teilnehmer: ".db2display($row4['TEILNEHMER'])." / Datum: ".dateDisplay2Short($row4['BEGINN'])."</p>";
 				if ($row3['LOCKED'] == "no") {
@@ -253,8 +253,8 @@ if (($selectPartyID < 1 && $selectPartyID != -1) || $selectPartyID > 10000000) {
 								if ( $j == 3 ) { $j = 0; echo "</tr>\n<tr>"; }
 								$j++;
 
-								$result0815 = mysql_query("select KOMMENTAR from ARCHIV_KOMMENTAR where ARCHIVID = '$archivID' and NAME = '".substr($Slines[$Si],3)."'");
-								$row4 = @mysql_fetch_array($result0815);
+								$result0815 = DB::query("select KOMMENTAR from ARCHIV_KOMMENTAR where ARCHIVID = '$archivID' and NAME = '".substr($Slines[$Si],3)."'");
+								$row4 = $result0815->fetch_array();
 
 								//### Für Kategorie Video Download aktivieren
 								//### Name des Files steht im Feld Link
@@ -290,12 +290,12 @@ if (($selectPartyID < 1 && $selectPartyID != -1) || $selectPartyID > 10000000) {
 		} else if ($selectTyp == "img") {
 			//################################
 			// Detailansicht für Kategorie
-			$result = mysql_query("select PARTYID, ARCHIVID, USERID, LOCKED, KOMMENTAR from ARCHIV where ARCHIVID = '$archivID'");
-			$row3 = @mysql_fetch_array($result);
-			$result = mysql_query("select LOGIN from USER where USERID = ".$row3['USERID']);
-			$row2 = @mysql_fetch_array($result);
-			$result = mysql_query("select beschreibung, terminvon, TEILNEHMER from party where PARTYID = ".$row3['PARTYID']);
-			$row4 = @mysql_fetch_array($result);
+			$result = DB::query("select PARTYID, ARCHIVID, USERID, LOCKED, KOMMENTAR from ARCHIV where ARCHIVID = '$archivID'");
+			$row3 = $result->fetch_array();
+			$result = DB::query("select LOGIN from USER where USERID = ".$row3['USERID']);
+			$row2 = $result->fetch_array();
+			$result = DB::query("select beschreibung, terminvon, TEILNEHMER from party where PARTYID = ".$row3['PARTYID']);
+			$row4 = $result->fetch_array();
 			echo "<h2>".db2display($row4['beschreibung'])." : ".$KATEGORIEINFO[7][0]."</h2>";
 			echo "<p>Teilnehmer: ".db2display($row4['TEILNEHMER'])." / Datum: ".dateDisplay2Short($row4['terminvon'])."</p>";
 			if ($row3['LOCKED'] == "no") {
@@ -312,8 +312,8 @@ if (($selectPartyID < 1 && $selectPartyID != -1) || $selectPartyID > 10000000) {
 					if (substr($Slines[$Si],0,3) == "tn_") {
 						if ( $j == 3 ) { $j = 0; echo "</tr>\n<tr>"; }
 						$j++;
-						$result0815 = mysql_query("select KOMMENTAR from ARCHIV_KOMMENTAR where ARCHIVID = '$archivID' and NAME = '".substr($Slines[$Si],3)."'");
-						$row4 = @mysql_fetch_array($result0815);
+						$result0815 = DB::query("select KOMMENTAR from ARCHIV_KOMMENTAR where ARCHIVID = '$archivID' and NAME = '".substr($Slines[$Si],3)."'");
+						$row4 = $result0815->fetch_array();
 						//### Name des Files steht im Feld Link
 						$sTheURL = PELASHOST."archiv/_".$selectTyp."/".$archivID."/".rawurlencode(substr($Slines[$Si],3));
 						$imageUrl = PELASHOST."archiv/_".$selectTyp."/".$archivID."/".rawurlencode($Slines[$Si]);
@@ -335,12 +335,12 @@ if (($selectPartyID < 1 && $selectPartyID != -1) || $selectPartyID > 10000000) {
 		} elseif ($selectTyp == "youtube") {
 			//################################
 			// Detailansicht für Kategorie
-			$result = mysql_query("select PARTYID, ARCHIVID, USERID, LOCKED, KOMMENTAR, LINK from ARCHIV where ARCHIVID = '$archivID'");
-			$row3 = @mysql_fetch_array($result);
-			$result = mysql_query("select LOGIN from USER where USERID = ".$row3['USERID']);
-			$row2 = @mysql_fetch_array($result);
-			$result = mysql_query("select beschreibung, terminvon, TEILNEHMER from party where PARTYID = ".$row3['PARTYID']);
-			$row4 = @mysql_fetch_array($result);
+			$result = DB::query("select PARTYID, ARCHIVID, USERID, LOCKED, KOMMENTAR, LINK from ARCHIV where ARCHIVID = '$archivID'");
+			$row3 = $result->fetch_array();
+			$result = DB::query("select LOGIN from USER where USERID = ".$row3['USERID']);
+			$row2 = $result->fetch_array();
+			$result = DB::query("select beschreibung, terminvon, TEILNEHMER from party where PARTYID = ".$row3['PARTYID']);
+			$row4 = $result->fetch_array();
 			echo "<h2>".db2display($row4['beschreibung'])." : ".$KATEGORIEINFO[6][0]."</h2>";
 			echo "<p>Teilnehmer: ".db2display($row4['TEILNEHMER'])." / Datum: ".dateDisplay2Short($row4['terminvon'])."</p>";
 			if ($row3['LOCKED'] == "no") {
@@ -360,8 +360,8 @@ if (($selectPartyID < 1 && $selectPartyID != -1) || $selectPartyID > 10000000) {
 				echo "<p>Diese Galerie ist nicht freigegeben.</p>";
 			}
 		} else {
-			$result = mysql_query("select BESCHREIBUNG from MANDANT where MANDANTID = '$selectPartyID'");
-			$row = @mysql_fetch_array($result);
+			$result = DB::query("select BESCHREIBUNG from MANDANT where MANDANTID = '$selectPartyID'");
+			$row = $result->fetch_array();
 			echo "<h2>".db2display($row['BESCHREIBUNG'])."</h2>\n";
 
 			echo "<table class=\"rahmen_allg\" cellpadding=\"$cCellp\" cellspacing=\"1\" border=\"0\" width=\"$cTableSize\">\n";
@@ -380,7 +380,7 @@ if (($selectPartyID < 1 && $selectPartyID != -1) || $selectPartyID > 10000000) {
 			for ($i=$KATEGORIE_ARCH_VIDEOS;$i<=$KATEGORIE_ARCH_LINK;$i++) {
 				if ($KATEGORIEINFO[$i][2]){
 
-					#$rowCount = @mysql_fetch_array(mysql_db_query($dbname, "select count(*) as ANZAHL from ARCHIV_INFO where PARTYID='$selectPartyID' and TYP='$i' and locked='no'", $dbh), MYSQL_ASSOC);
+					#$rowCount = DB::query("select count(*) as ANZAHL from ARCHIV_INFO where PARTYID='$selectPartyID' and TYP='$i' and locked='no'")->fetch_assoc();
 					echo "<TR height=\"44\"><TD class=\"$sBGC\"><table><tr><td width=\"35\" style=\"text-align:center;\"><i class=\"archiv ".$aFontIcons[$i]."\"></i></td><td><a href=\"?page=14&selectPartyID=$selectPartyID&selectTyp=$i\">".db2display($KATEGORIEINFO[$i][0])."</a></td></tr></table></TD></tr>\n";
 					if ($sBGC == "TNListeTDA") {
 						$sBGC = "TNListeTDB";

@@ -439,9 +439,9 @@ function intervalAdd($eventID, $start_stunde, $start_tmj, $end_stunde, $end_tmj,
           FROM ANWESENHEITEN_EVENTS
           WHERE event = '.intval($eventID);
     if ($res = DB::query($q)) {
-      $row = mysql_fetch_assoc($res);
+      $row = $res->fetch_assoc();
     } else {
-      PELAS::error('MySQL-Fehler: '.mysql_error($res));
+      PELAS::error('MySQL-Fehler: '.DB::$link->error);
     }
 
     $overlap = false;
@@ -454,7 +454,7 @@ function intervalAdd($eventID, $start_stunde, $start_tmj, $end_stunde, $end_tmj,
 	        AND usrid = '.User::loginID();
         if ($res = DB::query($q)) {
             $overlap = false;
-            while ($row2 = mysql_fetch_assoc($res)) {
+            while ($row2 = $res->fetch_assoc()) {
                 if (
                     # Ende der neuen Zeitspanne liegt in einer alten Zeitspanne.
                     ($end >= $row2['start'] and $end <= $row2['end'])
@@ -483,7 +483,7 @@ function intervalAdd($eventID, $start_stunde, $start_tmj, $end_stunde, $end_tmj,
                 AND usrid = '-1'
                 AND description = '$description'";
         if ($res = DB::query($q)) {
-            $rowcheck = mysql_fetch_row($res);
+            $rowcheck = $res->fetch_row();
             $exists = ($rowcheck[0] != 0);
         }
         $insertquery = "INSERT INTO ANWESENHEITEN

@@ -11,14 +11,14 @@ echo "<h1>Inhaltstyp ".htmlspecialchars($KATEGORIEINFO[$_GET['nKategorieID']][0]
 $dbh = DB::connect();
 
 if ($_GET['iAction']=="deactivate") {
-	$result = mysql_db_query ($dbname, "update INHALT set AKTIV = 'N', WERGEAENDERT=".intval($loginID)." where INHALTID=".intval($_GET['nInhaltID'])." and KATEGORIEID=".intval($_GET['nKategorieID']), $dbh);
+	$result = DB::query("update INHALT set AKTIV = 'N', WERGEAENDERT=".intval($loginID)." where INHALTID=".intval($_GET['nInhaltID'])." and KATEGORIEID=".intval($_GET['nKategorieID']));
 	echo "<p>Der Inhalt wurde deaktiviert.</p>";
 } elseif ($_GET['iAction']=="activate") {
-	$result = mysql_db_query ($dbname, "update INHALT set AKTIV = 'J', WERGEAENDERT=".intval($loginID)." where INHALTID=".intval($_GET['nInhaltID'])." and KATEGORIEID=".intval($_GET['nKategorieID']), $dbh);
+	$result = DB::query("update INHALT set AKTIV = 'J', WERGEAENDERT=".intval($loginID)." where INHALTID=".intval($_GET['nInhaltID'])." and KATEGORIEID=".intval($_GET['nKategorieID']));
 	echo "<p>Der Inhalt wurde aktiviert.</p>";
 } else {
-	$result= mysql_db_query ($dbname, "select i.INHALTID, i.TITEL, i.AKTIV, i.DATE1, m.BESCHREIBUNG, m.REFERER from INHALT i, MANDANT m, RECHTZUORDNUNG r where i.KATEGORIEID=".intval($_GET['nKategorieID'])." and i.MANDANTID=m.MANDANTID and i.MANDANTID=r.MANDANTID and r.USERID=".intval($loginID)." and r.RECHTID='".$KATEGORIEINFO[$_GET['nKategorieID']][1]."' order by i.WANNANGELEGT desc", $dbh);
-	//echo mysql_errno().": ".mysql_error()."<BR>";
+	$result= DB::query("select i.INHALTID, i.TITEL, i.AKTIV, i.DATE1, m.BESCHREIBUNG, m.REFERER from INHALT i, MANDANT m, RECHTZUORDNUNG r where i.KATEGORIEID=".intval($_GET['nKategorieID'])." and i.MANDANTID=m.MANDANTID and i.MANDANTID=r.MANDANTID and r.USERID=".intval($loginID)." and r.RECHTID='".$KATEGORIEINFO[$_GET['nKategorieID']][1]."' order by i.WANNANGELEGT desc");
+	//echo DB::$link->errno.": ".DB::$link->error."<BR>";
 
 	echo "<table cellspacing=\"0\" cellpadding=\"0\">\n";
 	echo "<tr><td class=\"navbar\">\n";
@@ -33,7 +33,7 @@ if ($_GET['iAction']=="deactivate") {
 	echo "</b></td><td class=\"navbar\"><b>Mandant</b></td><td class=\"navbar\"><b>Aktion</b></td></tr>\n";
 
 	$sKlasse = "dblau";
-	while ($row = mysql_fetch_array($result)) {
+	while ($row = $result->fetch_array()) {
 		if ($row[AKTIV] == "J") {
 		  if ($_GET['nKategorieID'] == $KATEGORIE_MAILING) {
 		    $sAktiv = dateDisplay2($row['DATE1']);

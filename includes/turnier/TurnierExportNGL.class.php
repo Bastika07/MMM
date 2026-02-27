@@ -108,7 +108,7 @@ class TurnierExportNGL {
 						NACHNAME as nachname, EMAIL as email,
 						NGL_SINGLE as nglid
 						from USER where USERID = {$userid}");
-				$player = mysql_fetch_assoc($res);
+				$player = $res->fetch_assoc();
 
 				$XML_player->addChild('nglid', !empty($player['nglid']) ? $player['nglid'] : 0);
 				$XML_player->addChild('nickname', $this->char2xml($player['login']));

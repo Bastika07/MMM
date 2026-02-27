@@ -21,7 +21,7 @@ $sql = "SELECT g.*, u.*, a.sitzReihe, a.sitzPlatz
 
 $res = DB::query($sql);
 
-$row = mysql_fetch_assoc($res);
+$row = $res->fetch_assoc();
 
 if ($row['LFDNR'] > 0) {
 	/* OK, Anzeigen! */

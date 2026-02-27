@@ -30,10 +30,10 @@ function getAnzahl($theStatus) {
   	    p.mandantId = '$nPartyID' and
   	    b.status = '$theStatus'
   	  ";
-  	  $result = mysql_query ($sql, $dbh);
+  	  $result = DB::query($sql);
 
-	if (mysql_num_rows($result)) {
-		$row = mysql_fetch_array($result);
+	if ($result->num_rows) {
+		$row = $result->fetch_array();
 		return $row['anzahl'];
 	} else {
 		return -1;
@@ -57,8 +57,8 @@ function getZugeordnetesTicket() {
   	  ";
   	  $result = DB::query($sql);
 
-	if (mysql_num_rows($result)) {
-		$row = mysql_fetch_array($result);
+	if ($result->num_rows) {
+		$row = $result->fetch_array();
 		return $row['anzahl'];
 	} else {
 		return -1;
@@ -85,8 +85,8 @@ function getTicketsOhneSitzplatz() {
   	    (t.sitzReihe IS NULL OR t.sitzReihe = '')
   	  ";
   	  $result = DB::query($sql);
-	if (mysql_num_rows($result)) {
-		$row = mysql_fetch_array($result);
+	if ($result->num_rows) {
+		$row = $result->fetch_array();
 		return $row['anzahl'];
 	} else {
 		return 1;
@@ -107,10 +107,10 @@ function getAnzahlTurnieranmeldungen() {
 				AND tu.userid = '".intval($nLoginID)."'
 				AND t.partyid = '".intval($aktuellePartyID)."'
   	  ";
-  	  $result = mysql_query ($sql, $dbh);
+  	  $result = DB::query($sql);
 
-	if (mysql_num_rows($result)) {
-		$row = mysql_fetch_array($result);
+	if ($result->num_rows) {
+		$row = $result->fetch_array();
 		return $row['anzahl'];
 	} else {
 		return -1;

@@ -77,7 +77,7 @@ class TurnierAdmin {
 		$res = DB::query($sql);
 
 		$retval = array();
-		while ($row = mysql_fetch_assoc($res)) {
+		while ($row = $res->fetch_assoc()) {
 			array_push($retval, $row['turnierid']);
 		}
 
@@ -99,7 +99,7 @@ class TurnierAdmin {
 		$res = DB::query($sql);
 
 		$retval = array();
-		while ($row = mysql_fetch_assoc($res))
+		while ($row = $res->fetch_assoc())
 			$retval[$row['userid']] = $row['login'];
 
 		return $retval;
@@ -118,7 +118,7 @@ class TurnierAdmin {
 		$res = DB::query($sql);
 
 		$oldlist = array();
-		while ($row = mysql_fetch_assoc($res))
+		while ($row = $res->fetch_assoc())
 			array_push($oldlist, $row['userid']);
 
 		/* neue eintraege erzeugen */

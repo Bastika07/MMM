@@ -23,11 +23,11 @@ if (!isset($dbh))
 	$dbh = DB::connect();
 
 echo "<table class=\"rahmen_allg\" width=\"450\" border=\"0\" cellpadding=\"2\" cellspacing=\"1\"><tr>\n";
-  $clanname = @mysql_fetch_array(mysql_query("select NAME from CLAN where CLANID = '".intval($nClanID)."'"));
+  $clanname = DB::query("select NAME from CLAN where CLANID = '".intval($nClanID)."'")->fetch_array();
   echo "<td colspan=\"2\" class=\"pelas_benutzer_titel\"><b>".db2display($clanname['NAME'])."</b></td>\n";
 echo "</tr>\n";
 
-$url = @mysql_fetch_array(mysql_query("select IRC_CHANNEL, URL from CLAN where CLANID = '$nClanID'"));
+$url = DB::query("select IRC_CHANNEL, URL from CLAN where CLANID = '$nClanID'")->fetch_array();
 
 echo "<tr><td class=\"pelas_benutzer_prefix\" width=\"80\">".db2display($str['homepage'])."</td><td class=\"pelas_benutzer_inhalt\" width=\"380\">";
 
@@ -56,13 +56,13 @@ $sql= "select
          uc.MANDANTID = '".intval($nPartyID)."' and 
          uc.CLANID = '".intval($nClanID)."' and 
          uc.AUFNAHMESTATUS = $AUFNAHMESTATUS_OK";
-$result = mysql_query($sql);
+$result = DB::query($sql);
 
 echo '<table border="0" cellpadding="0" cellspacing="0">'."\n";
-while ($row = mysql_fetch_array($result)) {
+while ($row = $result->fetch_array()) {
     echo '<tr><td width="250">'."\n";
     echo "<nobr><a href=\"?page=4&nUserID=$row[USERID]\"><img src=\"gfx/userinfo.gif\" border=\"0\"></a> ".db2display($row['LOGIN'])."</nobr> ";
-    $row_status= mysql_fetch_array(mysql_query("select STATUS from ASTATUS where USERID = $row[USERID] and MANDANTID = ".intval($nPartyID)));
+    $row_status= DB::query("select STATUS from ASTATUS where USERID = $row[USERID] and MANDANTID = ".intval($nPartyID))->fetch_array();
     echo '</td><td width="20">'."\n";
 
 	if (ACCOUNTING == "OLD") {
@@ -76,7 +76,7 @@ while ($row = mysql_fetch_array($result)) {
 		}
 		echo '</td><td>'."\n";
 		$sql= "select s.REIHE, s.PLATZ from SITZ as s where s.USERID = $row[USERID] and s.MANDANTID = '".intval($nPartyID)."' and (s.RESTYP = 1 or s.RESTYP = 3)";
-		$row_platz= mysql_fetch_array(mysql_query($sql));
+		$row_platz= DB::query($sql)->fetch_array();
 		if (isset($row_platz['REIHE']))
 		    echo "Platz ".$row_platz['REIHE'].'-'.$row_platz['PLATZ'];
 	} else {
@@ -96,9 +96,9 @@ while ($row = mysql_fetch_array($result)) {
 			  t.statusId  = '".ACC_STATUS_BEZAHLT."' and
 			  p.mandantId = '".intval($nPartyID)."'
 		";
-		$res = mysql_query($sql);
+		$res = DB::query($sql);
 		$counter = 0;
-		while ($rowTemp = mysql_fetch_array($res)) {
+		while ($rowTemp = $res->fetch_array()) {
 			if ($counter >= 1) {
 				echo "&nbsp;";
 			}
@@ -111,7 +111,7 @@ while ($row = mysql_fetch_array($result)) {
 				  MANDANTID ='".intval($nPartyID)."' and
 				  REIHE     = '".$rowTemp['sitzReihe']."'";
 			$resTemp2 = DB::query($sql);
-			$rowTemp2 = mysql_fetch_array($resTemp2);
+			$rowTemp2 = $resTemp2->fetch_array();
 			$ebene   = $rowTemp2['EBENE'];
 			echo "<a href=\"/?page=9&ebene=$ebene&locateUser=".$rowTemp['userId']."\">";
 			echo $rowTemp['sitzReihe']."-".$rowTemp['sitzPlatz'];

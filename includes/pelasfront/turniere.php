@@ -28,8 +28,8 @@ if (!isset($dbh))
 	$dbh = DB::connect();
 
 // Gesamtcoins herausfinden
-$result = mysql_db_query ($dbname, "select STRINGWERT from CONFIG where PARAMETER = 'COINS_GESAMT' and MANDANTID='$nPartyID'",$dbh);
-$row = mysql_fetch_array($result);
+$result = DB::query("select STRINGWERT from CONFIG where PARAMETER = 'COINS_GESAMT' and MANDANTID='$nPartyID'");
+$row = $result->fetch_array();
 $nMaxCoins = $row['STRINGWERT'];
 
 
@@ -41,11 +41,11 @@ function Verbrauchte_Coins($nUserID) {
 	}
 	$q = "select sum(tl.COINS) as ANZAHL from TURNIERLISTE tl, TURNIERTEILNEHMER t where tl.TURNIERID=t.TURNIERID and t.USERID='$nUserID' and t.MANDANTID='$nPartyID' and tl.MANDANTID='$nPartyID'";
 	$res = DB::query($q);
-	$rowTemp = mysql_fetch_array($res);
+	$rowTemp = $res->fetch_array();
 	$anzLeader = $rowTemp['ANZAHL'];
 	$q = "select sum(tl.COINS) as ANZAHL from TURNIERLISTE tl, TURNIERGRUPPE t where tl.TURNIERID=t.TURNIERID and t.USERID='$nUserID' and t.MANDANTID='$nPartyID' and tl.MANDANTID='$nPartyID'";
 	$res = DB::query($q);
-	$rowTemp = mysql_fetch_array($res);
+	$rowTemp = $res->fetch_array();
 	$anzGruppe = $rowTemp['ANZAHL'];
 	
 	return $anzLeader + $anzGruppe;
@@ -54,8 +54,8 @@ function Verbrauchte_Coins($nUserID) {
 
 if ($turnierid > 0) {
 	// Turnierinfos auslesen und in lokalen Variablen ablegen
-	$result= mysql_db_query ($dbname, "select t.BILDKL, t.PREIS_PLATZ1, t.PREIS_PLATZ2, t.PREIS_PLATZ3, t.STARTZEIT, t.ANMELDUNGOFFEN, t.TURNIERID, t.GRUPPENGROESSE, t.ANZAHL_TEILNEHMER, t.NAME, t.ART, t.REGELN, t.BILDKL, t.BILDGR, t.COINS from TURNIERLISTE t where t.MANDANTID = $nPartyID and t.TURNIERID='$turnierid'",$dbh);
-	$row = mysql_fetch_array($result);
+	$result= DB::query("select t.BILDKL, t.PREIS_PLATZ1, t.PREIS_PLATZ2, t.PREIS_PLATZ3, t.STARTZEIT, t.ANMELDUNGOFFEN, t.TURNIERID, t.GRUPPENGROESSE, t.ANZAHL_TEILNEHMER, t.NAME, t.ART, t.REGELN, t.BILDKL, t.BILDGR, t.COINS from TURNIERLISTE t where t.MANDANTID = $nPartyID and t.TURNIERID='$turnierid'");
+	$row = $result->fetch_array();
 	$Anzahl_Teilnehmer = $row[ANZAHL_TEILNEHMER];
 	$TurnierName       = db2display($row[NAME]);
 	$GruppenGroesse    = $row[GRUPPENGROESSE];
@@ -75,12 +75,12 @@ if ($turnierid > 0) {
 }
 if ($nLoginID > 0) {
 	// Wichtige Infos des eingeloggten Users auslesen
-	$result= mysql_db_query ($dbname, "select STATUS from ASTATUS where MANDANTID=$nPartyID and USERID=$nLoginID",$dbh);
-	$row = mysql_fetch_array($result);
+	$result= DB::query("select STATUS from ASTATUS where MANDANTID=$nPartyID and USERID=$nLoginID");
+	$row = $result->fetch_array();
 	$UserStatus = $row[STATUS];
-	$result= mysql_db_query ($dbname, "select c.NAME, uc.CLANID from CLAN c, USER_CLAN uc where c.MANDANTID=$nPartyID and uc.MANDANTID=$nPartyID and c.CLANID=uc.CLANID and uc.USERID=$nLoginID and uc.AUFNAHMESTATUS=$AUFNAHMESTATUS_OK",$dbh);
-	//echo mysql_errno().": ".mysql_error()."<BR>";
-	$row = mysql_fetch_array($result);
+	$result= DB::query("select c.NAME, uc.CLANID from CLAN c, USER_CLAN uc where c.MANDANTID=$nPartyID and uc.MANDANTID=$nPartyID and c.CLANID=uc.CLANID and uc.USERID=$nLoginID and uc.AUFNAHMESTATUS=$AUFNAHMESTATUS_OK");
+	//echo DB::$link->errno.": ".DB::$link->error."<BR>";
+	$row = $result->fetch_array();
 	$UserClan     = $row[CLANID];
 	$UserClanName = $row[NAME];
 }
@@ -95,11 +95,11 @@ if ($action == "detail") {
 	//echo "<img src=\"/turnierbild/$TurnierBildGR\" border=\"0\" align=\"right\">";
 
 //***** Turnier hat noch nicht begonnen, Teilnahme moeglich *****
-	// $result= mysql_db_query ($dbname, "select a.CLANID, a.TURNIERTEILNEHMERID, a.USERID, b.LOGIN, a.TEAMNAME from TURNIERTEILNEHMER a, USER b where b.USERID = a.USERID and a.TURNIERID='$turnierid' and a.MANDANTID=$nPartyID",$dbh);
-	$result= mysql_db_query ($dbname, "select a.CLANID, a.TURNIERTEILNEHMERID, a.USERID, b.LOGIN, a.TEAMNAME from TURNIERTEILNEHMER a, USER b where b.USERID = a.USERID and a.TURNIERID='$turnierid' and a.MANDANTID=$nPartyID",$dbh);
-	//echo mysql_errno().": ".mysql_error()."<BR>";
+	// $result= DB::query("select a.CLANID, a.TURNIERTEILNEHMERID, a.USERID, b.LOGIN, a.TEAMNAME from TURNIERTEILNEHMER a, USER b where b.USERID = a.USERID and a.TURNIERID='$turnierid' and a.MANDANTID=$nPartyID");
+	$result= DB::query("select a.CLANID, a.TURNIERTEILNEHMERID, a.USERID, b.LOGIN, a.TEAMNAME from TURNIERTEILNEHMER a, USER b where b.USERID = a.USERID and a.TURNIERID='$turnierid' and a.MANDANTID=$nPartyID");
+	//echo DB::$link->errno.": ".DB::$link->error."<BR>";
 	$rc = 1;
-	while ($row = mysql_fetch_array($result)) {
+	while ($row = $result->fetch_array()) {
 		$TurnierTeilnehmerID[$rc] = $row[TURNIERTEILNEHMERID];
 		$Teilnehmer[$rc] = $row[LOGIN];
 		$Teilnehmer_team[$rc] = $row[TEAMNAME];
@@ -108,8 +108,8 @@ if ($action == "detail") {
 		
 		if ($row[CLANID] > 0) {
 			// Clannamen anzeigen!
-			$result2 = mysql_db_query ($dbname, "select CLANID, NAME from CLAN where MANDANTID=$nPartyID and CLANID=$row[CLANID]", $dbh);
-			$row2 = mysql_fetch_array($result2);
+			$result2 = DB::query("select CLANID, NAME from CLAN where MANDANTID=$nPartyID and CLANID=$row[CLANID]");
+			$row2 = $result2->fetch_array();
 			$Teilnehmer_team[$rc] = $row2[NAME];
 			$Teilnehmer_clan[$rc] = $row2[CLANID];
 		}
@@ -181,8 +181,8 @@ $nVerbleibend = $nMaxCoins - Verbrauchte_Coins($nLoginID);
 		
 		if ($Teilnehmer[$t] != "" ) {
 			// Bisher im Team gefundene Leute raussuchen
-			$result2 = mysql_db_query ($dbname, "select count(*) from TURNIERGRUPPE where MANDANTID=$nPartyID and TURNIERID=$turnierid and TURNIERTEILNEHMERID='$TurnierTeilnehmerID[$t]'", $dbh);
-			$row2 = mysql_fetch_array($result2);
+			$result2 = DB::query("select count(*) from TURNIERGRUPPE where MANDANTID=$nPartyID and TURNIERID=$turnierid and TURNIERTEILNEHMERID='$TurnierTeilnehmerID[$t]'");
+			$row2 = $result2->fetch_array();
 			$Anzahl = $row2[0] + 1;
 		
 			echo "<td class=\"$TableClass\" width=\"50%\">";
@@ -207,9 +207,9 @@ $nVerbleibend = $nMaxCoins - Verbrauchte_Coins($nLoginID);
 			}
 			
 			// Ist der angemeldete User als Mitglied im Team? Wenn ja Austritt ermöglichen
-			$result2 = mysql_db_query ($dbname, "select USERID from TURNIERGRUPPE where MANDANTID=$nPartyID and TURNIERID='$turnierid' and TURNIERTEILNEHMERID='$TurnierTeilnehmerID[$t]' and USERID=$nLoginID", $dbh);
-			//echo mysql_errno().": ".mysql_error()."<BR>";
-			$row2 = mysql_fetch_array($result2);
+			$result2 = DB::query("select USERID from TURNIERGRUPPE where MANDANTID=$nPartyID and TURNIERID='$turnierid' and TURNIERTEILNEHMERID='$TurnierTeilnehmerID[$t]' and USERID=$nLoginID");
+			//echo DB::$link->errno.": ".DB::$link->error."<BR>";
+			$row2 = $result2->fetch_array();
 			if ($row2[USERID] == $nLoginID) {
 				$imTeam = 1;
 			} else {
@@ -263,12 +263,12 @@ if ($nLoginID != $UserID) {
 	echo "</form>";
 } else {
 //*** Ok, abmelden
-	$result= mysql_db_query ($dbname, "delete from TURNIERTEILNEHMER where TURNIERID=$turnierid and USERID=$UserID and MANDANTID=$nPartyID",$dbh);
-	//echo mysql_errno().": ".mysql_error()."<BR>";
+	$result= DB::query("delete from TURNIERTEILNEHMER where TURNIERID=$turnierid and USERID=$UserID and MANDANTID=$nPartyID");
+	//echo DB::$link->errno.": ".DB::$link->error."<BR>";
 	if ($GruppenGroesse > 1) {
 		// Mitglieder auch loeschen
-		$result= mysql_db_query ($dbname, "delete from TURNIERGRUPPE where TURNIERID='$turnierid' and MANDANTID=$nPartyID and TURNIERTEILNEHMERID='$TurnierTeilnehmerID'",$dbh);
-		//echo mysql_errno().": ".mysql_error()."<BR>";
+		$result= DB::query("delete from TURNIERGRUPPE where TURNIERID='$turnierid' and MANDANTID=$nPartyID and TURNIERTEILNEHMERID='$TurnierTeilnehmerID'");
+		//echo DB::$link->errno.": ".DB::$link->error."<BR>";
 	}
 	echo "<p>Du hast Dich soeben vom Turnier $TurnierName abgemeldet.</p>";
 }
@@ -303,19 +303,19 @@ Wenn Du ein neues Team erstellst, musst Du einen Namen eingeben.</p>
 }
 
 //Ist noch ein Platz frei?
-$result= mysql_db_query ($dbname, "select COUNT(*) from TURNIERTEILNEHMER where TURNIEREID='$turnierid and' MANDANTID=$nPartyID",$dbh);
-//echo mysql_errno().": ".mysql_error()."<BR>";
-if ($result != "" ) { $rowATeilnehmer = mysql_fetch_array($result); }
+$result= DB::query("select COUNT(*) from TURNIERTEILNEHMER where TURNIEREID='$turnierid and' MANDANTID=$nPartyID");
+//echo DB::$link->errno.": ".DB::$link->error."<BR>";
+if ($result != "" ) { $rowATeilnehmer = $result->fetch_array(); }
 
 //Vielleicht schon eingetragen?
-$result= mysql_db_query ($dbname, "select USERID from TURNIERTEILNEHMER where TURNIERID='$turnierid' and USERID=$nLoginID and MANDANTID=$nPartyID",$dbh);
-//echo mysql_errno().": ".mysql_error()."<BR>";
-if ($result != "" ) { $rowDrin = mysql_fetch_array($result); }
+$result= DB::query("select USERID from TURNIERTEILNEHMER where TURNIERID='$turnierid' and USERID=$nLoginID and MANDANTID=$nPartyID");
+//echo DB::$link->errno.": ".DB::$link->error."<BR>";
+if ($result != "" ) { $rowDrin = $result->fetch_array(); }
 
 // Bereits in irgendeinem Team als Member?
-$result= mysql_db_query ($dbname, "select USERID from TURNIERGRUPPE where USERID=$nLoginID and TURNIERID='$turnierid' and MANDANTID=$nPartyID",$dbh);
-//echo mysql_errno().": ".mysql_error()."<BR>";
-$imTeam = mysql_fetch_array($result);
+$result= DB::query("select USERID from TURNIERGRUPPE where USERID=$nLoginID and TURNIERID='$turnierid' and MANDANTID=$nPartyID");
+//echo DB::$link->errno.": ".DB::$link->error."<BR>";
+$imTeam = $result->fetch_array();
 
 echo "<h2>Teilnehmen am Turnier $TurnierName</h2>";
 
@@ -363,9 +363,9 @@ if ($AnmeldungOffen != "J") {
 		} else {
 			//Clan schon eingetragen?
 			if ($NimmClan == "clan" and $UserClan > 0) {
-				$result= mysql_db_query ($dbname, "select CLANID from TURNIERTEILNEHMER where TURNIERID='$turnierid' and CLANID='$UserClan' and MANDANTID=$nPartyID",$dbh);
-				//echo mysql_errno().": ".mysql_error()."<BR>";
-				if ($result != "" ) { $rowClanDrin = mysql_fetch_array($result); }
+				$result= DB::query("select CLANID from TURNIERTEILNEHMER where TURNIERID='$turnierid' and CLANID='$UserClan' and MANDANTID=$nPartyID");
+				//echo DB::$link->errno.": ".DB::$link->error."<BR>";
+				if ($result != "" ) { $rowClanDrin = $result->fetch_array(); }
 			}
 
 			if ($rowClanDrin > 0) {
@@ -378,15 +378,15 @@ if ($AnmeldungOffen != "J") {
 				//Alles i.O. teilnehmen
 				if ($NimmClan == "clan") {
 					// Clan anmelden
-					$result= mysql_db_query ($dbname, "insert into TURNIERTEILNEHMER (TURNIERID, MANDANTID, CLANID, USERID, KOMMENTAR) values ('$turnierid', $nPartyID, '$UserClan', $nLoginID, '$iKOMMENTAR')",$dbh);
-					//echo mysql_errno().": ".mysql_error()."<BR>";
+					$result= DB::query("insert into TURNIERTEILNEHMER (TURNIERID, MANDANTID, CLANID, USERID, KOMMENTAR) values ('$turnierid', $nPartyID, '$UserClan', $nLoginID, '$iKOMMENTAR')");
+					//echo DB::$link->errno.": ".DB::$link->error."<BR>";
 				} else {
 					// Frei fliegendes Team anmelden
-					$result= mysql_db_query ($dbname, "insert into TURNIERTEILNEHMER (TURNIERID, MANDANTID, USERID, KOMMENTAR, TEAMNAME) values ('$turnierid', $nPartyID, $nLoginID, '$iKOMMENTAR', '$iTEAMNAME')",$dbh);
-					//echo mysql_errno().": ".mysql_error()."<BR>";
+					$result= DB::query("insert into TURNIERTEILNEHMER (TURNIERID, MANDANTID, USERID, KOMMENTAR, TEAMNAME) values ('$turnierid', $nPartyID, $nLoginID, '$iKOMMENTAR', '$iTEAMNAME')");
+					//echo DB::$link->errno.": ".DB::$link->error."<BR>";
 				}
 
-				if (mysql_errno() == 0) {
+				if (DB::$link->errno == 0) {
 					echo "<p>Du hast nun ein Team f&uuml;r dieses Turnier angemeldet. </p>";
 				} else {	
 					echo "<p>Es gab technische Probleme bei der Anmeldung. Bitte wende Dich an einen Administrator.</p>";
@@ -396,10 +396,10 @@ if ($AnmeldungOffen != "J") {
 	} else {
 	//###### Einzelspiel ######
 		//Alles i.O. teilnehmen
-		$result= mysql_db_query ($dbname, "insert into TURNIERTEILNEHMER (TURNIERID, MANDANTID, USERID, KOMMENTAR) values ('$turnierid', $nPartyID, $nLoginID, '')",$dbh);
-		//echo mysql_errno().": ".mysql_error()."<BR>";
+		$result= DB::query("insert into TURNIERTEILNEHMER (TURNIERID, MANDANTID, USERID, KOMMENTAR) values ('$turnierid', $nPartyID, $nLoginID, '')");
+		//echo DB::$link->errno.": ".DB::$link->error."<BR>";
 
-		if (mysql_errno() == 0) {
+		if (DB::$link->errno == 0) {
 			echo "<p>Du hast Dich f&uuml;r dieses Turnier angemeldet.</p>";
 		} else {	
 			echo "<p>Es gab technische Probleme bei der Anmeldung. Bitte wende Dich an einen Administrator.</p>";
@@ -413,30 +413,30 @@ echo "<p><a href=\"turniere.php?action=detail&turnierid=$turnierid\">Zur&uuml;ck
 	// Team joinen
 	
 	// Voraussetzungen erkunden
-	$result = mysql_db_query ($dbname, "select c.NAME, tt.CLANID from TURNIERTEILNEHMER tt, CLAN c where tt.MANDANTID=$nPartyID and tt.TURNIERID='$turnierid' and tt.TURNIERTEILNEHMERID='$TurnierTeilnehmerID' and tt.CLANID=c.CLANID", $dbh);
-	$row2 = mysql_fetch_array($result);
+	$result = DB::query("select c.NAME, tt.CLANID from TURNIERTEILNEHMER tt, CLAN c where tt.MANDANTID=$nPartyID and tt.TURNIERID='$turnierid' and tt.TURNIERTEILNEHMERID='$TurnierTeilnehmerID' and tt.CLANID=c.CLANID");
+	$row2 = $result->fetch_array();
 	if ($row2[CLANID] > 0) {
 		$TeamName = db2display($row2[NAME]);
 	} else {
-		$result = mysql_db_query ($dbname, "select TEAMNAME from TURNIERTEILNEHMER where MANDANTID=$nPartyID and TURNIERID='$turnierid' and TURNIERTEILNEHMERID='$TurnierTeilnehmerID'", $dbh);
-		$row2 = mysql_fetch_array($result);
+		$result = DB::query("select TEAMNAME from TURNIERTEILNEHMER where MANDANTID=$nPartyID and TURNIERID='$turnierid' and TURNIERTEILNEHMERID='$TurnierTeilnehmerID'");
+		$row2 = $result->fetch_array();
 		$TeamName = db2display($row2[TEAMNAME]);
 	}
 	
 	echo "<h2>Team $TeamName joinen</h2>";
 	
 	// Bereits im Team?
-	$result= mysql_db_query ($dbname, "select USERID from TURNIERGRUPPE where USERID=$nLoginID and TURNIERID='$turnierid' and MANDANTID=$nPartyID",$dbh);
-	//echo mysql_errno().": ".mysql_error()."<BR>";
-	$imTeam = mysql_fetch_array($result);
-	$result= mysql_db_query ($dbname, "select USERID from TURNIERTEILNEHMER where USERID=$nLoginID and TURNIERID='$turnierid' and MANDANTID=$nPartyID",$dbh);
-	//echo mysql_errno().": ".mysql_error()."<BR>";
-	$imTeamLeader = mysql_fetch_array($result);
+	$result= DB::query("select USERID from TURNIERGRUPPE where USERID=$nLoginID and TURNIERID='$turnierid' and MANDANTID=$nPartyID");
+	//echo DB::$link->errno.": ".DB::$link->error."<BR>";
+	$imTeam = $result->fetch_array();
+	$result= DB::query("select USERID from TURNIERTEILNEHMER where USERID=$nLoginID and TURNIERID='$turnierid' and MANDANTID=$nPartyID");
+	//echo DB::$link->errno.": ".DB::$link->error."<BR>";
+	$imTeamLeader = $result->fetch_array();
 	
 	// Team bereits voll?
-	$result= mysql_db_query ($dbname, "select count(*) from TURNIERGRUPPE where TURNIERID='$turnierid' and MANDANTID=$nPartyID and TURNIERTEILNEHMERID='$TurnierTeilnehmerID'",$dbh);
-	//echo mysql_errno().": ".mysql_error()."<BR>";
-	if ($result != "" ) { $CountMembers = mysql_fetch_array($result); }
+	$result= DB::query("select count(*) from TURNIERGRUPPE where TURNIERID='$turnierid' and MANDANTID=$nPartyID and TURNIERTEILNEHMERID='$TurnierTeilnehmerID'");
+	//echo DB::$link->errno.": ".DB::$link->error."<BR>";
+	if ($result != "" ) { $CountMembers = $result->fetch_array(); }
 	
 	if ($AnmeldungOffen != "J") {
 		echo "<p>Die Anmeldung f&uuml;r dieses Turnier wurde noch nicht gestartet.</p>";
@@ -472,8 +472,8 @@ echo "<p><a href=\"turniere.php?action=detail&turnierid=$turnierid\">Zur&uuml;ck
 		echo "<p>Dein Clanmate hat nicht mehr gen&uuml;gend Coins ($nVerbleibend vorhanden, $nCoins ben&ouml;tigt).</p>";
 	} else {
 		//ok, go!
-		$result= mysql_db_query ($dbname, "insert into TURNIERGRUPPE (TURNIERID, MANDANTID, TURNIERTEILNEHMERID, USERID) values ('$turnierid', $nPartyID, '$TurnierTeilnehmerID', $nLoginID)",$dbh);
-		//echo mysql_errno().": ".mysql_error()."<BR>";
+		$result= DB::query("insert into TURNIERGRUPPE (TURNIERID, MANDANTID, TURNIERTEILNEHMERID, USERID) values ('$turnierid', $nPartyID, '$TurnierTeilnehmerID', $nLoginID)");
+		//echo DB::$link->errno.": ".DB::$link->error."<BR>";
 		
 		echo "Du bist dem Team erfolgreich beigetreten.</p>";
 	}
@@ -482,14 +482,14 @@ echo "<p><a href=\"turniere.php?action=detail&turnierid=$turnierid\">Zur&uuml;ck
 
 } elseif ($action == "ttn") {
 	// Voraussetzungen erkunden
-	$result = mysql_db_query ($dbname, "select c.NAME, tt.CLANID from TURNIERTEILNEHMER tt, CLAN c where tt.MANDANTID=$nPartyID and tt.TURNIERID='$turnierid' and tt.TURNIERTEILNEHMERID='$TurnierTeilnehmerID' and tt.CLANID=c.CLANID", $dbh);
-	$row2 = mysql_fetch_array($result);
+	$result = DB::query("select c.NAME, tt.CLANID from TURNIERTEILNEHMER tt, CLAN c where tt.MANDANTID=$nPartyID and tt.TURNIERID='$turnierid' and tt.TURNIERTEILNEHMERID='$TurnierTeilnehmerID' and tt.CLANID=c.CLANID");
+	$row2 = $result->fetch_array();
 	$ClanID = $row2[CLANID];
 	if ($ClanID > 0) {
 		$TeamName = db2display($row2[NAME]);
 	} else {
-		$result = mysql_db_query ($dbname, "select TEAMNAME from TURNIERTEILNEHMER where MANDANTID=$nPartyID and TURNIERID='$turnierid' and TURNIERTEILNEHMERID='$TurnierTeilnehmerID'", $dbh);
-		$row2 = mysql_fetch_array($result);
+		$result = DB::query("select TEAMNAME from TURNIERTEILNEHMER where MANDANTID=$nPartyID and TURNIERID='$turnierid' and TURNIERTEILNEHMERID='$TurnierTeilnehmerID'");
+		$row2 = $result->fetch_array();
 		$TeamName = db2display($row2[TEAMNAME]);
 	}
 	
@@ -498,8 +498,8 @@ echo "<p><a href=\"turniere.php?action=detail&turnierid=$turnierid\">Zur&uuml;ck
 	// Wenn WWCL-Turnier, dann WWCL-ID ausgeben
 	if ($sArt == "WWCL") {
 		// WWCL-ID lesen
-		$result = mysql_db_query ($dbname, "select u.WWCL_TEAM from TURNIERTEILNEHMER t ,USER u where u.USERID=t.USERID and t.TURNIERTEILNEHMERID='$TurnierTeilnehmerID' and t.TURNIERID='$turnierid'", $dbh);
-		$row = mysql_fetch_array($result);
+		$result = DB::query("select u.WWCL_TEAM from TURNIERTEILNEHMER t ,USER u where u.USERID=t.USERID and t.TURNIERTEILNEHMERID='$TurnierTeilnehmerID' and t.TURNIERID='$turnierid'");
+		$row = $result->fetch_array();
 		$sTeam   = $row[WWCL_TEAM];
 		if ($sTeam != "") {
 			// Vorhanden!
@@ -511,8 +511,8 @@ echo "<p><a href=\"turniere.php?action=detail&turnierid=$turnierid\">Zur&uuml;ck
 	}
 	if ($sArt == "NGL") {
 		// NGL-ID lesen
-		$result = mysql_db_query ($dbname, "select u.NGL_TEAM from TURNIERTEILNEHMER t ,USER u where u.USERID=t.USERID and t.TURNIERTEILNEHMERID='$TurnierTeilnehmerID' and t.TURNIERID='$turnierid'", $dbh);
-		$row = mysql_fetch_array($result);
+		$result = DB::query("select u.NGL_TEAM from TURNIERTEILNEHMER t ,USER u where u.USERID=t.USERID and t.TURNIERTEILNEHMERID='$TurnierTeilnehmerID' and t.TURNIERID='$turnierid'");
+		$row = $result->fetch_array();
 		$sTeam   = $row[NGL_TEAM];
 		if ($sTeam != "") {
 			// Vorhanden!
@@ -523,8 +523,8 @@ echo "<p><a href=\"turniere.php?action=detail&turnierid=$turnierid\">Zur&uuml;ck
 		}
 	}
 
-	$result = mysql_db_query ($dbname, "select u.USERID, u.LOGIN from TURNIERTEILNEHMER t ,USER u where u.USERID=t.USERID and t.TURNIERTEILNEHMERID='$TurnierTeilnehmerID' and t.MANDANTID=$nPartyID and t.TURNIERID='$turnierid'", $dbh);
-	$row = mysql_fetch_array($result);
+	$result = DB::query("select u.USERID, u.LOGIN from TURNIERTEILNEHMER t ,USER u where u.USERID=t.USERID and t.TURNIERTEILNEHMERID='$TurnierTeilnehmerID' and t.MANDANTID=$nPartyID and t.TURNIERID='$turnierid'");
+	$row = $result->fetch_array();
 	$LeaderName = db2display($row[LOGIN]);
 	$LeaderID   = $row[USERID];
 	
@@ -532,9 +532,9 @@ echo "<p><a href=\"turniere.php?action=detail&turnierid=$turnierid\">Zur&uuml;ck
 
 	echo "<tr><td class=\"dblau\" width=\"90\">Leader</td><td class=\"hblau\">$LeaderName <a href=\"benutzerdetails.php?nUserID=$LeaderID\"><img src=\"/gfx/showinfo.gif\" border=\"0\" alt=\"Teilnehmer Info\"></a></td></tr>";
 	
-	$result = mysql_db_query ($dbname, "select u.USERID, u.LOGIN from TURNIERGRUPPE t ,USER u where u.USERID=t.USERID and t.TURNIERTEILNEHMERID='$TurnierTeilnehmerID' and t.MANDANTID=$nPartyID and t.TURNIERID='$turnierid'", $dbh);
+	$result = DB::query("select u.USERID, u.LOGIN from TURNIERGRUPPE t ,USER u where u.USERID=t.USERID and t.TURNIERTEILNEHMERID='$TurnierTeilnehmerID' and t.MANDANTID=$nPartyID and t.TURNIERID='$turnierid'");
 	$counter = 1;
-	while ($row = mysql_fetch_array($result)) {
+	while ($row = $result->fetch_array()) {
 		echo "<tr><td class=\"dblau\">Spieler $counter</td><td class=\"hblau\"> ".db2display($row[LOGIN])." <a href=\"benutzerdetails.php?nUserID=$row[USERID]\"><img src=\"/gfx/showinfo.gif\" border=\"0\" alt=\"Teilnehmer Info\"></a></td></tr>";
 		$counter++;
 	}
@@ -574,8 +574,8 @@ echo "<p><a href=\"turniere.php?action=detail&turnierid=$turnierid\">Zur&uuml;ck
 		echo "</form>";
 	} else {
 	//*** Ok, abmelden
-		$result= mysql_db_query ($dbname, "delete from TURNIERGRUPPE where TURNIERID='$turnierid' and USERID='$UserID' and MANDANTID=$nPartyID and TURNIERTEILNEHMERID='$TurnierTeilnehmerID'",$dbh);
-		//echo mysql_errno().": ".mysql_error()."<BR>";
+		$result= DB::query("delete from TURNIERGRUPPE where TURNIERID='$turnierid' and USERID='$UserID' and MANDANTID=$nPartyID and TURNIERTEILNEHMERID='$TurnierTeilnehmerID'");
+		//echo DB::$link->errno.": ".DB::$link->error."<BR>";
 
 		echo "<p>Du hast Dich soeben vom Turnier $TurnierName abgemeldet.</p>";
 	}
@@ -586,13 +586,13 @@ echo "<p><a href=\"turniere.php?action=detail&turnierid=$turnierid\">Zur&uuml;ck
 	// Clanmates hinzufügen
 	
 	// Voraussetzungen erkunden
-	$result = mysql_db_query ($dbname, "select c.NAME, tt.CLANID from TURNIERTEILNEHMER tt, CLAN c where tt.MANDANTID=$nPartyID and tt.TURNIERID='$turnierid' and tt.TURNIERTEILNEHMERID='$TurnierTeilnehmerID' and tt.CLANID=c.CLANID", $dbh);
-	$row2 = mysql_fetch_array($result);
+	$result = DB::query("select c.NAME, tt.CLANID from TURNIERTEILNEHMER tt, CLAN c where tt.MANDANTID=$nPartyID and tt.TURNIERID='$turnierid' and tt.TURNIERTEILNEHMERID='$TurnierTeilnehmerID' and tt.CLANID=c.CLANID");
+	$row2 = $result->fetch_array();
 	if ($row2[CLANID] > 0) {
 		$TeamName = db2display($row2[NAME]);
 	} else {
-		$result = mysql_db_query ($dbname, "select TEAMNAME from TURNIERTEILNEHMER where MANDANTID=$nPartyID and TURNIERID='$turnierid' and TURNIERTEILNEHMERID='$TurnierTeilnehmerID'", $dbh);
-		$row2 = mysql_fetch_array($result);
+		$result = DB::query("select TEAMNAME from TURNIERTEILNEHMER where MANDANTID=$nPartyID and TURNIERID='$turnierid' and TURNIERTEILNEHMERID='$TurnierTeilnehmerID'");
+		$row2 = $result->fetch_array();
 		$TeamName = db2display($row2[TEAMNAME]);
 	}
 	
@@ -602,27 +602,27 @@ echo "<p><a href=\"turniere.php?action=detail&turnierid=$turnierid\">Zur&uuml;ck
 		// go!
 	
 		// ist der User wirklich in dem gleichen Clan?
-		$result= mysql_db_query ($dbname, "select CLANID from USER_CLAN where USERID='$nClanMateID' and MANDANTID=$nPartyID",$dbh);
-		//echo mysql_errno().": ".mysql_error()."<BR>";
-		$ClanCheck = mysql_fetch_array($result);
+		$result= DB::query("select CLANID from USER_CLAN where USERID='$nClanMateID' and MANDANTID=$nPartyID");
+		//echo DB::$link->errno.": ".DB::$link->error."<BR>";
+		$ClanCheck = $result->fetch_array();
 	
 		// hat das Clanmate gezahlt?
-		$result= mysql_db_query ($dbname, "select STATUS from ASTATUS where USERID='$nClanMateID' and MANDANTID=$nPartyID",$dbh);
-		//echo mysql_errno().": ".mysql_error()."<BR>";
-		$MateStatus = mysql_fetch_array($result);
+		$result= DB::query("select STATUS from ASTATUS where USERID='$nClanMateID' and MANDANTID=$nPartyID");
+		//echo DB::$link->errno.": ".DB::$link->error."<BR>";
+		$MateStatus = $result->fetch_array();
 	
 		// Bereits im Team?
-		$result= mysql_db_query ($dbname, "select USERID from TURNIERGRUPPE where USERID='$nClanMateID' and TURNIERID='$turnierid' and MANDANTID=$nPartyID",$dbh);
-		//echo mysql_errno().": ".mysql_error()."<BR>";
-		$imTeam = mysql_fetch_array($result);
-		$result= mysql_db_query ($dbname, "select USERID from TURNIERTEILNEHMER where USERID='$nClanMateID' and TURNIERID='$turnierid' and MANDANTID=$nPartyID",$dbh);
-		//echo mysql_errno().": ".mysql_error()."<BR>";
-		$imTeamLeader = mysql_fetch_array($result);
+		$result= DB::query("select USERID from TURNIERGRUPPE where USERID='$nClanMateID' and TURNIERID='$turnierid' and MANDANTID=$nPartyID");
+		//echo DB::$link->errno.": ".DB::$link->error."<BR>";
+		$imTeam = $result->fetch_array();
+		$result= DB::query("select USERID from TURNIERTEILNEHMER where USERID='$nClanMateID' and TURNIERID='$turnierid' and MANDANTID=$nPartyID");
+		//echo DB::$link->errno.": ".DB::$link->error."<BR>";
+		$imTeamLeader = $result->fetch_array();
 	
 		// Team bereits voll?
-		$result= mysql_db_query ($dbname, "select count(*) from TURNIERGRUPPE where TURNIERID='$turnierid' and MANDANTID=$nPartyID and TURNIERTEILNEHMERID='$TurnierTeilnehmerID'",$dbh);
-		//echo mysql_errno().": ".mysql_error()."<BR>";
-		if ($result != "" ) { $CountMembers = mysql_fetch_array($result); }
+		$result= DB::query("select count(*) from TURNIERGRUPPE where TURNIERID='$turnierid' and MANDANTID=$nPartyID and TURNIERTEILNEHMERID='$TurnierTeilnehmerID'");
+		//echo DB::$link->errno.": ".DB::$link->error."<BR>";
+		if ($result != "" ) { $CountMembers = $result->fetch_array(); }
 	
 		if ($AnmeldungOffen != "J") {
 			echo "<p>Die Anmeldung f&uuml;r dieses Turnier wurde noch nicht gestartet.</p>";
@@ -662,27 +662,27 @@ echo "<p><a href=\"turniere.php?action=detail&turnierid=$turnierid\">Zur&uuml;ck
 			echo "<p>Dein Clanmate hat nicht mehr gen&uuml;gend Coins ($nVerbleibend vorhanden, $nCoins ben&ouml;tigt).</p>";
 		} else {
 			//ok, go!
-			$result= mysql_db_query ($dbname, "insert into TURNIERGRUPPE (TURNIERID, MANDANTID, TURNIERTEILNEHMERID, USERID) values ('$turnierid', $nPartyID, '$TurnierTeilnehmerID', '$nClanMateID')",$dbh);
-			//echo mysql_errno().": ".mysql_error()."<BR>";
+			$result= DB::query("insert into TURNIERGRUPPE (TURNIERID, MANDANTID, TURNIERTEILNEHMERID, USERID) values ('$turnierid', $nPartyID, '$TurnierTeilnehmerID', '$nClanMateID')");
+			//echo DB::$link->errno.": ".DB::$link->error."<BR>";
 			
 			echo "Du hast Dein Clanmate erfolgreich aufgenommen.</p>";
 		}
 		echo "<p><a href=\"turniere.php?action=clanmates&turnierid=$turnierid&TurnierTeilnehmerID=$TurnierTeilnehmerID\">Zur&uuml;ck zur Clanmate-&Uuml;bersicht</a></p>";
 	} else {
 		// Memberliste anzeigen
-		$result = mysql_db_query ($dbname, "select a.STATUS, u.LOGIN, u.USERID from USER u, USER_CLAN uc, ASTATUS a where a.MANDANTID=$nPartyID and a.USERID=u.USERID and uc.AUFNAHMESTATUS = $AUFNAHMESTATUS_OK and u.USERID = uc.USERID and uc.CLANID = '$UserClan' and uc.MANDANTID = $nPartyID and u.USERID != $nLoginID", $dbh);
+		$result = DB::query("select a.STATUS, u.LOGIN, u.USERID from USER u, USER_CLAN uc, ASTATUS a where a.MANDANTID=$nPartyID and a.USERID=u.USERID and uc.AUFNAHMESTATUS = $AUFNAHMESTATUS_OK and u.USERID = uc.USERID and uc.CLANID = '$UserClan' and uc.MANDANTID = $nPartyID and u.USERID != $nLoginID");
 		
 		echo "<table class=\"rahmen_allg\" width=\"350\" cellspacing=\"1\" cellpadding=\"2\" border=\"0\">";
 		
 		$counter = 0;
-		while ($row=mysql_fetch_array($result)) {
+		while ($row=$result->fetch_array()) {
 			echo "<tr><td class=\"TNListeTDA\">".db2display($row[LOGIN])."</td><td class=\"TNListeTDB\">";
 
 			if ( User::hatBezahlt($row[USERID]) ) {
 //			if ( $row[STATUS] == $STATUS_BEZAHLT_LOGE || $row[STATUS] == $STATUS_BEZAHLT) { 
-				$result2 = mysql_db_query ($dbname, "select USERID, TURNIERTEILNEHMERID from TURNIERGRUPPE where USERID=$row[USERID] and MANDANTID=$nPartyID and TURNIERID='$turnierid'", $dbh);
-				//echo mysql_errno().": ".mysql_error()."<BR>";
-				$row2 = mysql_fetch_array($result2);
+				$result2 = DB::query("select USERID, TURNIERTEILNEHMERID from TURNIERGRUPPE where USERID=$row[USERID] and MANDANTID=$nPartyID and TURNIERID='$turnierid'");
+				//echo DB::$link->errno.": ".DB::$link->error."<BR>";
+				$row2 = $result2->fetch_array();
 				if ($row2[TURNIERTEILNEHMERID] != $TurnierTeilnehmerID && $row2[USERID] > 0) {
 					echo "Spielt in einem anderen Team"; 
 				} elseif ($row2[USERID] > 0) {
@@ -722,13 +722,13 @@ echo "<p><a href=\"turniere.php?action=detail&turnierid=$turnierid\">Zur&uuml;ck
 		$sAddWhere = "";
 	}
 	
-	$result= mysql_db_query ($dbname, "select t.STARTZEIT, t.ANZAHL_TEILNEHMER, t.TURNIERID, t.NAME, t.ART, t.REGELN, t.BILDKL, t.COINS from TURNIERLISTE t where t.MANDANTID = $nPartyID $sAddWhere order by t.NAME",$dbh);
-	//echo mysql_errno().": ".mysql_error()."<BR>";
+	$result= DB::query("select t.STARTZEIT, t.ANZAHL_TEILNEHMER, t.TURNIERID, t.NAME, t.ART, t.REGELN, t.BILDKL, t.COINS from TURNIERLISTE t where t.MANDANTID = $nPartyID $sAddWhere order by t.NAME");
+	//echo DB::$link->errno.": ".DB::$link->error."<BR>";
 
-	while ($row = mysql_fetch_array($result)) {
+	while ($row = $result->fetch_array()) {
 
-		$result2= mysql_db_query ($dbname, "select count(*) from TURNIERTEILNEHMER where MANDANTID=$nPartyID and TURNIERID=$row[TURNIERID]",$dbh);
-		$row2 = mysql_fetch_array($result2);
+		$result2= DB::query("select count(*) from TURNIERTEILNEHMER where MANDANTID=$nPartyID and TURNIERID=$row[TURNIERID]");
+		$row2 = $result2->fetch_array();
 		$TAnz = $row2[0];
 
 		echo "<TR><TD class='TNListeTDA' align=\"center\"><img src=\"$row[BILDKL]\" border=\"0\"></TD>";
@@ -738,14 +738,14 @@ echo "<p><a href=\"turniere.php?action=detail&turnierid=$turnierid\">Zur&uuml;ck
 			// Gesamtcoins herausfinden Teamleader
 			$q = "select USERID, TURNIERTEILNEHMERID from TURNIERTEILNEHMER where MANDANTID='$nPartyID' and TURNIERID='".$row['TURNIERID']."' and USERID='$nLoginID'";
 			$res = DB::query($q);
-			$rowTemp = mysql_fetch_array($res);
+			$rowTemp = $res->fetch_array();
 			if ($rowTemp['USERID'] > 0) {
 				echo " <a href=\"turniere.php?action=abmelden&turnierid=".$row['TURNIERID']."&UserID=".$rowTemp['USERID']."&TurnierTeilnehmerID=".$rowTemp['TURNIERTEILNEHMERID']."\"><img src=\"/gfx/turnier_abmelden.gif\" border=\"0\" alt=\"Vom Turnier abmelden\"></a>";
 			}
 			// Gesamtcoins herausfinden Gruppenmitglied
 			$q = "select USERID, TURNIERTEILNEHMERID from TURNIERGRUPPE where MANDANTID='$nPartyID' and TURNIERID='".$row['TURNIERID']."' and USERID='$nLoginID'";
 			$res = DB::query($q);
-			$rowTemp = mysql_fetch_array($res);
+			$rowTemp = $res->fetch_array();
 			if ($rowTemp['USERID'] > 0) {
 				echo " <a href=\"turniere.php?action=austreten&turnierid=".$row['TURNIERID']."&UserID=".$rowTemp['USERID']."&TurnierTeilnehmerID=".$rowTemp['TURNIERTEILNEHMERID']."\"><img src=\"/gfx/turnier_abmelden.gif\" border=\"0\" alt=\"Vom Turnier abmelden\"></a>";
 			}

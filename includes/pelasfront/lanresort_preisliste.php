@@ -9,7 +9,7 @@ echo "<table cellspacing=\"0\" cellpadding=\"2\" border=\"0\">";
 
 $q = "select * from bungalow_type where mandantID='$nPartyID' order by preis";
 $res = DB::query($q);
-while ($row = mysql_fetch_array($res)) {
+while ($row = $res->fetch_array()) {
 	echo "<tr><td width=\"190\">Bungalow ".$row['bezeichnung']."</td>";
 	echo "<td width=\"90\">".$row['size']." Personen</td>";
 	echo "<td>".$row['preis']." EUR</td>";

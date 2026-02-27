@@ -18,8 +18,8 @@ else
 		$profil = $loginID;
 	}
 
-$result = mysql_query ("select u.*, s.sizeCode, s.sizeDesc from USER u, acc_tshirt s where u.USERID = '".intval($profil)."' AND u.SHIRTSIZE = s.sizeCode");
-$row = mysql_fetch_array($result);
+$result = DB::query("select u.*, s.sizeCode, s.sizeDesc from USER u, acc_tshirt s where u.USERID = '".intval($profil)."' AND u.SHIRTSIZE = s.sizeCode");
+$row = $result->fetch_array();
 
 $sql = "select e.*,
 			t.*
@@ -28,8 +28,8 @@ $sql = "select e.*,
 		where e.USERID = '".intval($profil)."'
 			and t.id = e.TEILTEAMID
 ";
-$result1 = mysql_query ($sql);
-$row1 = mysql_fetch_array($result1);
+$result1 = DB::query($sql);
+$row1 = $result1->fetch_array();
 
 ?>
 

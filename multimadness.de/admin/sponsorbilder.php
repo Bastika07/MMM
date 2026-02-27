@@ -31,7 +31,7 @@ $sql = "select
           r.RECHTID='NEWSADMIN'";          
 $res = DB::query($sql);         
 
-while ($row = mysql_fetch_assoc($res)) {
+while ($row = $res->fetch_assoc()) {
   // erlaubte Mandanten durchgehen
   $mandanten[$row['MANDANTID']]['beschreibung'] = $row['BESCHREIBUNG'];
   $pattern = SPONSOR_DIR.$row['MANDANTID'].'_*';
