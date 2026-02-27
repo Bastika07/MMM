@@ -55,7 +55,7 @@ if ($iAction == "comment") {
 	    PELAS::fehler('Du bist nicht eingeloggt oder hast nicht die erforderlichen Rechte.');
 	  else {
 	    // preview-funktion, nur wenn man eingeloggt ist und das Recht NEWSADMIN hat
-	    $result = DB::query("select INHALTID, TITEL, DERINHALT, AUTORNAME, WANNANGELEGT from INHALT where MANDANTID=$nPartyID and KATEGORIEID=$KATEGORIE_NEWS and INHALTID='$_GET[newsID]'");
+	    $result = DB::query("select INHALTID, TITEL, DERINHALT, AUTORNAME, WANNANGELEGT from INHALT where MANDANTID=? and KATEGORIEID=? and INHALTID=?", (int)$nPartyID, (int)$KATEGORIE_NEWS, (int)$_GET['newsID']);
 	    $row = $result->fetch_array();
 	    displayNews($row["TITEL"],$row["DERINHALT"],$row["AUTORNAME"],$row["WANNANGELEGT"],$row["INHALTID"]);
 	  }

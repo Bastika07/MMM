@@ -342,7 +342,7 @@ Each block sets:
 
 2. ~~**Deprecated `mysql_*` functions**~~ — **Fixed.** All legacy `mysql_*` call-sites across 120+ files have been migrated to the `DB::` MySQLi wrapper (`DB::query()`, `$result->fetch_assoc()`, `DB::$link->error`, etc.). The backward-compatible shims in `includes/dblib.php` are retained for safety but are no longer exercised by application code. The underlying queries still use plain string-concatenation — see item 3.
 
-3. **SQL injection** — Several files build SQL queries by string-interpolating unescaped variables directly (e.g. `includes/pelasfront/news.php` uses `$_GET[newsID]` directly in a query string; similar patterns exist in `clanverwaltung.php`, `format.php`, `archiv.php`, `Team.class.php`). The `safe()` / `DB::$link->real_escape_string()` helper exists but is not consistently applied. Prepared statements (MySQLi `prepare()` / `bind_param()`) should be used throughout.
+3. ~~**SQL injection**~~ — **Fixed.** All SQL queries that previously string-interpolated user-supplied input (`$_GET`/`$_POST` variables) directly into query strings have been converted to use MySQLi prepared statements via the existing `DB::query($sql, ...$params)` interface with `?` placeholders. Affected files: `includes/pelasfront/news.php`, `includes/format.php`, `includes/pelasfront/sitzgruppen.php`.
 
 ### 🟠 High
 
@@ -378,7 +378,7 @@ Each block sets:
 |---|---|
 | ✅ | ~~Move all credentials/secrets to `.env` / environment variables~~ — done |
 | ✅ | ~~Fix UTF-8 encoding artefacts in `constants.php`~~ — done |
-| 🔴 | Use prepared statements (MySQLi `prepare()` / `bind_param()`) for all DB queries to eliminate SQL injection risk |
+| ✅ | ~~Use prepared statements (MySQLi `prepare()` / `bind_param()`) for all DB queries to eliminate SQL injection risk~~ — done |
 | ✅ | ~~Replace remaining legacy `mysql_*` call-sites across 80+ files with the `DB::` MySQLi wrapper~~ — done |
 | 🟠 | Add CSRF token generation and validation to all state-changing forms |
 | 🟠 | Replace hard-coded absolute paths in dev/intranet `constants.php` blocks with a single `BASE_DIR` constant derived at runtime (e.g. `dirname(__DIR__)`) |
