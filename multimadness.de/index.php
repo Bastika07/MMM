@@ -99,7 +99,8 @@ $requestedPage = isset($_GET['page']) ? intval($_GET['page']) : 0;
 $page = $router->has($requestedPage) ? $requestedPage : 1;
 $pageModule = $router->resolve($page);
 
-if (is_file("page/{$pageModule}.top.php")) include "page/{$pageModule}.top.php"; 
+$controller = new DefaultController($pageModule);
+$controller->beforeHtml();
 ?>
 <?php
 require_once "dblib.php";
@@ -182,7 +183,7 @@ Wir haben unsere Datenschutzrichtlinie aktualisiert, um euch mehr Informationen 
 
 <link rel="shortcut icon" href="favicon.ico">
 
-<?php if (is_file("page/{$pageModule}.head.php")) include "page/{$pageModule}.head.php"; ?>
+<?php $controller->head(); ?>
 </head>
 
 <body>
@@ -287,7 +288,7 @@ Wir haben unsere Datenschutzrichtlinie aktualisiert, um euch mehr Informationen 
 	include("pelasfront/party_running_checker.php");
 ?>
  
-<?php if (is_file("page/{$pageModule}.php")) include "page/{$pageModule}.php"; ?>
+<?php $controller->handle(); ?>
        
   </div>
 </div>

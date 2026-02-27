@@ -94,6 +94,7 @@ pipeline (`.github/workflows/phpunit.yml`) runs the full suite against PHP 8.1,
 | `RouterTest` | `Router::add()`, `resolve()`, `has()`, `getRoutes()`, `getDefaultId()`, and the full production route table |
 | `PelasTest` | Pure methods of `PELAS`: `HashPassword`, `PayPalGebuehr`, `formatBestellNr`, `formatTicketNr`, `userLink`, `countdown` |
 | `CsrfTest` | `csrf_token()`, `csrf_field()`, `csrf_verify()` helpers in `dblib.php` |
+| `ControllerTest` | `Controller` base class, `DefaultController`, and `View`: lifecycle hooks (`beforeHtml`, `head`, `handle`), template rendering, data extraction, custom controller subclasses |
 | `TurnierConstantsTest` | Tournament flag/status constants in `includes/turnier/t_constants.php` |
 | `DbTest` | `DB::query()`, `DB::getOne()`, `DB::getRow()`, `DB::getRows()`, `DB::getCol()`, `PELAS::logging()` |
 
@@ -237,7 +238,11 @@ If your MySQL instance listens on a Unix socket instead of TCP, set
 
 | File | Purpose |
 |---|---|
-| `multimadness.de/index.php` | Front controller: maps `?page=N` to `page/<name>.php` modules; handles cookie consent and newsletter popup |
+| `multimadness.de/index.php` | Front controller: resolves `?page=N` via `Router`, dispatches to a `Controller`, and renders the page layout with header/footer |
+| `includes/classes/Controller.class.php` | Abstract `Controller` base class (three lifecycle hooks: `beforeHtml`, `head`, `handle`) and the concrete `DefaultController` that delegates to `page/{module}.{top,head,}.php` view files |
+| `includes/classes/View.class.php` | `View` class: wraps a PHP template file and an optional data array; `render()` extracts data and includes the template |
+| `includes/classes/Router.class.php` | `Router` class: maps integer `?page=` IDs to module names via a fluent `add()` / `resolve()` interface |
+| `includes/classes/AuthState.class.php` | `AuthState` value-object encapsulating `$nLoginID` / `$sLogin` for dependency-injected auth state |
 | `includes/constants.php` | All runtime configuration: DB credentials, mail credentials, file paths, status codes, category IDs, constants; includes minimal `.env` loader |
 | `includes/.env` | Local environment variables (not committed); create from the variable list in [Configuration & Environment](#configuration--environment) |
 | `includes/dblib.php` | `DB::` static class wrapping MySQLi; provides `DB::connect()`, `DB::query()`, `DB::getOne()`, `DB::getAll()` etc.; also `safe()` escape helper, `BenutzerHatRecht()` permission check, and backward-compat shims for legacy `mysql_*` calls |
@@ -248,6 +253,7 @@ If your MySQL instance listens on a Unix socket instead of TCP, set
 | `includes/turnier/` | Tournament engine: `Turnier`, `Team`, `Match`, `Round`, `Jump`, `Ranking`, `TurnierSystem`, group and liga sub-classes |
 | `includes/turnier-frontend/` | Admin-facing tournament management pages (tap, verwaltung, seeding, transfer, export, prices, admins) |
 | `includes/pelasfront/` | Frontend page-logic modules shared between web roots (accounting, archiv, forum, geekradar, sitzplan, login, …) |
+| `multimadness.de/page/` | View templates: each file renders the HTML body for one page module |
 | `multimadness.de/admin/index.php` | Admin panel entry point |
 | `multimadness.de/admin/controller.php` | Admin AJAX/action dispatcher |
 
@@ -255,16 +261,34 @@ If your MySQL instance listens on a Unix socket instead of TCP, set
 
 ## Architecture
 
+### MVC Design
+
+The frontend follows a three-layer **Model-View-Controller** pattern:
+
+| Layer | Location | Responsibility |
+|---|---|---|
+| **Controller** | `includes/classes/Controller.class.php` | Handles the request lifecycle (pre-HTML hook, head hook, content hook); base class for all page controllers |
+| **DefaultController** | `includes/classes/Controller.class.php` | Generic controller that delegates all three lifecycle hooks to the legacy `page/{module}.{top,head,}.php` files, providing backward compatibility for every existing page without requiring a dedicated controller class |
+| **View** | `includes/classes/View.class.php` | Renders a PHP template file, optionally extracting a data array into local scope before inclusion |
+| **Model** | `includes/classes/` | Domain objects (`AuthState`, `Board`, `Thread`, `Post`, `User2BeamerMessage`) and the tournament engine (`includes/turnier/`) |
+
 ### Request Flow
 
 ```
 Browser → multimadness.de/index.php
-            ├── includes/getsession.php  (auth state)
-            ├── page/<name>.top.php      (optional early output)
-            ├── page/<name>.head.php     (optional <head> additions)
-            └── page/<name>.php         (page body)
-                  └── includes/pelasfront/<module>.php  (shared logic)
+            ├── Router::resolve()              → module name (e.g. 'news')
+            ├── new DefaultController(module)
+            │     ├── beforeHtml()             → page/{module}.top.php  (optional early exit / redirect)
+            │     ├── head()                   → page/{module}.head.php (optional <head> additions)
+            │     └── handle() → View::render() → page/{module}.php    (page body)
+            │                                       └── includes/pelasfront/<module>.php
+            └── ob_end_flush()
 ```
+
+Custom controllers override `handle()` (and optionally `beforeHtml()` / `head()`) to
+implement page-specific logic without mixing HTML output into the controller layer.  New
+controllers should be placed in `multimadness.de/controllers/` and named
+`<ModuleName>Controller` extending `Controller`.
 
 ### Database
 
@@ -432,7 +456,7 @@ Each block sets:
 
 8. ~~**Global variable pollution**~~ — **Fixed.** A lightweight `AuthState` value-object (`includes/classes/AuthState.class.php`) now encapsulates the `$nLoginID` / `$sLogin` pair.  `includes/getsession.php` instantiates it at the end of session resolution and exposes it as `$authState`; `includes/security.php` uses `$authState->isLoggedIn()` for the authentication guard.  `BenutzerHatRechtMandant()` accepts an optional `?AuthState $auth` parameter so callers can pass the object explicitly instead of relying on the `global $loginID` side-channel.  The existing bare globals (`$nLoginID`, `$sLogin`, `$loginID`) are preserved for backward compatibility with the 70+ files that still read them directly, but new code should use `AuthState` via dependency injection.
 
-9. ~~**Inline HTML / mixed concerns**~~ — **Partially fixed.** A `Router` class (`includes/classes/Router.class.php`) now encapsulates the routing concern: it holds the page-ID → module-name map and exposes `add()`, `resolve()`, `has()`, and `getRoutes()` methods.  `multimadness.de/index.php` uses `Router` to resolve the requested page ID to a module name, separating routing from the rest of the front controller.  The page modules themselves (`includes/pelasfront/`, `multimadness.de/page/`) still mix logic and HTML output — a full MVC separation of controllers and views is the recommended next step.
+9. ~~**Inline HTML / mixed concerns**~~ — **Fixed.** The full MVC split is now in place.  An abstract `Controller` base class (`includes/classes/Controller.class.php`) defines three lifecycle hooks (`beforeHtml()`, `head()`, `handle()`) that `multimadness.de/index.php` calls at the appropriate points during the request/response cycle.  A `View` class (`includes/classes/View.class.php`) wraps PHP template files and (optionally) a data array, keeping template rendering separate from controller logic.  A `DefaultController` subclass bridges the legacy `page/{module}.{top,head,}.php` file convention so every existing page continues to work without modification.  New pages should implement a dedicated `Controller` subclass in `multimadness.de/controllers/`.  The `Router` class (introduced previously) maps page IDs to module names; `index.php` instantiates the controller and delegates all rendering through it, so no HTML is generated directly in the front controller.
 
 10. ~~**Outdated frontend libraries**~~ — **Fixed.** All vendored JS/CSS libraries have now been updated:
     - **jQuery** updated from legacy 2.x → **3.7.1** ✅ (done previously)
@@ -463,5 +487,5 @@ Each block sets:
 | ✅ | ~~Update or replace vendored frontend libraries~~ — jQuery 3.7.1, bxSlider 4.2.17, Lightbox 2.11.5 — done |
 | ✅ | ~~Remove `@` error-suppression prefix from all `DB::query()` / MySQLi calls and add proper error handling (see item 7 in Known Issues)~~ — done |
 | ✅ | ~~Encapsulate auth state (`$nLoginID`, `$sLogin`, `$loginID`) in a `Session`/`Auth` value-object and pass it via dependency injection instead of relying on PHP globals (see item 8)~~ — done |
-| ✅ | ~~Introduce a lightweight router/framework to separate routing, controllers, and views (see item 9)~~ — `Router` class added; page modules still mix logic and HTML (full MVC split is the next step) |
+| ✅ | ~~Introduce a lightweight router/framework to separate routing, controllers, and views (see item 9)~~ — `Router` class, abstract `Controller` base class, `DefaultController`, and `View` renderer added; every request now dispatches through a controller; `page/{module}.php` files serve as view templates |
 | 🟢 | Clean up dead/commented-out code in `pelasfunctions.php` |

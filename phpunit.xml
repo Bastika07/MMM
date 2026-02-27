@@ -19,6 +19,8 @@
         <include>
             <file>includes/dblib.php</file>
             <file>includes/pelasfunctions.php</file>
+            <file>includes/classes/Controller.class.php</file>
+            <file>includes/classes/View.class.php</file>
             <directory>includes/turnier</directory>
         </include>
     </source>
