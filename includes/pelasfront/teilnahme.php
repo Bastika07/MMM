@@ -194,12 +194,12 @@ if (($row[STRINGWERT] == "J" || $bVoranmeld == 1 || User::hatBezahlt($nLoginID, 
     	
     	echo "<p><img src=\"gfx/headline_pfeil.png\" border=\"0\"> <a href=\"teilnehmer.php\">$str[teilnehmerliste]</a></p>";
     	
-    	$result = DB::query("select USERID from ASTATUS where USERID=$nLoginID and MANDANTID=$nPartyID");
+    	$result = DB::query("select USERID from ASTATUS where USERID = ? and MANDANTID = ?", $nLoginID, $nPartyID);
     	$row = $result->fetch_array();
     	if ($row[USERID] > 0 ) {
-    		@DB::query("update ASTATUS set STATUS = $STATUS_ANGEMELDET, WANNANGEMELDET=NOW() where USERID=$nLoginID and MANDANTID=$nPartyID");
+    		DB::query("update ASTATUS set STATUS = ?, WANNANGEMELDET = NOW() where USERID = ? and MANDANTID = ?", $STATUS_ANGEMELDET, $nLoginID, $nPartyID);
     	} else {
-    		@DB::query("insert into ASTATUS (MANDANTID, USERID, STATUS, WANNANGEMELDET) values ($nPartyID, $nLoginID, $STATUS_ANGEMELDET, NOW())");
+    		DB::query("insert into ASTATUS (MANDANTID, USERID, STATUS, WANNANGEMELDET) values (?, ?, ?, NOW())", $nPartyID, $nLoginID, $STATUS_ANGEMELDET);
     	}
     	
     	// Anmeldebestätigung verschicken
