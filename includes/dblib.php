@@ -888,7 +888,7 @@ if (!function_exists('mysql_field_name')) {
 # CSRF token helpers
 #
 # Usage:
-#   In every state-changing form add:  <?= csrf_field(); ?>
+#   In every state-changing form add:  <?= csrf_field(); ? >
 #   At the top of the POST handler:    csrf_verify();
 #
 # The token is generated once per PHP session and stored in
