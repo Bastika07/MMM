@@ -127,4 +127,10 @@ if ( ( !isset($_SESSION['MMMSESSION']['nLoginID']) || $_SESSION['MMMSESSION']["n
 	}
 
 }
+
+// Encapsulate the resolved auth state in a value-object.
+// New code should use $authState (or accept it as a parameter) rather than
+// the bare $nLoginID / $sLogin / $loginID globals.  The globals are kept for
+// backward compatibility with existing code.
+$authState = new AuthState($nLoginID, $sLogin);
 ?>
