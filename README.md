@@ -9,6 +9,7 @@ A legacy PHP-based LAN-party management system powering [multimadness.de](https:
 - [Overview](#overview)
 - [Supported Brands / Hostnames](#supported-brands--hostnames)
 - [Local Development](#local-development)
+- [Testing](#testing)
 - [Directory Structure](#directory-structure)
 - [Key Files](#key-files)
 - [Architecture](#architecture)
@@ -72,6 +73,72 @@ Dev (internet) variants follow the pattern `<brand>-dev.innovalan.de`; intranet 
 5. Open `http://localhost/` in your browser.
 
 > **Note** – any unrecognised hostname (including `localhost`) falls through to the `urtyp_live_internet` configuration block in `constants.php`, which reads DB credentials from `includes/.env`.
+
+---
+
+## Testing
+
+The project uses [PHPUnit](https://phpunit.de/) for automated tests.  The CI
+pipeline (`.github/workflows/phpunit.yml`) runs the full suite against PHP 8.1,
+8.2 and 8.3 with a MySQL 8.0 service container.
+
+### Test structure
+
+| Suite | Location | Requires MySQL |
+|---|---|---|
+| **Unit** | `tests/Unit/` | No (DB connection is still established at bootstrap time) |
+| **Integration** | `tests/Integration/` | Yes |
+
+| Test class | Covers |
+|---|---|
+| `PelasTest` | Pure methods of `PELAS`: `HashPassword`, `PayPalGebuehr`, `formatBestellNr`, `formatTicketNr`, `userLink`, `countdown` |
+| `CsrfTest` | `csrf_token()`, `csrf_field()`, `csrf_verify()` helpers in `dblib.php` |
+| `TurnierConstantsTest` | Tournament flag/status constants in `includes/turnier/t_constants.php` |
+| `DbTest` | `DB::query()`, `DB::getOne()`, `DB::getRow()`, `DB::getRows()`, `DB::getCol()`, `PELAS::logging()` |
+
+### Running locally
+
+**Prerequisites** – PHP 8.x, [Composer](https://getcomposer.org/), MySQL/MariaDB.
+
+```bash
+# Install dev dependencies
+composer install
+
+# Create a dedicated test database (once)
+mysql -u root -p <<'SQL'
+CREATE DATABASE IF NOT EXISTS mmm_test;
+CREATE USER IF NOT EXISTS 'mmm_test'@'localhost' IDENTIFIED BY 'mmm_test_pass';
+GRANT ALL ON mmm_test.* TO 'mmm_test'@'localhost';
+
+CREATE TABLE IF NOT EXISTS mmm_test.logging (
+  id         INT AUTO_INCREMENT PRIMARY KEY,
+  userID     INT         DEFAULT NULL,
+  msg        TEXT        NOT NULL,
+  cat        VARCHAR(64) DEFAULT NULL,
+  created_at TIMESTAMP   DEFAULT CURRENT_TIMESTAMP
+);
+SQL
+
+# Run all tests
+vendor/bin/phpunit
+
+# Run only the Unit suite (no DB I/O)
+vendor/bin/phpunit --testsuite Unit
+
+# Run only the Integration suite
+vendor/bin/phpunit --testsuite Integration
+```
+
+The bootstrap (`tests/bootstrap.php`) reads the connection from environment
+variables; the defaults match the setup above.  Override them as needed:
+
+```bash
+TEST_DB_HOST=127.0.0.1 TEST_DB_NAME=mmm_test TEST_DB_USER=mmm_test \
+  TEST_DB_PASS=mmm_test_pass TEST_DB_SOCKET="" vendor/bin/phpunit
+```
+
+If your MySQL instance listens on a Unix socket instead of TCP, set
+`TEST_DB_SOCKET` to the socket path (default: `/tmp/test_mysql.sock`).
 
 ---
 
@@ -365,7 +432,7 @@ Each block sets:
 
 ### 🟢 Low / Informational
 
-11. **No automated tests** — There is no test suite (no PHPUnit, no Jest). All validation is manual.
+11. ~~**No automated tests**~~ — **Fixed.** A PHPUnit test suite has been added under `tests/`.  Unit tests cover pure business-logic functions (`PELAS::HashPassword`, `PayPalGebuehr`, formatting helpers, countdown), all CSRF helpers, and all tournament flag/status constants.  Integration tests cover `DB::query()`, `DB::getOne/Row/Rows/Col()`, and `PELAS::logging()`.  A GitHub Actions workflow (`.github/workflows/phpunit.yml`) runs the suite against PHP 8.1–8.3 on every push and pull request.
 
 12. **Commented-out dead code** — Large blocks of commented-out SQL and PHP exist throughout `pelasfunctions.php`.
 
@@ -383,7 +450,7 @@ Each block sets:
 | ✅ | ~~Replace remaining legacy `mysql_*` call-sites across 80+ files with the `DB::` MySQLi wrapper~~ — done |
 | ✅ | ~~Add CSRF token generation and validation to all state-changing forms~~ — done |
 | ✅ | ~~Replace hard-coded absolute paths in dev/intranet `constants.php` blocks with a single `BASE_DIR` constant derived at runtime (e.g. `dirname(__DIR__)`)~~ — done |
-| 🟡 | Add PHPUnit test coverage for core business logic (`pelasfunctions.php`, `DB::`, tournament classes) |
+| ✅ | ~~Add PHPUnit test coverage for core business logic (`pelasfunctions.php`, `DB::`, tournament classes)~~ — done |
 | 🟡 | Introduce a lightweight router/framework to separate routing, controllers, and views |
 | 🟡 | Update or replace vendored frontend libraries (jQuery 2.1.1 is EOL, update to 3.x+) |
 | 🟢 | Clean up dead/commented-out code in `pelasfunctions.php` |
