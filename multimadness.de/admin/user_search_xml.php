@@ -6,7 +6,7 @@ include "checkrights.php";
 
 header('Content-type: text/xml; charset=ISO-8859-1');
 
-$query = mysql_real_escape_string($_GET['query']);
+$query = DB::$link->real_escape_string($_GET['query']);
 
 if (empty($query)) {
   // Wenn keine Einschränkung übergeben wurde, dann leeres Ergebnis zurückliefern
@@ -22,7 +22,7 @@ if (empty($query)) {
   $result = DB::query($sql);
   
   echo "<users>\n";
-  while ($row = mysql_fetch_assoc($result)) {
+  while ($row = $result->fetch_assoc()) {
     echo "  <user id=\"{$row['USERID']}\">".xmlentities($row['LOGIN'])." (".xmlentities($row['NAME'])." ".xmlentities($row['NACHNAME']).", ID:".$row['USERID'].")</user>\n";
   }
   echo "</users>";

@@ -122,7 +122,7 @@ class Turnier {
 
 		$sql = "SELECT * FROM t_turnier WHERE turnierid = '{$turnierid}'";
 		$res = DB::query($sql);
-		$row = mysql_fetch_assoc($res);
+		$row = $res->fetch_assoc();
 
 		$retval->turnierid	= (int)$row['turnierid'];
 		$retval->pturnierid	= (int)$row['pturnierid'];
@@ -160,10 +160,10 @@ class Turnier {
 				partyid = '{$this->partyid}',
 				groupid = '{$this->groupid}',
 				pturnierid = '{$this->pturnierid}',
-				name = '".mysql_escape_string($this->name)."',
+				name = '".DB::$link->real_escape_string($this->name)."',
 				mindestalter = '{$this->mindestalter}',
 				flags = '{$this->flags}',
-				startzeit = '".mysql_escape_string($this->startzeit)."',
+				startzeit = '".DB::$link->real_escape_string($this->startzeit)."',
 				gameid = '{$this->gameid}',
 				coins = '{$this->coins}',
 				teamnum = '{$this->teamnum}',
@@ -172,9 +172,9 @@ class Turnier {
 	 			htmltree = '$this->htmltree',
 	 			htmlranking = '$this->htmlranking',
 				status = '{$this->status}',
-				icon = '".mysql_escape_string($this->icon)."',
-				icon_big = '".mysql_escape_string($this->icon_big)."',
-				ircchannel = '".mysql_escape_string($this->ircchannel)."',
+				icon = '".DB::$link->real_escape_string($this->icon)."',
+				icon_big = '".DB::$link->real_escape_string($this->icon_big)."',
+				ircchannel = '".DB::$link->real_escape_string($this->ircchannel)."',
 				coinsback = '{$this->coinsback}',
 				wann_geaendert = '".time()."',
 				wer_geaendert = '".COMPAT::currentID()."'
@@ -182,7 +182,7 @@ class Turnier {
 				turnierid = '{$this->turnierid}'";
 
 /* Disabled mysql_real_escape_string, because magic_quotes_gpc ist enabled. */
-/*                              regeln = '".mysql_real_escape_string($this->regeln)."', */
+/*                              regeln = '".DB::$link->real_escape_string($this->regeln)."', */
 		if (!DB::query($sql))
 			return TS_ERROR;
 		/* Flush cache */
@@ -205,7 +205,7 @@ class Turnier {
 			// naechste turnierid berechnen
 			$sql = "SELECT MAX(turnierid) % 1000 AS lastid FROM t_turnier WHERE partyid = '{$this->partyid}'";
 			$res = DB::query($sql);
-			$row = mysql_fetch_assoc($res);
+			$row = $res->fetch_assoc();
 			$this->turnierid = ($this->partyid * 1000) + ((isset($row['lastid'])) ? $row['lastid'] +1 : 1);
 		}
 
@@ -214,19 +214,19 @@ class Turnier {
 				partyid = '{$this->partyid}',
 				groupid = '{$this->groupid}',
 				pturnierid = '{$this->pturnierid}',
-				name = '".mysql_escape_string($this->name)."',
+				name = '".DB::$link->real_escape_string($this->name)."',
 				mindestalter = '{$this->mindestalter}',
 				flags = '{$this->flags}',
-				startzeit = '".mysql_escape_string($this->startzeit)."',
+				startzeit = '".DB::$link->real_escape_string($this->startzeit)."',
 				gameid = '{$this->gameid}',
 				coins = '{$this->coins}',
 				teamnum = '{$this->teamnum}',
 				teamsize = '{$this->teamsize}',
 				regeln = '{$this->regeln}',
 				status = '{$this->status}',
-				icon = '".mysql_escape_string($this->icon)."',
-				icon_big = '".mysql_escape_string($this->icon_big)."',
-				ircchannel = '".mysql_escape_string($this->ircchannel)."',
+				icon = '".DB::$link->real_escape_string($this->icon)."',
+				icon_big = '".DB::$link->real_escape_string($this->icon_big)."',
+				ircchannel = '".DB::$link->real_escape_string($this->ircchannel)."',
 				coinsback = '{$this->coinsback}',
 				wann_angelegt = '".time()."',
 				wer_angelegt = '".COMPAT::currentID()."'";
@@ -266,7 +266,7 @@ class Turnier {
 		$res= DB::query($sql);
 
 		$retval = array();
-		while ($row = mysql_fetch_assoc($res))
+		while ($row = $res->fetch_assoc())
 			$retval[$row['turnierid']] = $row;
 		return $retval;
 	}
@@ -287,7 +287,7 @@ class Turnier {
 			AND t2u.userid = '$userid'";
 		$res= DB::query($sql);
 		$retval = array();
-		while ($row = mysql_fetch_assoc($res))
+		while ($row = $res->fetch_assoc())
 			$retval[$row['turnierid']] = $row;
 		return $retval;
 	}

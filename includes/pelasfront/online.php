@@ -16,7 +16,7 @@ $sql = "
 echo "<!-- $sql -->";
 
 $result = DB::query($sql);
-$loggedUserOnline = mysql_num_rows($result);
+$loggedUserOnline = $result->num_rows;
 
 // Alle Sessiondatensätze lesen.
 $sql = "
@@ -33,7 +33,7 @@ $userOnlineGesamt = DB::getOne($sql);
 //  echo '  <tr><td class="forum_titel">Wer ist online? (' . $userOnline . ")</td></tr>\n";
 //  echo '  <tr><td class="dblau">' . "\n";
 //  $count = 0;
-//  while ($row = mysql_fetch_array($result)) {
+//  while ($row = $result->fetch_array()) {
 //   echo '    <a href="?page=4&nUserID=' . $row['USERID'] . '">' . db2display($row['LOGIN']) . "</a><br/>\n";
 //    $count++;
 //  }
@@ -43,7 +43,7 @@ $userOnlineGesamt = DB::getOne($sql);
   echo '<div class="users-online">' . "\n";
   echo '  <p>' . $userOnlineGesamt . ' Benutzer '.(($userOnlineGesamt == 1) ? "ist" : "sind" ).' online. Davon '.(($loggedUserOnline == 1) ? 			"ist" : "sind" ).' ' . $loggedUserOnline . ' eingeloggt:</p>';
   echo "  <ul>\n";
-  while ($row = mysql_fetch_array($result)) {
+  while ($row = $result->fetch_array()) {
     echo '    <li><i class="fa fa-user"></i> <a href="?page=4&nUserID=' . $row['USERID'] . '">' . db2display($row['LOGIN']) . "</a></li>\n";
   }
   echo "  </ul>\n";

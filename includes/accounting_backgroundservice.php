@@ -31,7 +31,7 @@ $res = DB::query($sql);
 $theSummary = "Erinnerungen:\n";
 $counter = 0;
 
-while ($row = mysql_fetch_array($res)) {
+while ($row = $res->fetch_array()) {
 
 	// Bestellungen raussuchen Zahlungserinnerung
 	// Kriterien: 
@@ -52,7 +52,7 @@ while ($row = mysql_fetch_array($res)) {
 		  b.status       = ".ACC_STATUS_OFFEN;
 	
 	$resBestellung = DB::query($sql);
-	while ($rowBestellung = mysql_fetch_array($resBestellung)) {
+	while ($rowBestellung = $resBestellung->fetch_array()) {
 		// Erinnerungsmail senden, 2 = Zahlungserinnerung
 		$counter++;
 		$theSummary .= "PartyID: ".$row['partyId']." / Bestellid: ".$rowBestellung['bestellId']." / Bestdatum ".$rowBestellung['wannAngelegt']."\n";
@@ -74,7 +74,7 @@ $theSummary .= "Summe: $counter \n";
 $theSummary .= "\nStornierungen:\n";
 $theSummary .= "(noch deaktiviert)\n";
 
-while ($row = mysql_fetch_array($res)) {
+while ($row = $res->fetch_array()) {
 	// Bestellungen raussuchen zur Stornierung
 	// Kriterien:
 	// - Heute ist X Tage neuer als Bestelldatum (Aus config)

@@ -101,10 +101,10 @@ if ($res == FALSE) {
 					  partyId   = '$partyId' and
 					  bestellId = '$bestellId'
 				";
-				$result= mysql_db_query ($dbname, $sql, $dbh);
-				//echo mysql_errno().": ".mysql_error()."<BR>";
+				$result= DB::query($sql);
+				//echo DB::$link->errno.": ".DB::$link->error."<BR>";
 				$summe = 0;
-				while ($row = mysql_fetch_array($result)) {
+				while ($row = $result->fetch_array()) {
 					$summe = $summe + $row['anzahl'] * $row['preis'];
 				}
 
@@ -130,7 +130,7 @@ if ($res == FALSE) {
 						  bestellId = '$bestellId' and
 						  partyId   = '$partyId'
 					";
-					$result= mysql_db_query ($dbname, $sql, $dbh);
+					$result= DB::query($sql);
 
 					sendeBestellBestaetigung($partyId, $bestellId, 1, ACC_STATUS_BEZAHLT);
 					

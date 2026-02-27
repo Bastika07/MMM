@@ -18,7 +18,7 @@ $sql = "SELECT
 	ORDER BY
 	  start";
 $res = DB::query($sql);
-if (mysql_num_rows($res) == 0) {
+if ($res->num_rows == 0) {
 	// Kein Event in den nächsten 2h, nächstes Event
 	$sql = "SELECT
 		  id, unix_timestamp(start) start, name 
@@ -30,9 +30,9 @@ if (mysql_num_rows($res) == 0) {
 		  start
 		LIMIT 1";
 	$res = DB::query($sql);
-	$events[] = mysql_fetch_assoc($res);
+	$events[] = $res->fetch_assoc();
 } else {
-	while ($row = mysql_fetch_assoc($res))
+	while ($row = $res->fetch_assoc())
 		$events[] = $row;
 }
 

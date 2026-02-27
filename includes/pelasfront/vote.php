@@ -13,12 +13,12 @@ $sql = "select
 	  PARAMETER = 'UMFRAGE_AKTIV' AND
 	  MANDANTID = $nPartyID";
 $result = DB::query($sql);
-$row = mysql_fetch_assoc($result);
+$row = $result->fetch_assoc();
 // checken, ob get-variable on
 if ($row['STRINGWERT'] == "J") {
 
 	// aktuelle Umfrage feststellen
-	$row = @mysql_fetch_array(mysql_query("select UMFRAGE_UMFRAGEID,UMFRAGE_AUSWAHL_ANZAHL from UMFRAGE where UMFRAGE_MANDANTID = ".intval($nPartyID)." and UMFRAGE_AKTUELL='J'"), MYSQL_ASSOC);
+	$row = DB::query("select UMFRAGE_UMFRAGEID,UMFRAGE_AUSWAHL_ANZAHL from UMFRAGE where UMFRAGE_MANDANTID = ".intval($nPartyID)." and UMFRAGE_AKTUELL='J'")->fetch_assoc();
 	$aktuelle_umfrage = $row['UMFRAGE_UMFRAGEID'];
 	$anzahl = $row['UMFRAGE_AUSWAHL_ANZAHL'];
 
@@ -33,23 +33,23 @@ if ($row['STRINGWERT'] == "J") {
 		if ($UmfrageID < 1) {$UmdfrageID = -1;}
 
 		$UmfrageID = $UmfrageID * 1;
-		$result = mysql_query("select UMFRAGE_BESCHREIBUNG from UMFRAGE where UMFRAGE_UMFRAGEID = ".intval($UmfrageID)." and UMFRAGE_MANDANTID=".intval($nPartyID)." ORDER BY UMFRAGE_BESCHREIBUNG");
-		$row = mysql_fetch_array($result);
+		$result = DB::query("select UMFRAGE_BESCHREIBUNG from UMFRAGE where UMFRAGE_UMFRAGEID = ".intval($UmfrageID)." and UMFRAGE_MANDANTID=".intval($nPartyID)." ORDER BY UMFRAGE_BESCHREIBUNG");
+		$row = $result->fetch_array();
 		$putout = $row ['UMFRAGE_BESCHREIBUNG'];
 		echo "<p>".htmlspecialchars($putout)."</p>";
 
-		$resultGes = mysql_query("select count(*) from UMFERG where UMFERG_UMFRAGEID = ".intval($UmfrageID)." and UMFERG_MANDANTID=".intval($nPartyID));
-		$row = mysql_fetch_array($resultGes);
+		$resultGes = DB::query("select count(*) from UMFERG where UMFERG_UMFRAGEID = ".intval($UmfrageID)." and UMFERG_MANDANTID=".intval($nPartyID));
+		$row = $resultGes->fetch_array();
 		$Gesamt = $row[0];
 		if ($Gesamt < 1) { $Gesamt = 0.1; }
 
-		$result = mysql_query("select * from UMFVAUS where UMFVAUS_UMFRAGEID=".intval($UmfrageID)." order by UMFVAUS_VOTEORDER");
-		//echo mysql_errno().": ".mysql_error()."<BR>";
+		$result = DB::query("select * from UMFVAUS where UMFVAUS_UMFRAGEID=".intval($UmfrageID)." order by UMFVAUS_VOTEORDER");
+		//echo DB::$link->errno.": ".DB::$link->error."<BR>";
 		echo "<table >";
-		while ($row = mysql_fetch_array($result)) {
-			$result2 = mysql_query("select count(*) from UMFERG where UMFERG_UMFRAGEID=".intval($UmfrageID)." and UMFERG_VOTENR = $row[UMFVAUS_VOTENR]");
-			//echo mysql_errno().": ".mysql_error()."<BR>";		
-			$row_count = mysql_fetch_array($result2);
+		while ($row = $result->fetch_array()) {
+			$result2 = DB::query("select count(*) from UMFERG where UMFERG_UMFRAGEID=".intval($UmfrageID)." and UMFERG_VOTENR = $row[UMFVAUS_VOTENR]");
+			//echo DB::$link->errno.": ".DB::$link->error."<BR>";		
+			$row_count = $result2->fetch_array();
 			echo "<tr><td>".htmlspecialchars($row['UMFVAUS_VOTEBESCHREIBUNG'])."</td><td>";
 			
 			echo "<table cellspacing=\"0\" cellpadding=\"0\" border=\"0\">\n";
@@ -84,9 +84,9 @@ if ($row['STRINGWERT'] == "J") {
 			
 		} else {
 			$UmfrageID = $UmfrageID * 1;
-			$result = mysql_query("select * from UMFERG where UMFERG_USERID = ".intval($nLoginID)." and UMFERG_UMFRAGEID = '".intval($UmfrageID)."'");
-			//echo mysql_errno().": ".mysql_error()."<BR>";
-			$row = mysql_fetch_array($result);
+			$result = DB::query("select * from UMFERG where UMFERG_USERID = ".intval($nLoginID)." and UMFERG_UMFRAGEID = '".intval($UmfrageID)."'");
+			//echo DB::$link->errno.": ".DB::$link->error."<BR>";
+			$row = $result->fetch_array();
 			$voted = $row['UMFERG_USERID'];
 			if ($voted != "") {
 				echo "<p>".$str['vote_err_schon']."</p>";
@@ -94,15 +94,15 @@ if ($row['STRINGWERT'] == "J") {
 				echo "<p>".$str['vote_danke']."</p>";
 
 				if($anzahl==1){
-					$result = mysql_query("insert into UMFERG (UMFERG_USERID, UMFERG_MANDANTID, UMFERG_UMFRAGEID, UMFERG_VOTENR) values ($nLoginID, $nPartyID, '".intval($UmfrageID)."', '".intval($_POST['Umfrage'])."')");
+					$result = DB::query("insert into UMFERG (UMFERG_USERID, UMFERG_MANDANTID, UMFERG_UMFRAGEID, UMFERG_VOTENR) values ($nLoginID, $nPartyID, '".intval($UmfrageID)."', '".intval($_POST['Umfrage'])."')");
 				} else{
 					foreach ($_POST['Umfrage'] as $ergebnis) {
 						//echo $ergebnis;
-						$result = mysql_query("insert into UMFERG (UMFERG_USERID, UMFERG_MANDANTID, UMFERG_UMFRAGEID, UMFERG_VOTENR) values ($nLoginID, $nPartyID, '".intval($UmfrageID)."', '".intval($ergebnis)."')");
+						$result = DB::query("insert into UMFERG (UMFERG_USERID, UMFERG_MANDANTID, UMFERG_UMFRAGEID, UMFERG_VOTENR) values ($nLoginID, $nPartyID, '".intval($UmfrageID)."', '".intval($ergebnis)."')");
 					}
 				}
 				
-				//echo mysql_errno().": ".mysql_error()."<BR>";
+				//echo DB::$link->errno.": ".DB::$link->error."<BR>";
 			}
 			echo "<p><img src=\"/gfx/pfeil_tabelle.gif\" border=\"0\"> <a href=\"?page=32&action=results&UmfrageID=".intval($UmfrageID)."\">".$str['ergebnis']."</a></p>";
 		}

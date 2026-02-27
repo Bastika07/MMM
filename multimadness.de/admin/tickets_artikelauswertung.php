@@ -43,9 +43,9 @@ $sql = "select distinct
  					r.USERID='".intval($loginID)."' and 
  					(r.RECHTID='ACCOUNTINGADMIN' or r.RECHTID='STATISTIKADMIN')
 ";
-$result= mysql_db_query ($dbname, $sql ,$dbh);
-//echo mysql_errno().": ".mysql_error()."<BR>";
-while ($row = mysql_fetch_array($result)) {
+$result= DB::query($sql );
+//echo DB::$link->errno.": ".DB::$link->error."<BR>";
+while ($row = $result->fetch_array()) {
 	echo "<option value=\"$row[MANDANTID]\"";
 	if (isset($_POST['mandantId']) && $_POST['mandantId'] == $row['MANDANTID']) {echo " selected";}
 	echo ">$row[BESCHREIBUNG]";
@@ -78,12 +78,12 @@ if (isset($_POST['mandantId'])) {
  				order by
  				  p.terminVon desc
 	";
-	$result= mysql_db_query ($dbname, $sql ,$dbh);
+	$result= DB::query($sql );
 
 	echo "<select name=\"partyId\" OnChange=\"document.forms.filter.submit();\">";
 	echo "<option value=\"-1\">Bitte w&auml;hlen</option>";
 
-	while ($row = mysql_fetch_array($result)) {
+	while ($row = $result->fetch_array()) {
 		echo "<option value=\"$row[partyId]\"";
 		if (isset($_POST['partyId']) && $_POST['partyId'] == $row['partyId']) {echo " selected";}
 		echo ">".htmlspecialchars($row[beschreibung])." (".dateDisplay2Short($row['terminVon']).")";
@@ -120,12 +120,12 @@ if ($_POST['partyId'] > 0) {
  					r.mandantId='".intval($_POST['mandantId'])."'
 	";
 	
-	$result= mysql_db_query ($dbname, $sql ,$dbh);
+	$result= DB::query($sql );
 
 	echo "<select name=\"typId\" OnChange=\"document.forms.filter.submit();\">";
 	echo "<option value=\"-1\">Bitte w&auml;hlen</option>";
 
-	while ($row = mysql_fetch_array($result)) {
+	while ($row = $result->fetch_array()) {
 		echo "<option value=\"$row[typId]\"";
 		if (isset($_POST['typId']) && $_POST['typId'] == $row['typId']) {echo " selected";}
 		echo ">$row[kurzbeschreibung]</option>\n";
@@ -235,7 +235,7 @@ if ($_POST['typId'] > 0 && $_POST['filter'] > 0) {
 					  bestellId = '".intval($_POST['bestellId'][$i])."' and
 					  partyId   = '".intval($_POST['partyId'])."'
 				";
-				$result= mysql_db_query ($dbname, $sql, $dbh);
+				$result= DB::query($sql);
 				// Tickets auch stornieren
 				$sql = "update
 					  acc_tickets
@@ -245,7 +245,7 @@ if ($_POST['typId'] > 0 && $_POST['filter'] > 0) {
 					  bestellId = '".intval($_POST['bestellId'][$i])."' and
 					  partyId   = '".intval($_POST['partyId'])."'
 				";
-				$result= mysql_db_query ($dbname, $sql, $dbh);
+				$result= DB::query($sql);
 				// User informieren
 				sendeBestellBestaetigung(intval($_POST['partyId']), intval($_POST['bestellId'][$i]), 1, ACC_STATUS_STORNIERT);
 			}
@@ -269,9 +269,9 @@ if ($_POST['typId'] > 0 && $_POST['filter'] > 0) {
 			  ticketTypId = '".intval($_POST['typId'])."'";
 
 		$result = DB::query($sql);
-		//echo mysql_errno().": ".mysql_error()."<BR>";
+		//echo DB::$link->errno.": ".DB::$link->error."<BR>";
 
-		$row = mysql_fetch_array($result);
+		$row = $result->fetch_array();
 		$MinDoy = $row[MinDoy];
 		$MaxDoy = $row[MaxDoy];
 		$timeframe=$MaxDoy-$MinDoy;
@@ -290,7 +290,7 @@ if ($_POST['typId'] > 0 && $_POST['filter'] > 0) {
 				group by 
 				  TO_DAYS(wannAngelegt)";
 			$result = DB::query($sql);
-			$rowBestellt = mysql_fetch_array($result);
+			$rowBestellt = $result->fetch_array();
 			
 			// Bezahlungen
 			$sql = "select 
@@ -304,7 +304,7 @@ if ($_POST['typId'] > 0 && $_POST['filter'] > 0) {
 				group by 
 				  TO_DAYS(wannBezahlt)";
 			$result = DB::query($sql);
-			$rowBezahlt = mysql_fetch_array($result);
+			$rowBezahlt = $result->fetch_array();
 			
 			// Registrierungen
 			$sql = "select 
@@ -319,7 +319,7 @@ if ($_POST['typId'] > 0 && $_POST['filter'] > 0) {
 				group by 
 				  TO_DAYS(a.WANNANGELEGT)";
 			$result = DB::query($sql);
-			$rowRegistriert = mysql_fetch_array($result);
+			$rowRegistriert = $result->fetch_array();
 			
 			if($rowBestellt['summe']>0 || $rowBezahlt['summe'] > 0 || $rowRegistriert['summe'] > 0){
 				//if ($rowRegistriert['DOY'] == "") {
@@ -383,8 +383,8 @@ if ($_POST['typId'] > 0 && $_POST['filter'] > 0) {
 						b.bestellId
 		";
 
-		$result= mysql_db_query ($dbname, $sql ,$dbh);
-		//echo mysql_errno().": ".mysql_error()."<BR>";
+		$result= DB::query($sql );
+		//echo DB::$link->errno.": ".DB::$link->error."<BR>";
 		?>
 
 			<script language="JavaScript">
@@ -410,7 +410,7 @@ if ($_POST['typId'] > 0 && $_POST['filter'] > 0) {
 		$counter = 0;
 		$countIt = 1;
 		$farbe   = "hblau";
-		while ($row = mysql_fetch_array($result)) {
+		while ($row = $result->fetch_array()) {
 			echo "<input type=\"hidden\" name=\"bestellId[$countIt]\" value=\"".$row['bestellId']."\">";
 			echo "<tr>";
 			//echo "<td class=\"$farbe\"><a href=\"../admin/tickets_bestellungen.php?iBestellId=".PELAS::formatBestellNr($_POST['partyId'], $row['bestellId'])."&iStatus=-1\">".PELAS::formatBestellNr($_POST['partyId'], $row['bestellId'])."</a></td>";

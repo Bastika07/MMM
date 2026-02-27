@@ -1,7 +1,7 @@
 <?php
 
 /*
-    Dieses ist die Version für neues Accounting
+    Dieses ist die Version fï¿½r neues Accounting
 */
 ?>
 
@@ -26,17 +26,17 @@ if (!isset($dbh))
 
 //Userdaten
 if (!isset($_GET['nUserID']) || !is_numeric($_GET['nUserID']) || $_GET['nUserID'] < 0) {
-  PELAS::fehler('Ungültige Benutzer-ID!');
+  PELAS::fehler('Ungï¿½ltige Benutzer-ID!');
 } else {
-  $result = mysql_db_query ($dbname, "select * from USER where USERID = $nUserID",$dbh);
-  if (mysql_num_rows($result) != 1) {
+  $result = DB::query("select * from USER where USERID = $nUserID");
+  if ($result->num_rows != 1) {
     PELAS::fehler('Kein Benutzer mit dieser ID!');
   } else {
 
-$statusbeschreibung = mysql_db_query ($dbname, "select b.BESCHREIBUNG from STATUS b, ASTATUS a where a.USERID=$nUserID and a.MANDANTID=$nPartyID and b.STATUSID=a.STATUS",$dbh);
-//echo mysql_errno().": ".mysql_error()."<BR>";
-$sitz = mysql_db_query ($dbname, "select * from SITZ where USERID='$nUserID' and MANDANTID='$nPartyID' AND RESTYP='$SITZ_RESERVIERT'",$dbh);
-$besuchteParties = mysql_db_query ($dbname, "
+$statusbeschreibung = DB::query("select b.BESCHREIBUNG from STATUS b, ASTATUS a where a.USERID=$nUserID and a.MANDANTID=$nPartyID and b.STATUSID=a.STATUS");
+//echo DB::$link->errno.": ".DB::$link->error."<BR>";
+$sitz = DB::query("select * from SITZ where USERID='$nUserID' and MANDANTID='$nPartyID' AND RESTYP='$SITZ_RESERVIERT'");
+$besuchteParties = DB::query("
 	select m.REFERER, p.NAME, p.BEGINN 
 	from MANDANT m, ASTATUSHISTORIE a, PARTYHISTORIE p 
 	where m.MANDANTID=p.MANDANTID 
@@ -54,19 +54,19 @@ $besuchteParties = mysql_db_query ($dbname, "
 			or a.STATUS='$STATUS_VIP_2PERS'
 			or a.STATUS='$STATUS_VIP_4PERS'
 		) 
-	order by p.BEGINN desc", $dbh);
-//echo mysql_errno().": ".mysql_error()."<BR>";
+	order by p.BEGINN desc");
+//echo DB::$link->errno.": ".DB::$link->error."<BR>";
 
 // Clan raussuchen
-$result2 = mysql_db_query ($dbname, "select c.CLANID, c.NAME from CLAN c, USER_CLAN uc where c.CLANID = uc.CLANID and uc.USERID='$nUserID' and uc.MANDANTID='$nPartyID' and uc.AUFNAHMESTATUS='$AUFNAHMESTATUS_OK'",$dbh);
-$row2    = mysql_fetch_array($result2);
+$result2 = DB::query("select c.CLANID, c.NAME from CLAN c, USER_CLAN uc where c.CLANID = uc.CLANID and uc.USERID='$nUserID' and uc.MANDANTID='$nPartyID' and uc.AUFNAHMESTATUS='$AUFNAHMESTATUS_OK'");
+$row2    = $result2->fetch_array();
 $sClan   = db2display($row2['NAME']);
 $nClanID = $row2['CLANID'];
 
-$row = mysql_fetch_array($result);
-$rowStat = mysql_fetch_array($statusbeschreibung);
+$row = $result->fetch_array();
+$rowStat = $statusbeschreibung->fetch_array();
 
-$row_platz = mysql_fetch_array($sitz);
+$row_platz = $sitz->fetch_array();
 
 echo "<table class=\"rahmen_allg\" width=\"450\" border=\"0\" cellpadding=\"2\" cellspacing=\"1\"><tr><td class=\"pelas_benutzer_titel\" height=\"39\" colspan=\"3\" valign=\"top\">";
   echo "<table width=\"100%\" height=\"100%\" cellpadding=\"2\" cellspacing=\"0\" border=\"0\"><tr>";
@@ -144,11 +144,11 @@ $sql = "select
 	  t.statusId  = '".ACC_STATUS_BEZAHLT."' and
 	  p.mandantId = '$nPartyID'
 ";
-$res = mysql_db_query ($dbname, $sql ,$dbh);
+$res = DB::query($sql );
 
 echo "<tr><td class=\"pelas_benutzer_inhalt\" colspan=\"2\">";
 $counter = 0;
-while ($rowTemp = mysql_fetch_array($res)) {
+while ($rowTemp = $res->fetch_array()) {
 	if ($counter >= 1) {
 		echo "<br>";
 	}
@@ -163,7 +163,7 @@ while ($rowTemp = mysql_fetch_array($res)) {
 		  MANDANTID ='$nPartyID' and
 		  REIHE     = '".$rowTemp['sitzReihe']."'";
 	$resTemp2 = DB::query($sql);
-	$rowTemp2 = mysql_fetch_array($resTemp2);
+	$rowTemp2 = $resTemp2->fetch_array();
 	$ebene   = $rowTemp2['EBENE'];
 	echo " <a href=\"/sitzplan.php?ebene=$ebene&locateUser=".$rowTemp['userId']."\">";
 	echo $rowTemp['sitzReihe']."-".$rowTemp['sitzPlatz'];
@@ -177,13 +177,13 @@ if ($counter == 0) {
 echo "</td></tr>";
 
 
-// TODO: Übersetzen!
+// TODO: ï¿½bersetzen!
 echo "<tr><td class=\"pelas_benutzer_titel\" colspan=\"2\"><b>Besuchte Parties</b></td></tr>";
 
 echo "<tr><td class=\"pelas_benutzer_inhalt\" colspan=\"2\"><table cellspacing=\"0\" cellpadding=\"3\" border=\"0\">";
 
 $nCounter = 0;
-while ($row=mysql_fetch_array($besuchteParties)) {
+while ($row=$besuchteParties->fetch_array()) {
 	echo " <tr><td> <a href=\"$row[REFERER]\" target=\"_blank\">".db2display($row['NAME'])."</a> <small>(".dateDisplay2Short($row['BEGINN']).")</small></td></tr>";
 	$nCounter++;
 }

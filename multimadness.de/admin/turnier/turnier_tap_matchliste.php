@@ -41,7 +41,7 @@ function showOwn() {
 		Order By t_turnier.name";
 	$res = DB::query($sql);
 	$tourney_list = array();
-	while ($row = mysql_fetch_assoc($res)) {
+	while ($row = $res->fetch_assoc()) {
 		array_push($tourney_list, $row);
 	}
 
@@ -88,7 +88,7 @@ function showAll() {
 		Order By t_turnier.name";
 	$res = DB::query($sql);
 	$tourney_list = array();
-	while ($row = mysql_fetch_assoc($res)) {
+	while ($row = $res->fetch_assoc()) {
 		array_push($tourney_list, $row);
 	}
 

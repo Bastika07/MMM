@@ -188,9 +188,9 @@ class forum {
                 forum_boards b ON c.boardId = b.boardId
               WHERE
                 (
-			c.content LIKE '%".mysql_escape_string($value)."%'
+			c.content LIKE '%".DB::$link->real_escape_string($value)."%'
 			OR
-			c.title LIKE '%".mysql_escape_string($value)."%'
+			c.title LIKE '%".DB::$link->real_escape_string($value)."%'
 		) AND
 		(c.parent = -1 && c.hidden = 0 || c2.hidden = 0) AND
 		b.mandantId = {$this->mandantID} AND
@@ -203,7 +203,7 @@ class forum {
       else {
         $data = array();
         // Daten in Array einlesen, an Smarty übergeben
-        while ($row = mysql_fetch_assoc($res)) {
+        while ($row = $res->fetch_assoc()) {
           if (strpos($row['content'], $value) === false) {
            // $value nicht im Content gefunden. Dies kann passieren, wenn das Suchwort im Titel,
            // aber nicht im Text gefunden wurde. Hier die ersten 100 Zeichen des Contents anzeigen
@@ -244,7 +244,7 @@ class forum {
       $data = array();
       $boardIds = array();
       // Daten in Array einlesen, an Smarty übergeben
-      while ($row = mysql_fetch_assoc($res)) {
+      while ($row = $res->fetch_assoc()) {
        	//$row['new'] = $this->newThreadInBoard($row['boardID']);
        	$boardIds[] = $row['boardID'];
         array_push($data, $row);
@@ -285,7 +285,7 @@ class forum {
       if (!$showAll)
         $sql .= " LIMIT 5";
       if ($res = DB::query($sql)) {
-        while ($row = mysql_fetch_assoc($res)) {
+        while ($row = $res->fetch_assoc()) {
           if (!isset($data[$boardID])) {
             $data[$boardID] = array();
           }
@@ -324,11 +324,11 @@ class forum {
               ORDER BY
                 time DESC
               LIMIT 1";
-      if (!($res = DB::query($sql)) || mysql_num_rows($res) != 1) {
+      if (!($res = DB::query($sql)) || $res->num_rows != 1) {
         // DB-Fehler oder keine entsprechende News für die Kategorie
         $this->smarty->assign($boardName, array('hidden' => 1, 'boardID' => $boardID));
       } else {
-        $row = mysql_fetch_assoc($res);
+        $row = $res->fetch_assoc();
         $this->smarty->assign($boardName, $row);
       }
     }
@@ -354,7 +354,7 @@ class forum {
     if (!$res = DB::query($sql))
       echo "DB-Fehler";
     else {
-      while ($row = mysql_fetch_assoc($res)) {
+      while ($row = $res->fetch_assoc()) {
         $rc[$row['boardID']] = $row['name'];
       }
     }
@@ -379,7 +379,7 @@ class forum {
     $res = DB::query($sql);
     $boards = array();
     $data = array();
-    while ($row = mysql_fetch_row($res))
+    while ($row = $res->fetch_row())
       array_push($boards, $row);
     foreach ($boards as $val) {
       $sql = "SELECT
@@ -399,7 +399,7 @@ class forum {
       if (!$res = DB::query($sql)) {
         echo "DB-Fehler";
       } else {
-        while ($row = mysql_fetch_assoc($res)) {
+        while ($row = $res->fetch_assoc()) {
           $row['boardName'] = $val[1];
           array_push($data, $row);
         }
@@ -473,7 +473,7 @@ class forum {
         $data = array();
         $threadIds = array();
         // Daten in Array einlesen, an Smarty übergeben
-        while ($row = mysql_fetch_assoc($res)) {
+        while ($row = $res->fetch_assoc()) {
           // Ist der Thread ungelesen?
           $threadIds[] = $row['contentID'];
           // Ist der Thread "hot"?
@@ -576,7 +576,7 @@ class forum {
         $data = array();
         $threadIds = array();
         // Daten in Array einlesen, an Smarty übergeben
-        while ($row = mysql_fetch_assoc($res)) {
+        while ($row = $res->fetch_assoc()) {
           // Ist der Thread ungelesen?
           $threadIds[] = $row['contentID'];
           // Ist der Thread "hot"?
@@ -718,7 +718,7 @@ class forum {
 
             if (!$res = DB::query($sql))
               echo "DB-Fehler";
-            else if (mysql_num_rows($res) == 0){
+            else if ($res->num_rows == 0){
               echo "Diese Seite existiert nicht";
             } else {
               $data = array();
@@ -727,7 +727,7 @@ class forum {
               $authorClass = array();
 
               // Daten in Array einlesen, an Smarty übergeben
-              while ($row = mysql_fetch_assoc($res)) {
+              while ($row = $res->fetch_assoc()) {
                 // Userklasse bestimmen
                 if (!isset($authorClass[$row['authorID']])) {
                   if (User::hatRecht("GASTADMIN", $row['authorID'], $this->mandantID))
@@ -1282,7 +1282,7 @@ class forum {
           $count";
     $res = DB::query($sql);
     $rc = false;
-    while ($row = mysql_fetch_assoc($res)) {
+    while ($row = $res->fetch_assoc()) {
       $rc[] = $row;
     }
     return $rc;
@@ -1298,12 +1298,12 @@ class forum {
               boardID = '$board->id'";
     $res = DB::query($sql);
     $threadIds = array();
-    while ($row = mysql_fetch_row($res)) {
+    while ($row = $res->fetch_row()) {
       $threadIds[] = $row[0];
     }
 
     // Überhaupt Threads da?
-    if (mysql_num_rows($res) > 0) {
+    if ($res->num_rows > 0) {
       $sql = "REPLACE INTO
                 forum_readmarks
               (threadID, postID, userID)
@@ -1433,7 +1433,7 @@ class forum {
             WHERE
               contentID = '$contentID'";
     $res = DB::query($sql);
-    $row = mysql_fetch_row($res);
+    $row = $res->fetch_row();
     return ($row[0] == -1) ? $contentID : $row[0];
   }
 
@@ -1448,7 +1448,7 @@ class forum {
             WHERE
               contentID = '$threadID'";
     $res = DB::query($sql);
-    $row = mysql_fetch_row($res);
+    $row = $res->fetch_row();
     return $row[0];
   }
 
@@ -1463,7 +1463,7 @@ class forum {
             WHERE
               boardID = '$boardID'";
     $res = DB::query($sql);
-    $row = mysql_fetch_row($res);
+    $row = $res->fetch_row();
     $rc = ($row[0] == 1) ? true : false;
     return $rc;
   }
@@ -1479,7 +1479,7 @@ class forum {
              WHERE
                boardID = '$boardID'";
      $res = DB::query($sql);
-     $row = mysql_fetch_assoc($res);
+     $row = $res->fetch_assoc();
      $rc = 0;
      if ($row['closed'] == 1)
        $rc |= BOARD_CLOSED;
@@ -1499,7 +1499,7 @@ class forum {
              WHERE
                boardID = '$boardID'";
      $res = DB::query($sql);
-     $row = mysql_fetch_row($res);
+     $row = $res->fetch_row();
      $rc = $row[0];
      return $rc;
   }
@@ -1516,7 +1516,7 @@ class forum {
               contentID = '$threadID' AND
               parent = -1";
     $res = DB::query($sql);
-    $row = mysql_fetch_row($res);
+    $row = $res->fetch_row();
     $rc = ($row[0] == 1) ? true : false;
     return $rc;
   }
@@ -1555,7 +1555,7 @@ class forum {
 			$data = array();
 			foreach ($boardIds as $boardId)
 				$data[$boardId] = 0;
-			while ($row = mysql_fetch_assoc($res)) {
+			while ($row = $res->fetch_assoc()) {
 				$data[$row['boardID']] = 1;
 			}
     }	else {
@@ -1592,7 +1592,7 @@ class forum {
 		  rm.threadID IS NULL";
       $time_start = microtime_float();
       $res = DB::query($sql);
-      $row = mysql_fetch_row($res);
+      $row = $res->fetch_row();
       $time_end = microtime_float();
 //if ($this->isAdmin) echo "newThreadInBoard: ". ($time_end - $time_start)."<br>";
       // 0.3899 auf live
@@ -1624,7 +1624,7 @@ class forum {
                 rm.userID = {$this->userID} AND
                 c.lastPostID = rm.postID";
 			$res = DB::query($sql);
-			while ($row = mysql_fetch_assoc($res)) {
+			while ($row = $res->fetch_assoc()) {
 				$data[$row['threadID']] = 0;
 			}			
     }
@@ -1649,7 +1649,7 @@ class forum {
 		  rm.userID = {$this->userID} AND 
 		  c.lastPostID = rm.postID";
 	$res = DB::query($sql);
-	$row = mysql_fetch_row($res);
+	$row = $res->fetch_row();
         $rc = ($row[0] == 0);      
       $time_end = microtime_float();
 //if ($this->isAdmin) echo "threadIsNew: ". ($time_end - $time_start)."<br>";
@@ -1676,7 +1676,7 @@ class forum {
 		$time_end = microtime_float();
 //if ($this->isAdmin) echo "threadPageForPost: ". ($time_end - $time_start)."<br>";
 		// 0.06 auf live
-		$row = mysql_fetch_row($res);
+		$row = $res->fetch_row();
 		return (int) $row[0];
 	}
 
@@ -1692,7 +1692,7 @@ class forum {
       if (!$res = DB::query($sql)) {
       	$rc = 0;
       } else {
-        $row = mysql_fetch_row($res);
+        $row = $res->fetch_row();
         $rc = $row[0];
       }
     } else {
@@ -1721,7 +1721,7 @@ class forum {
 		$time_end = microtime_float();
 //if ($this->isAdmin) echo "threadFirstNewPost: ". ($time_end - $time_start)."<br>";
 		// 0.06 auf live
-        		$row = mysql_fetch_row($res);
+        		$row = $res->fetch_row();
         		$rc = $row[0];
 			// sind alle Posts gelesen, wird 0 zurückgegeben
       			return (int) ($rc) ? $rc : 0;
@@ -1794,7 +1794,7 @@ class forum {
             WHERE
               boardID = '$boardID'";
     $res = DB::query($sql);
-    $row = mysql_fetch_row($res);
+    $row = $res->fetch_row();
     return $row[0];
   }
 
@@ -1809,7 +1809,7 @@ class forum {
             WHERE
               contentID = '$threadID'";
     $res = DB::query($sql);
-    $row = mysql_fetch_row($res);
+    $row = $res->fetch_row();
     $rc = ($row[0] == 1) ? true : false;
     return $rc;
   }
@@ -1825,7 +1825,7 @@ class forum {
             WHERE
               contentID = '$threadID'";
     $res = DB::query($sql);
-    $row = mysql_fetch_row($res);
+    $row = $res->fetch_row();
     $rc = ($row[0] == 1) ? true : false;
     return $rc;
   }
@@ -1845,7 +1845,7 @@ class forum {
 		$time_end = microtime_float();
 //if ($this->isAdmin) echo "lastPostInThread: ". ($time_end - $time_start)."<br>";
 		// 0.08 auf live
-    $row = mysql_fetch_row($res);
+    $row = $res->fetch_row();
     return (int) $row[0];
   }
 
@@ -1862,7 +1862,7 @@ class forum {
             WHERE
               contentID = '$postID'";
     $res = DB::query($sql);
-    $row = mysql_fetch_row($res);
+    $row = $res->fetch_row();
     $rc = ($row[0] == 1) ? true : false;
     return $rc;
   }
@@ -1883,7 +1883,7 @@ class forum {
       if (!$res = DB::query($sql))
         $rc = 0;
       else {
-        $row = mysql_fetch_row($res);
+        $row = $res->fetch_row();
         $rc = $row[0];
       }
     }
@@ -1902,7 +1902,7 @@ class forum {
               contentID = '$postID' AND
               parent = -1";
     $res = DB::query($sql);
-    $row = mysql_fetch_row($res);
+    $row = $res->fetch_row();
     $rc = ($row[0] == 1) ? true : false;
     return $rc;
   }
@@ -1927,7 +1927,7 @@ class forum {
         echo "DB-Fehler";
         $rc = 0;
       } else {
-        $row = mysql_fetch_row($res);
+        $row = $res->fetch_row();
         $rc = $row[0];
       }
     }
@@ -1948,7 +1948,7 @@ class forum {
       echo "DB-Fehler";
       $rc = 0;
     } else {
-      $row = mysql_fetch_row($res);
+      $row = $res->fetch_row();
       $rc = ($row[0] == -1) ? $post : $row[0];
     }
     return $rc;
@@ -1966,7 +1966,7 @@ class forum {
 			  mandantID = '{$this->mandantID}' AND
 			  type = '{$type}'";
 		$res = DB::query($sql);
-		$row = mysql_fetch_assoc($res);
+		$row = $res->fetch_assoc();
 		return $row['boardID'];
 	}
 
@@ -1998,7 +1998,7 @@ class forum {
 				p.partyId desc";
 		$res = DB::query($sql);
 		$passes = array();
-		while ($row = mysql_fetch_assoc($res)) {
+		while ($row = $res->fetch_assoc()) {
 			$passes[] = $row;
 		}
 		return $passes;

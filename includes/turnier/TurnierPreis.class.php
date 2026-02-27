@@ -28,7 +28,7 @@ class TurnierPreis {
 		$res = DB::query($sql);
 		$max = 0;
 		
-		while ($row = mysql_fetch_assoc($res)) 
+		while ($row = $res->fetch_assoc()) 
 			$retval[$max = $row['platzierung']] = $row['beschreibung'];
 			
 		// PlŠtze ohne Preis in die Liste aufnehmen
@@ -54,8 +54,8 @@ class TurnierPreis {
 				WHERE turnierid = '{$turnierid}'
 				AND platzierung = '{$platzierung}'";
 			$res = DB::query($sql);
-			if (mysql_num_rows($res) > 0) {
-				$row = mysql_fetch_assoc($res);
+			if ($res->num_rows > 0) {
+				$row = $res->fetch_assoc();
 				if (empty($beschreibung)) {
 					$sql = "DELETE FROM t_preise
 						WHERE turnierid = '{$turnierid}'

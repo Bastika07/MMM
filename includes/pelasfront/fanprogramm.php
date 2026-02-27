@@ -19,12 +19,12 @@ if (isset($linkus)) {
 	
 	// Alte Sperrdatensätze löschen
 	$sql = "delete from CLAN_FANCOUNTER_LOCK where DATE_ADD(time, INTERVAL $sperrMinuten MINUTE) <= NOW()";
-	mysql_query($sql);
+	DB::query($sql);
 	
 	// Gucken ob Sperrdatensatz vorhanden.
 	$sql = "select remoteIp from CLAN_FANCOUNTER_LOCK where partyId='$aktuellePartyID' and clanId='$linkus' and remoteIp='$remoteIp'";
-	$result = mysql_query($sql);
-	if (mysql_num_rows($result) > 0) {
+	$result = DB::query($sql);
+	if ($result->num_rows > 0) {
 		// Vorhanden, nicht zählen
 		//echo "IP noch gesperrt";
 	} else {
@@ -34,10 +34,10 @@ if (isset($linkus)) {
 		if ($result[0] == "J") {
 			// Nur Zähldatensatz einfügen wenn Feature in der Clanverwaltun aktiviert
 			$sql = "insert into CLAN_FANCOUNTER_LOCK (partyId, clanId, remoteIp) VALUE ('$aktuellePartyID', '$linkus', '$remoteIp')";
-			mysql_query($sql);
+			DB::query($sql);
 			// Hochzählen, vorher gucken ob DS schon vorhanden
 			$sql = "INSERT INTO CLAN_FANCOUNTER (partyId, clanId, stand, wannAngelegt) VALUES ('$aktuellePartyID', '$linkus', '1', NOW()) ON DUPLICATE KEY UPDATE stand=stand+1";
-			$result = mysql_query($sql);
+			$result = DB::query($sql);
 		}
 	}
 	header ("Location: news.php");
@@ -69,13 +69,13 @@ Informationen zur Teilnahme am Fanprogramm findet ihr in eurer <img src="gfx/hea
 				cf.clanId   = c.CLANID
 			order by cf.stand desc
 	";
-	$result = mysql_query($sql);
+	$result = DB::query($sql);
 	
-	//echo mysql_errno().": ".mysql_error()."<BR>";
+	//echo DB::$link->errno.": ".DB::$link->error."<BR>";
 	
 	$zaehl = 1;
 	
-	while ($row = mysql_fetch_array($result)) {
+	while ($row = $result->fetch_array()) {
 		if ($zaehl == 1) {
 			$size = 8;
 		} elseif ($zaehl > 1 and $zaehl <=10) {

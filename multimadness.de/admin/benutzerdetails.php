@@ -187,7 +187,7 @@ function openAstatus(Mandant) {
         $resMandant = DB::query($sql);
 
         $vorhanden = 0;
-        while ($rowMandant = mysql_fetch_array($resMandant)) {
+        while ($rowMandant = $resMandant->fetch_array()) {
             # Welchen Status hat der Teilnehmer in diesem Mandanten?
             $sql = "SELECT
                         a.STATUS,
@@ -208,7 +208,7 @@ function openAstatus(Mandant) {
             echo '<form name="Astatus' . $rowMandant['MANDANTID'] . '">' . "\n";
             echo '<tr><td class="dblau">' . $rowMandant['BESCHREIBUNG'] . ":</td>\n";
 
-            $rowAstatus = mysql_fetch_array($resAstatus);
+            $rowAstatus = $resAstatus->fetch_array();
             if ($rowAstatus == '') {
                    $rowAstatus = array('BESCHREIBUNG' => 'nicht angemeldet');
 	    }
@@ -256,7 +256,7 @@ function openAstatus(Mandant) {
                     r.RECHTID = 'USERADMIN'";
         $resMandant = DB::query($sql);
 
-        while ($rowMandant = mysql_fetch_array($resMandant)) {
+        while ($rowMandant = $resMandant->fetch_array()) {
             echo '<tr><td class="dblau" colspan="5">'."\n";
             echo '<table width="100%" border="0"><tr>'."\n";
             echo '<td align="left"><b>'.$rowMandant['BESCHREIBUNG'].'</b></td>'."\n";
@@ -272,7 +272,7 @@ function openAstatus(Mandant) {
                         a.STATUS > 0
                     ORDER BY s.EBENE";
             $resEbene = DB::query($sql);
-            while ($row = mysql_fetch_array($resEbene)) {
+            while ($row = $resEbene->fetch_array()) {
                 echo '<a href="sitzplan.php?nPartyID='.$rowMandant['MANDANTID'].'&ebene='.$row['EBENE'].'&userID='.intval($_GET['id']).'" target="_blank">Ebene '.$row['EBENE'].'</a> '."\n";
 	    }
 
@@ -303,7 +303,7 @@ function openAstatus(Mandant) {
                         s.MANDANTID = " . $rowMandant['MANDANTID'] . " AND
                         u1.USERID = '".intval($_GET['id'])."'";
             $resPlatz = DB::query($sql);
-            while ($row = mysql_fetch_array($resPlatz)) {
+            while ($row = $resPlatz->fetch_array()) {
                 echo '<tr><td class="hblau">Gesetzt von: ';
                 if (isset($row['USERID2'])) {
                     echo '<a href="' . $PHP_SELF . '?id=' . $row['USERID2'] . '">' . $row['LOGIN2'] . "</a></td>\n";
@@ -347,7 +347,7 @@ function openAstatus(Mandant) {
             ORDER BY time DESC
             LIMIT 6";
         $res = DB::query($sql);
-        while ($row = mysql_fetch_array($res)) {
+        while ($row = $res->fetch_array()) {
             echo '<tr><td class="'.$sTBG.'">'.db2display($row['msg']).'</td><td class="'.$sTBG.'">'.dateDisplay2($row['time']).'</td><td class="'.$sTBG.'">'.$row['cat'].'</td></tr>'."\n";
             if ($sTBG == 'dblau') {
               $sTBG = 'hblau';
@@ -376,14 +376,14 @@ function openAstatus(Mandant) {
                     r.MANDANTID = m.MANDANTID";
         $res = DB::query($sql);
         $r_mandanten = array();
-        while ($row = mysql_fetch_assoc($res)) {
+        while ($row = $res->fetch_assoc()) {
             array_push($r_mandanten, $row);
 	}
 
         # Welche Rechte gibt es im System?
         $res = DB::query('SELECT RECHTID FROM RECHT');
         $r_rechte = array();
-        while ($row = mysql_fetch_assoc($res))
+        while ($row = $res->fetch_assoc())
             array_push($r_rechte, $row);
 
         # Welche Rechte, in welchem Mandanten hat das Opfer?
@@ -392,7 +392,7 @@ function openAstatus(Mandant) {
                 WHERE USERID = '".intval($_GET['id'])."'";
         $res = DB::query($sql);
         $flags = array();
-        while ($row = mysql_fetch_assoc($res)) {
+        while ($row = $res->fetch_assoc()) {
             array_push($flags, $row);
 	}
 
@@ -433,7 +433,7 @@ if ($form['alter_userid'] != $form['userid']) {
            FROM USER
            WHERE USERID = '$form[userid]'";
     $res = DB::query($sql);
-    $row = mysql_fetch_array($res);
+    $row = $res->fetch_array();
     if ($row) {
          $_GET['id'] = $row['USERID'];
     } else {
@@ -455,7 +455,7 @@ if (!isset($_GET['id'])) {
                 from USER
                 where USERID = '".intval($_GET['id'])."'";
         $res = DB::query($sql);
-        $row = mysql_fetch_array($res);
+        $row = $res->fetch_array();
 
         $formVars['userid']            = $row['USERID'];
         $formVars['alter_userid']    = $row['USERID'];
@@ -640,7 +640,7 @@ if ($_POST['actionID'] == 'daten') {
 
                 $sql = 'SELECT * FROM USER_EXT WHERE USERID = ' . $_GET['id'];
                 $res = DB::query($sql);
-                if ($res and (mysql_num_rows($res) == 0)) {
+                if ($res and ($res->num_rows == 0)) {
                     # Kein Datensatz vorhanden, einfügen.
                     $sql = "
 		        INSERT INTO USER_EXT
@@ -683,7 +683,7 @@ if ($_POST['actionID'] == 'daten') {
     $res = DB::query($sql);
 
     $flags = array();
-    while ($row = mysql_fetch_assoc($res)) {
+    while ($row = $res->fetch_assoc()) {
         array_push($flags, $row);
     }
 
@@ -694,7 +694,7 @@ if ($_POST['actionID'] == 'daten') {
 	      AND RECHTID = 'MANDANTADMIN'";
     $res = DB::query($sql);
     $allowed = array();
-    while ($row = mysql_fetch_assoc($res)) {
+    while ($row = $res->fetch_assoc()) {
         $allowed[$row['MANDANTID']] = True;
     }
 

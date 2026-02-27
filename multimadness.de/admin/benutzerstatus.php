@@ -51,8 +51,8 @@ if ($iGo == 'yes') {
 	      FROM RECHTZUORDNUNG
 	      WHERE MANDANTID = ' . $nMandantID . '
 	        AND USERID = ' . $loginID;
-	$result = mysql_db_query($dbname, $q, $dbh);
-	$row = mysql_fetch_array($result);
+	$result = DB::query($q);
+	$row = $result->fetch_array();
 	if ($row[USERID] > 0) {
 		# Und ab.
 	
@@ -61,16 +61,16 @@ if ($iGo == 'yes') {
 		      FROM ASTATUS
 		      WHERE MANDANTID = ' . $nMandantID . '
 		        AND USERID = ' . $id;
-		$resultV = mysql_db_query($dbname, $q, $dbh);
-		##echo mysql_errno() . ': ' . mysql_error() . "<br/>\n";
-		$rowV = mysql_fetch_array($resultV);
+		$resultV = DB::query($q);
+		##echo DB::$link->errno . ': ' . DB::$link->error . "<br/>\n";
+		$rowV = $resultV->fetch_array();
 		if ($rowV[USERID] <= 0) {
 			# ASTATUS vorbelegen.
 			$q = "INSERT INTO ASTATUS
 			        (MANDANTID, USERID, STATUS, WERGEAENDERT, WERANGELEGT)
 				VALUES ($nMandantID, $id, $STATUS_NICHTANGEMELDET, $loginID, $loginID)";
-			$resultInsert = mysql_db_query($dbname, $q, $dbh);
-			##echo mysql_errno() . ': ' . mysql_error() . "<br/>\n";
+			$resultInsert = DB::query($q);
+			##echo DB::$link->errno . ': ' . DB::$link->error . "<br/>\n";
 		}
 
 		# Wannbezahlt setzen!
@@ -94,17 +94,17 @@ if ($iGo == 'yes') {
 			  WERGEAENDERT = $loginID $addWhere
 		      WHERE USERID = $id
 		        AND MANDANTID = $nMandantID";
-		$result = mysql_db_query($dbname, $q, $dbh);
-		##echo mysql_errno() . ': ' . mysql_error() . "<br/>\n";
+		$result = DB::query($q);
+		##echo DB::$link->errno . ': ' . DB::$link->error . "<br/>\n";
 
 		if ((($iAnmeldestatus == $STATUS_BEZAHLT) or ($iAnmeldestatus == $STATUS_BEZAHLT_LOGE)) and ($iInfo == 'yes')) {
-			$result = mysql_db_query($dbname, 'SELECT REFERER, BESCHREIBUNG, EMAIL FROM MANDANT WHERE MANDANTID = ' . $nMandantID, $dbh);
-			$row = mysql_fetch_array($result);
+			$result = DB::query('SELECT REFERER, BESCHREIBUNG, EMAIL FROM MANDANT WHERE MANDANTID = ' . $nMandantID);
+			$row = $result->fetch_array();
 			$sURL = $row['REFERER'];
 			$sMandant = $row['BESCHREIBUNG'];
 			$sMandantEmail = $row['EMAIL'];
-			$result = mysql_db_query($dbname, 'SELECT LOGIN, EMAIL FROM USER WHERE USERID = ' . $id, $dbh);
-			$row = mysql_fetch_array($result);
+			$result = DB::query('SELECT LOGIN, EMAIL FROM USER WHERE USERID = ' . $id);
+			$row = $result->fetch_array();
 			$sLogin = $row['LOGIN'];
 			$sEmail = $row['EMAIL'];
 
@@ -120,16 +120,16 @@ if ($iGo == 'yes') {
 		<?php
 		# Hat der User einen Platz gehabt?
 		if (($iAnmeldestatus == $STATUS_ABGEMELDET) or ($iAnmeldestatus == $STATUS_ANGEMELDET)) {
-			$result= mysql_db_query ($dbname, 'SELECT USERID FROM SITZ WHERE MANDANTID = ' . $nMandantID . ' AND USERID = ' . $id, $dbh);
-			$row = mysql_fetch_array($result);
+			$result= DB::query('SELECT USERID FROM SITZ WHERE MANDANTID = ' . $nMandantID . ' AND USERID = ' . $id);
+			$row = $result->fetch_array();
 			if ($row[USERID] > 0) {
 				# Platz aus DB l�schen.
-				$result = mysql_db_query($dbname, 'DELETE FROM SITZ WHERE MANDANTID = ' . $nMandantID . ' AND USERID = ' . $id, $dbh);
+				$result = DB::query('DELETE FROM SITZ WHERE MANDANTID = ' . $nMandantID . ' AND USERID = ' . $id);
 			}
 		}
 		
-		$result = mysql_db_query($dbname, 'SELECT BESCHREIBUNG FROM STATUS WHERE STATUSID = ' . $iAnmeldestatus, $dbh);
-		$row = mysql_fetch_array($result);
+		$result = DB::query('SELECT BESCHREIBUNG FROM STATUS WHERE STATUSID = ' . $iAnmeldestatus);
+		$row = $result->fetch_array();
 		$sAstatusBeschreibung = $row['BESCHREIBUNG'];
 		# dann mit diesem Java-Script das Quellformular aktualisieren.
 		?>
@@ -155,14 +155,14 @@ if ($iGo == 'yes') {
 
 	echo "<input type=\"hidden\" name=\"iGo\" value=\"yes\">";
 
-	$result = mysql_db_query($dbname, "select * from USER where USERID=$id", $dbh);
-	$row = mysql_fetch_array($result);
-	$result = mysql_db_query($dbname, "select STATUS, BEZ_IN_CLAN, RABATTSTUFE, BUFFET from ASTATUS where MANDANTID=$nMandantID and USERID=$id", $dbh);
-	$row_status = mysql_fetch_array($result);
-	##echo mysql_errno().": ".mysql_error()."<BR>";
-	$resultMandant = mysql_db_query($dbname, "select BESCHREIBUNG from MANDANT where MANDANTID=$nMandantID", $dbh);
-	##echo mysql_errno().": ".mysql_error()."<BR>";
-	$rowMandant = mysql_fetch_array($resultMandant);
+	$result = DB::query("select * from USER where USERID=$id");
+	$row = $result->fetch_array();
+	$result = DB::query("select STATUS, BEZ_IN_CLAN, RABATTSTUFE, BUFFET from ASTATUS where MANDANTID=$nMandantID and USERID=$id");
+	$row_status = $result->fetch_array();
+	##echo DB::$link->errno.": ".DB::$link->error."<BR>";
+	$resultMandant = DB::query("select BESCHREIBUNG from MANDANT where MANDANTID=$nMandantID");
+	##echo DB::$link->errno.": ".DB::$link->error."<BR>";
+	$rowMandant = $resultMandant->fetch_array();
 
 	echo "<table cellspacing=\"0\" cellpadding=\"0\" border=\"0\">\n";
 	echo "<tr><td class=\"navbar\">\n";
@@ -170,8 +170,8 @@ if ($iGo == 'yes') {
 	echo "<tr><td class=\"navbar\" colspan=\"2\"><b>Status von &quot;".db2display($row['LOGIN'])."&quot; f&uuml;r &quot;".db2display($rowMandant['BESCHREIBUNG'])."&quot;</b></td></tr>\n";
 
 	# Alter Status
-	$result = mysql_db_query($dbname, "select BESCHREIBUNG from STATUS where STATUSID=$nOldStatus", $dbh);
-	$row = mysql_fetch_array($result);
+	$result = DB::query("select BESCHREIBUNG from STATUS where STATUSID=$nOldStatus");
+	$row = $result->fetch_array();
 	echo "<tr><td class=\"dblau\">Alter Status</td><td class=\"hblau\">$row[BESCHREIBUNG]</td></tr>";
 	echo "\n";
 	
@@ -180,9 +180,9 @@ if ($iGo == 'yes') {
 	# Neuer Status
 	echo "<tr><td class=\"dblau\">Neuer Status</td><td class=\"hblau\">";
 	echo "<select name=\"iAnmeldestatus\">";
-	$result = mysql_db_query($dbname, "select STATUSID, BESCHREIBUNG from STATUS", $dbh);
-	##echo mysql_errno().": ".mysql_error()."<BR>";
-	while ($row = mysql_fetch_array($result)) {
+	$result = DB::query("select STATUSID, BESCHREIBUNG from STATUS");
+	##echo DB::$link->errno.": ".DB::$link->error."<BR>";
+	while ($row = $result->fetch_array()) {
 		echo "<option value=\"$row[STATUSID]\"";
 		if ($nOldStatus == $row['STATUSID']) {
 			echo ' selected="selected"';

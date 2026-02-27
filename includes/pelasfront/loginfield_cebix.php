@@ -11,8 +11,8 @@ if ($nLoginID > 0) {
 }
 
 //feststellen, ob noch nicht angemeldet
-$result = mysql_query("select STATUS from ASTATUS where USERID='$nLoginID' and MANDANTID='$nPartyID'");
-$row = mysql_fetch_array($result);
+$result = DB::query("select STATUS from ASTATUS where USERID='$nLoginID' and MANDANTID='$nPartyID'");
+$row = $result->fetch_array();
 if ($row['STATUS'] == 1) {
 	$selected = 3; 
 } elseif (($row['STATUS'] == 2) || ($row['STATUS'] == 3)) {

@@ -340,7 +340,7 @@ Each block sets:
 
 1. ~~**Credentials committed to source control**~~ — **Fixed.** All database passwords, mail passwords, and the Bing Maps API key are now read exclusively from environment variables via `getenv()` in `constants.php` and `index.php`. No credentials are hard-coded. Store secrets in `includes/.env` (excluded from version control by `.gitignore`).
 
-2. **Deprecated `mysql_*` functions** — `multimadness.de/admin/index.php` has been migrated to the `DB::` MySQLi wrapper. However, legacy `mysql_*` calls still exist in 80+ other files (800+ call-sites). `includes/dblib.php` now provides backward-compatible shims (`mysql_query()`, `mysql_fetch_assoc()`, etc.) that delegate to the active MySQLi connection, so these calls are functional on PHP 7/8 — but the underlying queries are still plain string-concatenation and not prepared statements (see item 3).
+2. ~~**Deprecated `mysql_*` functions**~~ — **Fixed.** All legacy `mysql_*` call-sites across 120+ files have been migrated to the `DB::` MySQLi wrapper (`DB::query()`, `$result->fetch_assoc()`, `DB::$link->error`, etc.). The backward-compatible shims in `includes/dblib.php` are retained for safety but are no longer exercised by application code. The underlying queries still use plain string-concatenation — see item 3.
 
 3. **SQL injection** — Several files build SQL queries by string-interpolating unescaped variables directly (e.g. `includes/pelasfront/news.php` uses `$_GET[newsID]` directly in a query string; similar patterns exist in `clanverwaltung.php`, `format.php`, `archiv.php`, `Team.class.php`). The `safe()` / `DB::$link->real_escape_string()` helper exists but is not consistently applied. Prepared statements (MySQLi `prepare()` / `bind_param()`) should be used throughout.
 
@@ -379,7 +379,7 @@ Each block sets:
 | ✅ | ~~Move all credentials/secrets to `.env` / environment variables~~ — done |
 | ✅ | ~~Fix UTF-8 encoding artefacts in `constants.php`~~ — done |
 | 🔴 | Use prepared statements (MySQLi `prepare()` / `bind_param()`) for all DB queries to eliminate SQL injection risk |
-| 🔴 | Replace remaining legacy `mysql_*` call-sites across 80+ files with the `DB::` MySQLi wrapper; the shims in `dblib.php` keep them functional but they should be migrated for clarity |
+| ✅ | ~~Replace remaining legacy `mysql_*` call-sites across 80+ files with the `DB::` MySQLi wrapper~~ — done |
 | 🟠 | Add CSRF token generation and validation to all state-changing forms |
 | 🟠 | Replace hard-coded absolute paths in dev/intranet `constants.php` blocks with a single `BASE_DIR` constant derived at runtime (e.g. `dirname(__DIR__)`) |
 | 🟡 | Add PHPUnit test coverage for core business logic (`pelasfunctions.php`, `DB::`, tournament classes) |

@@ -49,7 +49,7 @@ if ($nLoginID < 1) {
 		and b.partyId = '".intval($aktuellePartyID)."'";
 
 	$res = DB::query($sql);
-	$rowTemp = mysql_fetch_array($res);
+	$rowTemp = $res->fetch_array();
 
 	if ($rowTemp['vorhanden'] > 0) {
 		// Bestellung vorhanden, gleich zu bestellung verwalten forwarden

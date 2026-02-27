@@ -35,7 +35,7 @@ function zeichneGrafik($linieFarbe, $sAddWhere, $what)
 			  TO_DAYS($what)";
 		$result = DB::query($sql);
 
-		$row = mysql_fetch_array($result);
+		$row = $result->fetch_array();
 		//echo "ID: $row[USERID] Angemeldet: $row[$what] <br>";
 		$count = $count + $row[0];
 
@@ -99,9 +99,9 @@ $sql = "select
 	  ticketTypId = '".intval($_GET['typId'])."'";
 	  
 $result = DB::query($sql);
-//echo mysql_errno().": ".mysql_error()."<BR>";
+//echo DB::$link->errno.": ".DB::$link->error."<BR>";
 
-$row = mysql_fetch_array($result);
+$row = $result->fetch_array();
 $MinDoy = $row[MinDoy];
 $MaxDoy = $row[MaxDoy];
 
@@ -129,9 +129,9 @@ $sql = "select
 	  ticketTypId = '".intval($_GET['typId'])."'
 	";
 $result = DB::query($sql);
-//echo mysql_errno().": ".mysql_error()."<BR>";
+//echo DB::$link->errno.": ".DB::$link->error."<BR>";
 $Peak = 0;
-while ($row = mysql_fetch_array($result)) {
+while ($row = $result->fetch_array()) {
 	if ($row[0] > $Peak) {
 		$Peak = $row[0];
 	}

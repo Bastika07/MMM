@@ -51,8 +51,8 @@ gesuchten Wert enthalten, werden angezeigt. Es wird nicht nach Gross- und Kleins
 	<option value="-1">Alle
 	<?php
 		$result = DB::query("select STATUSID, BESCHREIBUNG from STATUS");
-		//echo mysql_errno().": ".mysql_error()."<BR>";
-		while ($row = mysql_fetch_array($result)) {
+		//echo DB::$link->errno.": ".DB::$link->error."<BR>";
+		while ($row = $result->fetch_array()) {
 			echo "<option value=\"$row[STATUSID]\"";
 			if (isset($iAnmeldestatus) && $iAnmeldestatus == $row['STATUSID']) {echo " selected";}
 			echo ">$row[BESCHREIBUNG]";
@@ -68,8 +68,8 @@ gesuchten Wert enthalten, werden angezeigt. Es wird nicht nach Gross- und Kleins
 	>Alle
 	<?php
 		$result = DB::query("select distinct m.MANDANTID, m.BESCHREIBUNG from MANDANT m, RECHTZUORDNUNG r where r.MANDANTID=m.MANDANTID and r.USERID='".intval($loginID)."' and (r.RECHTID='USERADMIN' || r.RECHTID='USERADMIN_READONLY' || r.RECHTID='EINLASSADMIN')");
-		//echo mysql_errno().": ".mysql_error()."<BR>";
-		while ($row = mysql_fetch_array($result)) {
+		//echo DB::$link->errno.": ".DB::$link->error."<BR>";
+		while ($row = $result->fetch_array()) {
 			echo "<option value=\"$row[MANDANTID]\"";
 			if (isset($_POST['iMandant']) && $_POST['iMandant'] == $row['MANDANTID']) {echo " selected";}
 			echo ">$row[BESCHREIBUNG]";
@@ -173,11 +173,11 @@ if (isset($_POST['iGo']) && $_POST['iGo'] == 'yes') {
 		}
 
 		$result = DB::query($sWhere);
-		//echo mysql_errno().": ".mysql_error()."<BR>";
+		//echo DB::$link->errno.": ".DB::$link->error."<BR>";
 
 		$bgc = 'hblau';
 
-		while ($row = mysql_fetch_array($result)) {
+		while ($row = $result->fetch_array()) {
 			$dateDisplay = date('d.m.Y H:i', $row['WANNGEAENDERT']);
 
 			echo "<tr>";

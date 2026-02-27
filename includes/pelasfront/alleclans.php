@@ -11,11 +11,11 @@ include_once "language.inc.php";
 
 <?php
 
-	$result = mysql_query("select CLANID, NAME from CLAN where MANDANTID = $nPartyID order by NAME");
+	$result = DB::query("select CLANID, NAME from CLAN where MANDANTID = $nPartyID order by NAME");
 	
-	//echo mysql_errno().": ".mysql_error()."<BR>";
+	//echo DB::$link->errno.": ".DB::$link->error."<BR>";
 	
-	while ($row = mysql_fetch_array($result)) {
+	while ($row = $result->fetch_array()) {
 		echo "<TR>";
 		
 		echo "<TD width=\"20\" class='TNListeTDB' align=\"center\"><a href=\"clandetails.php?nClanID=$row[CLANID]\"><img align=\"middle\" src=\"gfx/userinfo.gif\" border=\"0\"></a></td>";
@@ -30,7 +30,7 @@ include_once "language.inc.php";
 		
 		echo "<TD class='TNListeTDB'>".db2display($row['NAME']);
 		
-		$arry = mysql_fetch_array(mysql_query("select count(*) as anzahl from USER_CLAN where MANDANTID = $nPartyID and CLANID = $row[CLANID] and AUFNAHMESTATUS=$AUFNAHMESTATUS_OK"));
+		$arry = DB::query("select count(*) as anzahl from USER_CLAN where MANDANTID = $nPartyID and CLANID = $row[CLANID] and AUFNAHMESTATUS=$AUFNAHMESTATUS_OK")->fetch_array();
 		
 		echo " <i>(".$arry['anzahl'].")</i></td></tr>\n";
 	}

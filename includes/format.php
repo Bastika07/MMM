@@ -50,8 +50,8 @@ function sende_mail_text ($empfaenger_mail, $subject, $body, $replyto_mail = "",
 			where
 				m.MANDANTID = ".intval($nPartyID);
 	$result_mandant = DB::query($sql);
-	//echo mysql_errno().": ".mysql_error()."<BR>";
-	$rowMandant = mysql_fetch_array($result_mandant);
+	//echo DB::$link->errno.": ".DB::$link->error."<BR>";
+	$rowMandant = $result_mandant->fetch_array();
 
 	if ($rowMandant && count($rowMandant > 0))
 	{
@@ -394,7 +394,7 @@ function displayInhalte($nKategorieID, $nParentID) {
   }
 		
   $result_titel = DB::query("select TITEL from INHALT where INHALTID = $nParentID and KATEGORIEID = $nTempKat and MANDANTID = $nPartyID");
-	$row_titel = mysql_fetch_array($result_titel);
+	$row_titel = $result_titel->fetch_array();
 		
   # ID des letzten Posts holen.
   $sql = "select
@@ -407,13 +407,13 @@ function displayInhalte($nKategorieID, $nParentID) {
             INHALTID desc
           limit 1";		        
   $result_last = DB::query($sql);
-  $row_last = mysql_fetch_row($result_last);
+  $row_last = $result_last->fetch_row();
   $last_post = $row_last[0];
 
   echo "<table cellspacing=\"1\" cellpadding=\"3\" border=\"0\">";
   echo "<tr><td class=\"forum_titel\"><img src=\"/gfx/lgif.gif\" width=\"115\" height=\"0\"></td><td class=\"forum_titel\" width=\"100%\"><b>".db2display($row_titel[TITEL])."</b></td></tr>";
 
-  while ($row = mysql_fetch_array($result)) {
+  while ($row = $result->fetch_array()) {
     echo "<tr><td class='forum_bg1' valign='top'>";
     $tempAutorID = $row['AUTOR'];
     if ($tempAutorID > 0) {
@@ -500,7 +500,7 @@ function InhaltAnlegen($nKategorieID, $nParentID) {
 	  AND KATEGORIEID = ' . $nTempKat . '
 	  AND MANDANTID = ' . $nPartyID
     );
-    $row_titel = mysql_fetch_array($result_titel);
+    $row_titel = $result_titel->fetch_array();
 
     if ($_GET['Parent'] == -1) {
         $wasneu = 'Thema';
@@ -665,10 +665,10 @@ function InhaltEdit($nKategorieID, $nParentID) {
             FROM INHALT
             WHERE INHALTID = '$_GET[Inhalt]'";
     $res = DB::query($sql);
-    if (mysql_num_rows($res) != 1) {
+    if ($res->num_rows != 1) {
         PELAS::fehler('Ungültige BeitragsID');
     } else {
-        $row = mysql_fetch_row($res);
+        $row = $res->fetch_row();
         $nParentID = ($row[0] == -1) ? $_GET['Inhalt'] : $row[0];
         $inhalt = $row[1];      
         $nKategorieID = $row[2];
@@ -677,7 +677,7 @@ function InhaltEdit($nKategorieID, $nParentID) {
 		FROM INHALT 
 		WHERE INHALTID = '$nParentID'";
 	$result = DB::query($sql);
-	$row = mysql_fetch_row($result);
+	$row = $result->fetch_row();
 	$titel = $row[0];
 
 	$wasneu = ($_GET['Parent'] == -1) ? 'Thema' : 'Beitrag';

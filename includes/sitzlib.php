@@ -6,11 +6,11 @@ if (!isset($dbh))
 else 
   $dbh_spg = $dbh;
 
-$result = mysql_query ("select * from SITZDEF where EBENE='$ebene'", $dbh_spg);
-//echo mysql_errno().": ".mysql_error()."<BR>";
+$result = DB::query("select * from SITZDEF where EBENE='$ebene'");
+//echo DB::$link->errno.": ".DB::$link->error."<BR>";
 //$PlatzArray = Array ( $row[REIHE] => Array ($row[LAENGE], $row[XCORD], $row[YCORD], $row[AUSRICHTUNG], $row[ISTLOGE] ));
 $PlatzArray = "";
-while ($row = mysql_fetch_array($result)) {
+while ($row = $result->fetch_array()) {
 	//Kommentar ausgeben
 	$PlatzArray[$row['REIHE']][0] = $row['LAENGE'];
 	$PlatzArray[$row['REIHE']][1] = $row['XCORD'];
@@ -20,16 +20,16 @@ while ($row = mysql_fetch_array($result)) {
 }
 
 //groessenkonstanten
-$result = mysql_query ("select STRINGWERT from CONFIG where PARAMETER='SITZTIEFE'", $dbh_spg);
-$row = mysql_fetch_array($result);
+$result = DB::query("select STRINGWERT from CONFIG where PARAMETER='SITZTIEFE'");
+$row = $result->fetch_array();
 $tTempTiefe = $row['STRINGWERT'];
 if ($tTempTiefe > 0) {
 	$tbreite = $tTempTiefe;
 } else {
 	$tbreite = 13;
 }
-$result = mysql_query ("select STRINGWERT from CONFIG where PARAMETER='SITZBREITE'", $dbh_spg);
-$row = mysql_fetch_array($result);
+$result = DB::query("select STRINGWERT from CONFIG where PARAMETER='SITZBREITE'");
+$row = $result->fetch_array();
 $tTempBreite = $row['STRINGWERT'];
 if ($tTempBreite > 0) {
 	$tlaenge = $tTempBreite;
@@ -38,8 +38,8 @@ if ($tTempBreite > 0) {
 }
 
 //Breite der Loge
-$result = mysql_query ("select STRINGWERT from CONFIG where PARAMETER='LOGE_SITZBREITE'", $dbh_spg);
-$row = mysql_fetch_array($result);
+$result = DB::query("select STRINGWERT from CONFIG where PARAMETER='LOGE_SITZBREITE'");
+$row = $result->fetch_array();
 $tTempBreite = $row['STRINGWERT'];
 if ($tTempBreite > 0) {
 	$tLogelaenge = $tTempBreite;
@@ -48,14 +48,14 @@ if ($tTempBreite > 0) {
 }
 
 //Maximale Reihen
-$result = mysql_query ("select MAX(REIHE) as MAXROW from SITZDEF where EBENE='$ebene'", $dbh_spg);
-//echo mysql_errno().": ".mysql_error()."<BR>";
-$row = mysql_fetch_array($result);
+$result = DB::query("select MAX(REIHE) as MAXROW from SITZDEF where EBENE='$ebene'");
+//echo DB::$link->errno.": ".DB::$link->error."<BR>";
+$row = $result->fetch_array();
 $maxreihen = $row['MAXROW'];
 
 //Reihen starten ab
-$result = mysql_query ("select MIN(REIHE) as MINROW from SITZDEF where EBENE='$ebene'", $dbh_spg);
-$row = mysql_fetch_array($result);
+$result = DB::query("select MIN(REIHE) as MINROW from SITZDEF where EBENE='$ebene'");
+$row = $result->fetch_array();
 $startreihen = $row['MINROW'];
 
 ?>

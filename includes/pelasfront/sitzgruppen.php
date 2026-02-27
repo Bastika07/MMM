@@ -49,7 +49,7 @@ function ShowGruppenBlaettern()
 $sitzResOffen = sitzPLatzResOffen($nPartyID);
 
 // Anmeldung offen?
-$row = mysql_fetch_array(DB::query("select STRINGWERT from CONFIG where PARAMETER = 'VORANMELDUNG_OFFEN' and MANDANTID = $nPartyID"));
+$row = DB::query("select STRINGWERT from CONFIG where PARAMETER = 'VORANMELDUNG_OFFEN' and MANDANTID = $nPartyID")->fetch_array();
 // checken, ob get-variable on
 if ($voranmeldung == "true" && $row['STRINGWERT'] == "J") {
 	$bVoranmeld = 1;
@@ -60,7 +60,7 @@ if ($voranmeldung == "true" && $row['STRINGWERT'] == "J") {
 }
 
 
-$row = mysql_fetch_array(DB::query("select STRINGWERT from CONFIG where PARAMETER = 'ANMELDUNG_OFFEN' and MANDANTID = $nPartyID"));
+$row = DB::query("select STRINGWERT from CONFIG where PARAMETER = 'ANMELDUNG_OFFEN' and MANDANTID = $nPartyID")->fetch_array();
 if ($row['STRINGWERT'] == "J") {
 	$bAnmeld = 1;
 } else {
@@ -80,7 +80,7 @@ if ($bAnmeld == 1 || $bVoranmeld == 1) {
                where
                 GRUPPEN_ID = '$mygroup'AND USERID = '$_GET[tauschen]'";
       $res = DB::query($sql);
-      if ($row = mysql_fetch_row($res)) {
+      if ($row = $res->fetch_row()) {
         
         //Mein Reihe Platz kriegen
         $sql = " select 
@@ -90,7 +90,7 @@ if ($bAnmeld == 1 || $bVoranmeld == 1) {
                  where
                   MANDANTID=$nPartyID AND USERID=$nLoginID";
         $res = DB::query($sql);
-        $row = mysql_fetch_row($res);
+        $row = $res->fetch_row();
         $meinPlatz = $row[1];
         $meineReihe = $row[0];
         
@@ -101,7 +101,7 @@ if ($bAnmeld == 1 || $bVoranmeld == 1) {
                  where
                   MANDANTID='$nPartyID' AND USERID='$_GET[tauschen]'";
         DB::query($sql);
-        if(mysql_affected_rows()<1){
+        if(DB::$link->affected_rows<1){
           Pelas::fehler('Fehler beim setzen des 1. Platzes.');
         }
         
@@ -112,7 +112,7 @@ if ($bAnmeld == 1 || $bVoranmeld == 1) {
            where
             MANDANTID='$nPartyID' AND REIHE='$meineReihe' AND PLATZ='$meinPlatz'";
         DB::query($sql);
-        if(mysql_affected_rows()<1){
+        if(DB::$link->affected_rows<1){
           Pelas::fehler('Fehler beim setzen des 2. Platzes');
         }
         echo "Das Umsetzen wurde durchgeführt.<br>";
@@ -133,7 +133,7 @@ if ($bAnmeld == 1 || $bVoranmeld == 1) {
             where
               s.MANDANTID=$nPartyID AND s.GRUPPEN_ID='".$_GET['gruppenID']. "' AND s.ERSTELLT_VON=u.USERID";
     $res = DB::query($sql);
-    $row = mysql_fetch_row($res);
+    $row = $res->fetch_row();
     if(!$row){
       PELAS::fehler('Fehler beider Verarbeitung aufgetreten');
     } else {   
@@ -146,7 +146,7 @@ if ($bAnmeld == 1 || $bVoranmeld == 1) {
                 MANDANTID='$nPartyID' AND REIHE = '$row_platz[REIHE]'";
       $rese = DB::query($sqle);
       $ebene = -1;
-      if($rowe = mysql_fetch_row($rese)){
+      if($rowe = $rese->fetch_row()){
         $ebene = $rowe[0];
       }
       if( $ebene == -1){
@@ -186,7 +186,7 @@ if ($bAnmeld == 1 || $bVoranmeld == 1) {
       // Mitgliedertabelle
       echo "<TABLE class='rahmen_allg' width=400 cellspacing=1 cellpadding=2 class=msg2>";  
       echo "<TR><TD class='TNListe'>Gruppenmitglieder</TD><TD class='TNListe'>Sitzreihe</TD><TD class='TNListe'>Sitzplatz</TD></TR>";
-      while($row2 = mysql_fetch_array($res2)){
+      while($row2 = $res2->fetch_array()){
         if ($class == "TNListeTDA") {
           $class = "TNListeTDB";
         } else {
@@ -199,7 +199,7 @@ if ($bAnmeld == 1 || $bVoranmeld == 1) {
                where
                 MANDANTID='$nPartyID' AND USERID='$row2[USERID]'";
         $res = DB::query($sql);
-        $row = mysql_fetch_row($res);
+        $row = $res->fetch_row();
         echo "<TR><TD class='$class'><a href='/benutzerdetails.php?nUserID=". db2display($row2['USERID']) ."'>". db2display($row2['LOGIN']) ."</a></TD><TD class='$class'>".db2display($row[0])."</TD><TD class='$class'>".db2display($row[1])."</TD></TR>";
       }
       echo "</TABLE>";
@@ -213,11 +213,11 @@ if ($bAnmeld == 1 || $bVoranmeld == 1) {
          where
           i.GRUPPEN_ID='$_GET[gruppenID]' AND u.USERID=i.USERID";
       $res = DB::query($sql);
-      if (mysql_num_rows($res)>0){
+      if ($res->num_rows>0){
         if (checkUserSeatgroup($nPartyID, $nLoginID)==$_GET[gruppenID]){
           echo "<TABLE class='rahmen_allg' width=400 cellspacing=1 cellpadding=2 class=msg2>";  
           echo "<TR><TD class='TNListe'>Eingeladene Spieler</TD><TD align=center class='TNListe'>Ausladen</TD></TR>";
-          while($row = mysql_fetch_array($res)){
+          while($row = $res->fetch_array()){
             if ($class == "TNListeTDA") {
               $class = "TNListeTDB";
             } else {
@@ -229,7 +229,7 @@ if ($bAnmeld == 1 || $bVoranmeld == 1) {
         } else {
           echo "<TABLE width=100% cellspacing=1 cellpadding=2 class=msg2>";  
           echo "<TR><TD class='rahmen_msgtitle'>Eingeladene Spieler: </TD></TR>";
-          while($row = mysql_fetch_array($res)){
+          while($row = $res->fetch_array()){
             if ($class == "TNListeTDA") {
               $class = "TNListeTDB";
             } else {
@@ -254,7 +254,7 @@ if ($bAnmeld == 1 || $bVoranmeld == 1) {
               d.MANDANTID='$nPartyID' AND s.MANDANTID='$nPartyID' AND
                s.USERID='$nLoginID' AND s.REIHE=d.REIHE AND s.PLATZ=d.PLATZ";
       $res = DB::query($sql);
-      $row = mysql_fetch_row($res);
+      $row = $res->fetch_row();
       $q = "SELECT 
             STATUS
             FROM 
@@ -266,7 +266,7 @@ if ($bAnmeld == 1 || $bVoranmeld == 1) {
                          $STATUS_COMFORT_8PERS, $STATUS_PREMIUM_4PERS, $STATUS_PREMIUM_6PERS, 
                           $STATUS_ZUGEORDNET, $STATUS_VIP_2PERS)";
       $res = DB::query($q);
-      $row2 = mysql_fetch_row($res);
+      $row2 = $res->fetch_row();
     	if($mygroup && !checkUserSeatgroup($nPartyID, $_GET['einladen']) && 
     	    (($row[0]=='platz'&&USER::hatBezahlt($_GET['einladen']))||($row[0]=='logenplatz'&&$row2[0]==$STATUS_BEZAHLT_LOGE))){
     		$sql = "select
@@ -276,7 +276,7 @@ if ($bAnmeld == 1 || $bVoranmeld == 1) {
     						where
     							USERID=".$_GET['einladen']." AND GRUPPEN_ID='$mygroup'";
     		$res = DB::query($sql);
-    		if(mysql_fetch_row($res)){
+    		if($res->fetch_row()){
     			PELAS::fehler('Dieser Teilnehmer wurde bereits in die Gruppe eingeladen');
     		}else {
   	  		$sql = "insert
@@ -284,7 +284,7 @@ if ($bAnmeld == 1 || $bVoranmeld == 1) {
   	  						sitzgruppen_einladung (GRUPPEN_ID, USERID, MANDANTID)
   	  							values
   	  						('$mygroup', '".$_GET['einladen']."', '$nPartyID')";
-  	  		if(!mysql_query($sql)){
+  	  		if(!DB::query($sql)){
   	  			PELAS::fehler('Es gab einen fehler beim erstellen der Einladung, bitte versuche es erneut');
   	  		}
   	  		?>
@@ -318,14 +318,14 @@ if ($bAnmeld == 1 || $bVoranmeld == 1) {
               WHERE
                 GRUPPEN_ID='$mygroup' AND USERID='$_GET[ausladen]'";
       $res = DB::query($sql);
-      if (mysql_num_rows($res)==1){
+      if ($res->num_rows==1){
         $sql = "delete
                 from
                   sitzgruppen_einladung
                 WHERE
                   GRUPPEN_ID='$mygroup' AND USERID='$_GET[ausladen]'";   
         $res = DB::query($sql);
-        if(mysql_affected_rows()==1){
+        if(DB::$link->affected_rows==1){
           echo"<p> Der Benutzer wurde erfolgreich aus der Einladungsliste entfernt.</p> 
                   <p><img src=\"gfx/headline_pfeil.png\"> <a href=sitzgruppen.php?gruppenID=$mygroup> Zurück. </a></p>";
         }
@@ -354,8 +354,8 @@ if ($bAnmeld == 1 || $bVoranmeld == 1) {
               s.MANDANTID = $nPartyID
             $limitString";
     $result= DB::query($sql);
-    //echo mysql_errno().": ".mysql_error()."<BR>";
-    $row = mysql_fetch_array($result);
+    //echo DB::$link->errno.": ".DB::$link->error."<BR>";
+    $row = $result->fetch_array();
     $Anzahl_Gruppen = $row[0];
     if ($Anzahl_Gruppen == 0) {
     	$Anzahl_Gruppen = 1;
@@ -408,8 +408,8 @@ if ($bAnmeld == 1 || $bVoranmeld == 1) {
       	        $limitString 
       	        $sAddSort $sAddWhere";
     $result= DB::query($sql);    	
-    //echo mysql_errno().": ".mysql_error()."<BR>";    	
-    while ($row = mysql_fetch_row($result)) {
+    //echo DB::$link->errno.": ".DB::$link->error."<BR>";    	
+    while ($row = $result->fetch_row()) {
       $tempGName = $row[1];
     		if (strlen($tempGName) > 23 ) {
     			$Anzeige_GName = db2display(substr( $tempGName, 0, 23)."...");
@@ -423,8 +423,8 @@ if ($bAnmeld == 1 || $bVoranmeld == 1) {
               where 
                 GRUPPEN_ID = '$row[0]'";
       $result2= DB::query($sql2);
-      //echo mysql_errno().": ".mysql_error()."<BR>";
-      $row2 = mysql_fetch_row($result2);
+      //echo DB::$link->errno.": ".DB::$link->error."<BR>";
+      $row2 = $result2->fetch_row();
       $anzahl_Mitglieder = $row2[0]; 		
     		
   		$sql3 = "select 
@@ -435,7 +435,7 @@ if ($bAnmeld == 1 || $bVoranmeld == 1) {
                   s.GRUPPEN_ID = '$row[0]'AND s.USERID = t.USERID AND d.MANDANTID = $nPartyID AND 
                   t.REIHE=d.REIHE AND t.PLATZ=d.PLATZ";
       if($res = DB::query($sql3)){
-    		  $row3 = mysql_fetch_row($res);
+    		  $row3 = $res->fetch_row();
     		  $block = $row3[0];
     		}
     		else{

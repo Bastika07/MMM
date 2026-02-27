@@ -63,7 +63,7 @@ function msz_gamerlist() {
             `m`.`type` IN ('biete gamer', 'suche gamer')";
   
   if ($res = DB::query($sql)) {
-    while ($row = mysql_fetch_assoc($res))
+    while ($row = $res->fetch_assoc())
       array_push($rc, $row);      
   }  
   return $rc;

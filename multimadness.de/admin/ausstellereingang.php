@@ -103,7 +103,7 @@ if ($iMandantID < 1) {
 	$result_tickets = DB::query($sql);
 
 	$gesamtdaten= array();
-	while ($row = mysql_fetch_array($result_tickets)) {
+	while ($row = $result_tickets->fetch_array()) {
 		array_push($gesamtdaten, $row);
 	}
 
@@ -126,7 +126,7 @@ if ($iMandantID < 1) {
 	";
 	$result_aussteller = DB::query($sql);
 
-	while ($row = mysql_fetch_array($result_aussteller)) {
+	while ($row = $result_aussteller->fetch_array()) {
 		array_push($gesamtdaten, $row);
 	}
 
@@ -186,7 +186,7 @@ if ($iMandantID < 1) {
 		FROM aussteller_typ
 	";
 	$result_aussteller_typ = DB::query($sql);
-	while ($row_typ = mysql_fetch_array($result_aussteller_typ)) {
+	while ($row_typ = $result_aussteller_typ->fetch_array()) {
 		echo "<option value='".$row_typ['typId']."'";
 		if ($_POST['typ'] == $row_typ['typId']) echo " selected";
 		echo ">".phplspecialchars($row_typ['beschreibung'])."</option>\n";

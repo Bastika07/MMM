@@ -87,7 +87,7 @@ $sql = "SELECT
 $result = DB::query($sql);
 
 
-if (mysql_num_rows($result) > 0) {
+if ($result->num_rows > 0) {
 	echo "<br><br><table width=\"410\" cellpadding=\"2\" cellspacing=\"1\"><tr><td class=\"header\" colspan=\"3\"><b>International visitors</b></td></tr>";
 	$class = "hblau";
 	
@@ -103,12 +103,12 @@ if (mysql_num_rows($result) > 0) {
 										UCASE(f.isoCode) = UCASE(u.LAND)";
 
 	$result_userlist = DB::query($sql_userlist);
-	while ($row_userlist = mysql_fetch_assoc($result_userlist)) {
+	while ($row_userlist = $result_userlist->fetch_assoc()) {
 		$userlist[$row_userlist['LAND']][] = $row_userlist['LOGIN']." (".$row_userlist['PLZ'].", ".$row_userlist['ORT'].")";
 	}
 	
 		
-	while ($row = mysql_fetch_assoc($result)) {
+	while ($row = $result->fetch_assoc()) {
 		if ($sLang == "en") {
 			$userHtml =  "<b>".db2display($row['descEnglish']).":</b><br>";
 		} else {
@@ -161,11 +161,11 @@ function createMap() {
 		  p.partyId = '$aktuellePartyID' AND 
 		  p.locationPLZ = g.plz";
 	$res = DB::query($sql);
-	if (!$res || mysql_num_rows($res) == 0) {
+	if (!$res || $res->num_rows == 0) {
 		//trigger_error('No coordinates for party found', E_USER_ERROR);
 		echo "<p class=\"fehler\">Fehler: Keine aktive Party gefunden, alter G33kradar wird angezeigt.</p>";
 	} else {
-		$row = mysql_fetch_assoc($res);
+		$row = $res->fetch_assoc();
 		$party_x = $row['laenge'];
 		$party_y = $row['breite'];
 
@@ -201,7 +201,7 @@ function createMap() {
 			  u.plz";
 		$result = DB::query($sql);
 
-		while ($row = mysql_fetch_assoc($result)) {
+		while ($row = $result->fetch_assoc()) {
 			$row['ort'] = ucfirst($row['ort']);
 			if (strlen(trim($row['ort'])) == 0)
 				$row['ort'] = "unbekannt";

@@ -120,7 +120,7 @@ if (isset($_GET['action']) && $_GET['action'] == "passwordreset") {
 			from userActionHash
 			where
 				userId = '".intval($_GET['pwruid'])."' and
-				hash   = '".mysql_real_escape_string($_GET['pwrcode'])."' and
+				hash   = '".DB::$link->real_escape_string($_GET['pwrcode'])."' and
 				action = 'pwreset'
 		";
 		$workUID = DB::getOne($sql);
@@ -153,7 +153,7 @@ if (isset($_GET['action']) && $_GET['action'] == "passwordreset") {
 					delete from userActionHash
 					where
 						userId = '".intval($_GET['pwruid'])."' and
-						hash   = '".mysql_real_escape_string($_GET['pwrcode'])."' 
+						hash   = '".DB::$link->real_escape_string($_GET['pwrcode'])."' 
 				";
 				DB::query($sql);
 
@@ -182,7 +182,7 @@ if (isset($_GET['action']) && $_GET['action'] == "passwordreset") {
 						LIMIT
 								1';
 		$result = DB::query($sql);
-		if(mysql_num_rows($result) > 0) {
+		if($result->num_rows > 0) {
 			$captchaCheck = "1";
 		} else {
 			$captchaCheck = "-1";
@@ -195,13 +195,13 @@ if (isset($_GET['action']) && $_GET['action'] == "passwordreset") {
 			$stmt->bind_param('s', $email_lowered);
 			$stmt->execute();
 			$result = $stmt->get_result();
-			//echo mysql_errno().": ".mysql_error()."<BR>";
-			$row = mysql_fetch_array($result);
+			//echo DB::$link->errno.": ".DB::$link->error."<BR>";
+			$row = $result->fetch_array();
 			$resultemail_lowered = strtolower($row['EMAIL']);
 	
-			$result2 = mysql_query("select BESCHREIBUNG from MANDANT where MANDANTID= '".intval($nPartyID)."'");
-			//echo mysql_errno().": ".mysql_error()."<BR>";
-			$row2 = mysql_fetch_array($result2);
+			$result2 = DB::query("select BESCHREIBUNG from MANDANT where MANDANTID= '".intval($nPartyID)."'");
+			//echo DB::$link->errno.": ".DB::$link->error."<BR>";
+			$row2 = $result2->fetch_array();
 			$sMandant = $row2['BESCHREIBUNG'];
 	
 			if ($resultemail_lowered == $email_lowered and $email_lowered != "" ) {
@@ -281,12 +281,12 @@ if (isset($_GET['action']) && $_GET['action'] == "passwordreset") {
 	//Erfolgreichen login ausgeben
   echo "<p>Hallo ".db2display($sLogin).", du bist nun mit der ID ".$nLoginID." eingeloggt.</p>\n";
 		// Altes System
-		$result4 = mysql_query("select STATUS from ASTATUS where USERID='".intval($nLoginID)."' and MANDANTID='".intval($nPartyID)."'");
-		$row4 = mysql_fetch_array($result4);
+		$result4 = DB::query("select STATUS from ASTATUS where USERID='".intval($nLoginID)."' and MANDANTID='".intval($nPartyID)."'");
+		$row4 = $result4->fetch_array();
 
-		if (mysql_num_rows($result4) < 1) {
+		if ($result4->num_rows < 1) {
 			// kein Datensatz in Astatus vorhanden > einfügen!
-			$resultTemp = mysql_query("insert into ASTATUS (MANDANTID, USERID, STATUS, WANNANGELEGT, WERANGELEGT, WERGEAENDERT) values ('".intval($nPartyID)."', '".intval($nLoginID)."', '".$STATUS_NICHTANGEMELDET."', now(), '".intval($nLoginID)."', now())");
+			$resultTemp = DB::query("insert into ASTATUS (MANDANTID, USERID, STATUS, WANNANGELEGT, WERANGELEGT, WERGEAENDERT) values ('".intval($nPartyID)."', '".intval($nLoginID)."', '".$STATUS_NICHTANGEMELDET."', now(), '".intval($nLoginID)."', now())");
 		}
 
 		if (ACCOUNTING == "NEW") {
@@ -320,13 +320,13 @@ if (isset($_GET['action']) && $_GET['action'] == "passwordreset") {
     // beide Felder angegeben
 	
 	// Jeweils nach Login und Email suchen in der Datenbank
-	$result = mysql_query("select USERID, LOGIN from USER where BINARY LOGIN='".mysql_real_escape_string($_POST['iLogin'])."'");
-	//echo mysql_errno().": ".mysql_error()."<BR>";
-	$rowLogin = mysql_fetch_array($result);
+	$result = DB::query("select USERID, LOGIN from USER where BINARY LOGIN='".DB::$link->real_escape_string($_POST['iLogin'])."'");
+	//echo DB::$link->errno.": ".DB::$link->error."<BR>";
+	$rowLogin = $result->fetch_array();
 
-	$result = mysql_query("select USERID, LOGIN from USER where EMAIL='".mysql_real_escape_string($_POST['iLogin'])."'");
-	//echo mysql_errno().": ".mysql_error()."<BR>";
-	$rowEmail = mysql_fetch_array($result);
+	$result = DB::query("select USERID, LOGIN from USER where EMAIL='".DB::$link->real_escape_string($_POST['iLogin'])."'");
+	//echo DB::$link->errno.": ".DB::$link->error."<BR>";
+	$rowEmail = $result->fetch_array();
 
 	if ($rowLogin['USERID'] > 0) {
 		$theUser  = $rowLogin['USERID'];
@@ -340,9 +340,9 @@ if (isset($_GET['action']) && $_GET['action'] == "passwordreset") {
 	$pwHash = PELAS::HashPassword ($_POST['iPassword'], $theUser);
 
 	// Und nun den Hashwert in der Datenbank checken
-	$result = mysql_query("select PASSWORD_HASH from USER where USERID='".$theUser."'");
-	//echo mysql_errno().": ".mysql_error()."<BR>";
-	$rowPwHash = mysql_fetch_array($result);
+	$result = DB::query("select PASSWORD_HASH from USER where USERID='".$theUser."'");
+	//echo DB::$link->errno.": ".DB::$link->error."<BR>";
+	$rowPwHash = $result->fetch_array();
 
   if ($theUser > 0 && $rowPwHash['PASSWORD_HASH'] == $pwHash) {
       // login ok

@@ -74,7 +74,7 @@ if (isset($_GET['action']) && $_GET['action'] == "subscribe" && $nLoginID > 0) {
 			AND userid = '".intval($_GET['userid'])."'
 	";
 	$res = DB::query($sql);
-	if (mysql_affected_rows() > 0)
+	if (DB::$link->affected_rows > 0)
 		echo "<p class='confirm'>Erfolgreich abgemeldet.</p>\n";
 	else
 		echo "<p class='fehler'>Fehler: Abmeldung nicht erfolgreich.</p>\n";
@@ -92,7 +92,7 @@ $res = DB::query($sql);
 
 /* Alle gefundenen Runden durchgehen */
 $countit = 0;
-while ($row = mysql_fetch_array($res)) {
+while ($row = $res->fetch_array()) {
 	echo "<p><table width='650' cellspacing='2' cellpadding='2'>\n";
 	echo "<tr><td class='forum_titel' colspan='4'>Spielblock mit ".$row['spieler']." Spielern je Team am ".date("l d F Y", $row['start'])."</td></tr>\n";
 	
@@ -141,7 +141,7 @@ function showTeams ($runde, $lfdnr, $team)
 	";
 	$res =  DB::query($sql);
 	$count = 0;
-	while ($row = mysql_fetch_array($res)) {
+	while ($row = $res->fetch_array()) {
 		echo ($count >= 1) ? "+ " : "";
 		echo "<a style='text-decoration:none;' href='benutzerdetails.php?nUserID=".$row['USERID']."'>".db2display($row['LOGIN'])."</a>";
 		/* TODO: Abmelde-Link für Admins überall und immer erlauben! */

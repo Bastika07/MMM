@@ -42,7 +42,7 @@ function checkName($sName) {
 	    ."and LCASE(NAMEDNS)='".safe(strtolower($sName))."'";
 	
     	$result = DB::query($q);
-    	$row = mysql_fetch_array($result);
+    	$row = $result->fetch_array();
 	
 	if ($row['LFDNR'] > 0) {
 	  	return true;
@@ -55,7 +55,7 @@ $q = "SELECT * "
     ."FROM MANDANT "
     ."WHERE MANDANTID = ".intval($nPartyID);
 if ($res = DB::query($q)) {
-  $row = mysql_fetch_row($res);
+  $row = $res->fetch_row();
   $sLanParty = $row[1];
 }
 
@@ -80,7 +80,7 @@ $q = "SELECT count(*) as ServerAnzahl "
     ."WHERE USERID = ".intval($nLoginID)." "
     ."and MANDANTID = ".intval($nPartyID);
 if ($res = DB::query($q)) {
-  $row = mysql_fetch_row($res);
+  $row = $res->fetch_row();
   $nAnzahlServer = $row[0];
 }
 
@@ -98,7 +98,7 @@ if ($nLoginID < 1) {
       ."and LFDNR = '".intval($LFDNR)."' "
       ."and MANDANTID = ".intval($nPartyID);
      if ($res = DB::query($q)) {
-      $row = mysql_fetch_row($res);
+      $row = $res->fetch_row();
       $ServerIP = $row[0];
      }   
      
@@ -187,7 +187,7 @@ A:HOVER, A:ACTIVE {
         ."FROM GASTSERVER "
         ."WHERE MANDANTID = '".intval($nPartyID)."'";
     if ($res = DB::query($q)) {
-      $row = mysql_fetch_row($res);
+      $row = $res->fetch_row();
       $nNewLFD = $row[0];
       $nNewLFD++;
     }
@@ -254,7 +254,7 @@ A:HOVER, A:ACTIVE {
       ."WHERE USERID = ".intval($nLoginID)." "
       ."and MANDANTID = ".intval($nPartyID);
   $res = DB::query($q);
-  while ($row = mysql_fetch_array($res)) {
+  while ($row = $res->fetch_array()) {
     
     echo "<p><table class=\"rahmen_allg\" width=\"650\" border=\"0\" cellpadding=\"3\" cellspacing=\"1\">\n";
     echo "  <tr><td class=\"pelas_benutzer_titel\" colspan=\"3\" valign=\"top\">";

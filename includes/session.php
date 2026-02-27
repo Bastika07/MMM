@@ -45,7 +45,7 @@ if (!function_exists('starteSession')) {
 			Aber generell nicht Sessions löschen, sondern nur doppelte
 			
 			$result = DB::query("DELETE FROM SESSION where ZEITSTEMPEL < '$aktDatum'");
-			//echo mysql_errno().": ".mysql_error()."<BR>";
+			//echo DB::$link->errno.": ".DB::$link->error."<BR>";
 		}
 	*/
 
@@ -65,7 +65,7 @@ if (!function_exists('starteSession')) {
 		$result = DB::query("delete from SESSION where MANDANTID=$nPartyID and LOGINID=$SessionLoginID");
 		//neuen Eintrag vornehmen
 		$result = DB::query("INSERT INTO SESSION (SESSIONID, MANDANTID, LOGINID, LOGIN, REMOTEIP, ZEITSTEMPEL, NUTZBAR) values ('$sessid', $nPartyID, $SessionLoginID, '$SessionLogin', '$ip', '$aktDatum' ,'J')");
-		//echo mysql_errno().": ".mysql_error()."<BR>";
+		//echo DB::$link->errno.": ".DB::$link->error."<BR>";
 
 	// Session-ID zurueckgeben
 

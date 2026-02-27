@@ -76,7 +76,7 @@ class Round {
 			WHERE turnierid = '{$turnierid}'
 			AND roundid = '{$roundid}'";
 		$res = DB::query($sql);
-		$row = mysql_fetch_assoc($res);
+		$row = $res->fetch_assoc();
 
 		$retval->turnierid	= (int)$row['turnierid'];
 		$retval->roundid	= (int)$row['roundid'];
@@ -102,10 +102,10 @@ class Round {
 	 */
 	function save() {
 		$sql = "UPDATE t_rounds SET
-				name = '".mysql_escape_string($this->name)."',
-				begins = '".mysql_escape_string($this->begins)."',
-				ends = '".mysql_escape_string($this->ends)."',
-				info = '".mysql_escape_string($this->info)."',
+				name = '".DB::$link->real_escape_string($this->name)."',
+				begins = '".DB::$link->real_escape_string($this->begins)."',
+				ends = '".DB::$link->real_escape_string($this->ends)."',
+				info = '".DB::$link->real_escape_string($this->info)."',
 				flags = '{$this->flags}',
 				wann_geaendert = '".time()."',
 				wer_geaendert = '".COMPAT::currentID()."'
@@ -130,10 +130,10 @@ class Round {
 		$sql = "INSERT INTO t_rounds SET
 				turnierid = '{$this->turnierid}',
 				roundid = '{$this->roundid}',
-				name = '".mysql_escape_string($this->name)."',
-				begins = '".mysql_escape_string($this->begins)."',
-				ends = '".mysql_escape_string($this->ends)."',
-				info = '".mysql_escape_string($this->info)."',
+				name = '".DB::$link->real_escape_string($this->name)."',
+				begins = '".DB::$link->real_escape_string($this->begins)."',
+				ends = '".DB::$link->real_escape_string($this->ends)."',
+				info = '".DB::$link->real_escape_string($this->info)."',
 				flags = '{$this->flags}',
 				wann_angelegt = '".time()."',
 				wer_angelegt = '".COMPAT::currentID()."'";
@@ -184,7 +184,7 @@ class Round {
 
 		$res = DB::query($sql);
 
-		while ($row = mysql_fetch_assoc($res))
+		while ($row = $res->fetch_assoc())
 			$retval[$row['roundid']] = $row;
 
 		return $retval;

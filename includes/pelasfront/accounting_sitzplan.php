@@ -54,7 +54,7 @@ if (($_GET['iAction'] >= 1) and ($nLoginID >= 1)) {
           AND u.USERID = t.userId
     ";
     $resTicket = DB::query($sql);
-    $rowTicket = mysql_fetch_array($resTicket);
+    $rowTicket = $resTicket->fetch_array();
 
     # Anmeldung offen?
     if (($callFromAdmin != 1) and (LOCATION == 'intranet')) {
@@ -63,7 +63,7 @@ if (($_GET['iAction'] >= 1) and ($nLoginID >= 1)) {
     } elseif (! $resOffen) {
         # Sitzplatzreservierung noch nicht offen.
         PELAS::fehler($str['sitzres_nichtoffen'] . ': ' . $sResOffenAb);
-    } elseif (! mysql_num_rows($resTicket)) {
+    } elseif (! $resTicket->num_rows) {
         # Kein Recht auf das Ticket.
         PELAS::fehler($str['acc_keinrecht']);
     } else {
@@ -206,7 +206,7 @@ if ($nLoginID < 1) {
     $resTicket = DB::query($sql);
 
     # Prüfen, ob Ticket vorhanden ist!
-    $ticket_vorhanden = (bool) mysql_num_rows($resTicket);
+    $ticket_vorhanden = (bool) $resTicket->num_rows;
 }
 ?>
 
@@ -253,7 +253,7 @@ if (! $resOffen) {
 	    echo '<p>' . $str['ticketauswahl'] . ': ';
 	    echo '<select name="iTicket">' . "\n";
 	    $sInfo = False;
-	    while ($row = mysql_fetch_array($resTicket)) {
+	    while ($row = $resTicket->fetch_array()) {
 		echo '  <option value="' . $row['ticketId'] . '"';
 		if ($iTicket == $row['ticketId']) {
 		    echo ' selected="selected"';

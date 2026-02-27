@@ -325,8 +325,8 @@ if ($_GET['action'] == 'activate') {
 		  WHERE partyId = '".intval($_GET['iPartyID'])."'";
 	}
 	DB::query($q);
-	if (mysql_errno()) {
-	    exit('Fehler: ' . mysql_errno() . ': ' . mysql_error() . ' beim Einfügen/Ã„ndern in Party-Tabelle - Abbruch!<br/>');
+	if (DB::$link->errno) {
+	    exit('Fehler: ' . DB::$link->errno . ': ' . DB::$link->error . ' beim Einfügen/Ã„ndern in Party-Tabelle - Abbruch!<br/>');
 	}
 	echo '<p class="confirm">Party gespeichert.</p>' . "\n";
 	echo '<p><a href="' . $_SERVER['SCRIPT_NAME'] . '">Zur Ãœbersicht</a></p>' . "\n";

@@ -12,7 +12,7 @@ function sitzPlatzResOffen($nPartyID){
          where
           MANDANTID = '$nPartyID' AND PARAMETER='SITZPLATZRES_OFFEN'";
   $res = DB::query($sql);
-  $row = mysql_fetch_row($res);
+  $row = $res->fetch_row();
   if ($row[0] == 'J') {
     return true;
   } else {
@@ -29,7 +29,7 @@ function getRowLength($nPartyID, $row){
            where
             MANDANTID = '$nPartyID' AND REIHE = '$row'";
   $res = DB::query($sql);
-  $row = mysql_fetch_row($res);
+  $row = $res->fetch_row();
   return $row[0];
 }
 
@@ -43,12 +43,12 @@ function freeSeats($nPartyID, $reihe){
             MANDANTID = '$nPartyID' AND REIHE = '$reihe' ORDER BY PLATZ";
   $res = DB::query($sql);
   $length = getRowLength($nPartyID, $reihe);
-  if (mysql_num_rows($res) < $length){
+  if ($res->num_rows < $length){
     $freeSeats = array();
-    $row = mysql_fetch_row($res);
+    $row = $res->fetch_row();
     for ($i=1; $i<=$length; $i++) {
       if($row[0]==$i){
-        $row = mysql_fetch_row($res);
+        $row = $res->fetch_row();
       }
       else{
         $freeSeats[] = $i;
@@ -69,7 +69,7 @@ function checkTierForRow($nPartyID, $ebene, $reihe){
           where
             MANDANTID='$nPartyID' AND REIHE='$reihe'";
   $res = DB::query($sql);
-  $row = mysql_fetch_row($res);
+  $row = $res->fetch_row();
   if($row[0] == $ebene){
     return TRUE;
   }
@@ -94,7 +94,7 @@ function moveFirst($nPartyID, $reihe){
             s.USERID=m.USERID AND
             m.GRUPPEN_ID=g.GRUPPEN_ID";
   $res = DB::query($sql);
-  $row = mysql_fetch_row($res);
+  $row = $res->fetch_row();
   //Check if User sits already in his altRow and chose the complementary
   if($reihe == $row[1]){
     $moveToRow =$row[0];
@@ -146,7 +146,7 @@ function moveLast($nPartyID, $reihe, $length){
             s.USERID=m.USERID AND
             m.GRUPPEN_ID=g.GRUPPEN_ID";
   $res = DB::query($sql);
-  $row = mysql_fetch_row($res);
+  $row = $res->fetch_row();
   if($reihe == $row[1]){
     $moveToRow =$row[0];
   }
@@ -196,7 +196,7 @@ function placeUser($nPartyID, $userID, $gruppenID){
             s.USERID=m.USERID AND
             m.GRUPPEN_ID='$gruppenID'";
   $res = DB::query($sql);
-  $row = mysql_fetch_row($res);
+  $row = $res->fetch_row();
   
   $sql2 = " select
             REIHE, UMBRECHENNACH
@@ -205,7 +205,7 @@ function placeUser($nPartyID, $userID, $gruppenID){
            where
             MANDANTID='$nPartyID' and GRUPPEN_ID='$gruppenID'";
   $res2 = DB::query($sql2);
-  $row2 = mysql_fetch_row($res2);
+  $row2 = $res2->fetch_row();
   
   if($row[0]==$row2[0]){
     $reihe = $row2[0];
@@ -241,9 +241,9 @@ function placeUser($nPartyID, $userID, $gruppenID){
   $resRMax = DB::query($sqlRMax);
   $resRmin = DB::query($sqlRMIN);
   
-  $reiheMaxPlatzRow = mysql_fetch_row($resRMax);
+  $reiheMaxPlatzRow = $resRMax->fetch_row();
   $reiheMaxPlatz    = $reiheMaxPlatzRow[0];
-  $reiheMinPlatzRow = mysql_fetch_row($resRmin);
+  $reiheMinPlatzRow = $resRmin->fetch_row();
   $reiheMinPlatz    = $reiheMinPlatzRow[0];
   $length = getRowLength($nPartyID, $reihe);
   $debug.= "MaxMinLen".$reiheMaxPlatz."-".$reiheMinPlatz."-".$length."<br>";
@@ -465,7 +465,7 @@ function checkUserSeatgroup ($nPartyID, $userID){
   $res = DB::query($sql);
   
   //Teilnehmer ist bereits in einer Sitzgruppe eingetragen
-  $row = mysql_fetch_row($res);
+  $row = $res->fetch_row();
   
   if ($row){
     //Nun stehen die Optionen Austreten, oder Umsetzen bereit.
@@ -488,7 +488,7 @@ function userClanID($userID, $nPartyID){
           USERID='$userID' AND MANDANTID='$nPartyID'"
           ;
   $res = DB::query($sql);
-  $row = mysql_fetch_row($res);
+  $row = $res->fetch_row();
   if ( $row){
     return $row[0];
   }
@@ -507,7 +507,7 @@ function userClangroupExists($userID, $nPartyID){
         WHERE
          CLANID='$clanID' AND MANDANTID='$nPartyID'";
     if ($res = DB::query($sql)){
-      $row = mysql_fetch_row($res);
+      $row = $res->fetch_row();
      return $row[0];
     }
     else {
@@ -527,7 +527,7 @@ function groupExists($groupName, $nPartyID){
         WHERE
          GRUPPEN_NAME='$groupName' AND MANDANTID='$nPartyID'";
   if ($res = DB::query($sql)){
-    if ($row = mysql_fetch_row($res)){
+    if ($row = $res->fetch_row()){
       return TRUE;
     } else {
       return FALSE;
@@ -550,7 +550,7 @@ function generateClanGroup($userID, $nPartyID, $clanID, $reihe, $platz, $ersatzr
             WHERE
               u.USERID='$userID' AND u.MANDANTID='$nPartyID' AND u.CLANID='$clanID' AND u.CLANID=c.CLANID";
       $res = DB::query($sql);
-      $row = mysql_fetch_row($res);
+      $row = $res->fetch_row();
       if ($row){
         $clanname = $row[1];
         $sql1 = "INSERT INTO 
@@ -558,17 +558,17 @@ function generateClanGroup($userID, $nPartyID, $clanID, $reihe, $platz, $ersatzr
                 (MANDANTID, GRUPPEN_NAME, CLANID, ERSTELLT_VON, WANNANGELEGT, REIHE, UMBRECHENNACH) 
                    values 
                 ('$nPartyID', '$clanname', '$clanID', '$userID', UNIX_TIMESTAMP(), '$reihe', '$ersatzreihe')";
-        if (!mysql_query($sql1)) {
+        if (!DB::query($sql1)) {
            return FALSE;
         }
         else {
-          $gruppenID = mysql_insert_id();
+          $gruppenID = DB::$link->insert_id;
 
           $sql2 = "INSERT INTO 
                     `sitzgruppen_mitglieder`
                   (USERID, MANDANTID, GRUPPEN_ID) 
                     values ('$userID', '$nPartyID', '$gruppenID')";
-          if (!mysql_query($sql2)) {
+          if (!DB::query($sql2)) {
             $sqldelete = "DELETE 
                             from 
                           `sitzgruppe`
@@ -583,7 +583,7 @@ function generateClanGroup($userID, $nPartyID, $clanID, $reihe, $platz, $ersatzr
                     (MANDANTID, REIHE, PLATZ, USERID, RESTYP) 
                       values 
                     ('$nPartyID', '$reihe', '$platz', '$userID', '$restyp')";                    
-            if (!mysql_query($sql3)) {
+            if (!DB::query($sql3)) {
               $sqldelete1 = "DELETE 
                             from 
                           `sitzgruppe`
@@ -634,18 +634,18 @@ function generateGroup($userID, $nPartyID, $groupName, $reihe, $platz, $ersatzre
               (MANDANTID, GRUPPEN_NAME, ERSTELLT_VON, WANNANGELEGT, REIHE, UMBRECHENNACH) 
                  values 
               ('$nPartyID', '$groupName', '$userID', UNIX_TIMESTAMP(), '$reihe', '$ersatzreihe')";
-      if (!mysql_query($sql1)) {
+      if (!DB::query($sql1)) {
          return FALSE;
       }
       else {
       
-        $gruppenID = mysql_insert_id();
+        $gruppenID = DB::$link->insert_id;
         $sql2 = "INSERT INTO 
                   `sitzgruppen_mitglieder`
                 (USERID, MANDANTID, GRUPPEN_ID) 
                   values ('$userID', '$nPartyID', '$gruppenID')";
                   
-        if (!mysql_query($sql2)) {
+        if (!DB::query($sql2)) {
           $sqldelete = "DELETE 
                           from 
                         `sitzgruppe`
@@ -661,7 +661,7 @@ function generateGroup($userID, $nPartyID, $groupName, $reihe, $platz, $ersatzre
                     values 
                   ('$nPartyID', '$reihe', 
                     '$platz', '$userID', '$restyp')";
-          if (!mysql_query($sql3)) {
+          if (!DB::query($sql3)) {
             $sqldelete1 = "DELETE 
                           from 
                         `sitzgruppe`
@@ -698,7 +698,7 @@ function hasInvitation($userID, $gruppenID, $nPartyID){
           WHERE
             USERID='$userID' AND GRUPPEN_ID='$gruppenID' AND MANDANTID='$nPartyID'";
   $res = DB::query($sql);
-  if (mysql_num_rows($res)>0){
+  if ($res->num_rows>0){
     return TRUE;
   }
   else {
@@ -714,7 +714,7 @@ function rejectInvitation($userID, $gruppenID, $nPartyID){
               WHERE
             USERID='$userID' AND GRUPPEN_ID='$gruppenID'AND MANDANTID='$nPartyID'";
     $res = DB::query($sql);
-    if (mysql_affected_rows()>0){
+    if (DB::$link->affected_rows>0){
       return TRUE;
     }
     else {
@@ -735,12 +735,12 @@ function joinGroup($nPartyID, $userID,  $gruppenID){
                 sitzgruppen_einladung
                 WHERE
                   USERID='$userID' AND GRUPPEN_ID='$gruppenID' AND MANDANTID='$nPartyID'";
-        if (mysql_query($sql)){  
+        if (DB::query($sql)){  
           $sql2 = "INSERT INTO 
                     `sitzgruppen_mitglieder`
                   (USERID, MANDANTID, GRUPPEN_ID) 
                     values ('$userID', '$nPartyID', '$gruppenID')";
-          if (mysql_query($sql2)){
+          if (DB::query($sql2)){
             return TRUE;
           }
           else {
@@ -772,8 +772,8 @@ function joinClanGroup($userID, $nPartyID, $clanID){
               USER_CLAN u, sitzgruppe s
             WHERE
               u.USERID='$userID' AND u.MANDANTID='$nPartyID' AND u.CLANID='$clanID' AND u.CLANID=s.CLANID";
-    if ($res = mysql_query($sql)){
-      $row = mysql_fetch_assoc($res);
+    if ($res = DB::query($sql)){
+      $row = $res->fetch_assoc();
       $gruppenID = $row['GRUPPEN_ID'];
       if (placeUser($nPartyID, $userID, $gruppenID)){
 
@@ -781,7 +781,7 @@ function joinClanGroup($userID, $nPartyID, $clanID){
                   `sitzgruppen_mitglieder`
                 (USERID, MANDANTID, GRUPPEN_ID) 
                   values ('$userID', '$nPartyID', '$gruppenID')";
-        if (mysql_query($sql)){
+        if (DB::query($sql)){
           return TRUE;
         }
         else {
@@ -814,7 +814,7 @@ function deleteAndRegroup($userID, $gruppenID, $nPartyID){
           WHERE
             USERID='$userID' AND MANDANTID='$nPartyID'";
   $res = DB::query($sql);
-  $row = mysql_fetch_row($res);
+  $row = $res->fetch_row();
   $deletedSeat = $row[0];
   $deletedInRow = $row[1];
   $debug.="Row-Seat: ".$deletedInRow."-".$deletedSeat." <br>";
@@ -827,7 +827,7 @@ function deleteAndRegroup($userID, $gruppenID, $nPartyID){
           WHERE
             GRUPPEN_ID='$gruppenID' AND MANDANTID='$nPartyID'";
   $res2 = DB::query($sql2);
-  $row2 = mysql_fetch_row($res2);  
+  $row2 = $res2->fetch_row();  
   $altrow = -1;
   if ($deletedInRow == $row2[0]){
     $altrow = $row2[1];
@@ -851,7 +851,7 @@ function deleteAndRegroup($userID, $gruppenID, $nPartyID){
   $res3 = DB::query($sql3);
   $deletedRowMinSeat = -1;
   $deletedRowMaxSeat = -1;
-  if($row3 = mysql_fetch_row($res3)){
+  if($row3 = $res3->fetch_row()){
     if($row3[0]){
       $deletedRowMinSeat = $row3[0];
     }
@@ -875,7 +875,7 @@ function deleteAndRegroup($userID, $gruppenID, $nPartyID){
   $res4 = DB::query($sql4);
   $altrowMin = -1;
   $altrowMax = -1;
-  if($row4 = mysql_fetch_row($res4)){
+  if($row4 = $res4->fetch_row()){
     if($row4[0]){
       $altrowMin = $row4[0];
     }
@@ -896,7 +896,7 @@ function deleteAndRegroup($userID, $gruppenID, $nPartyID){
             WHERE
               USERID='$userID' AND MANDANTID='$nPartyID'";
     DB::query($sql);
-    if (mysql_affected_rows() != -1){
+    if (DB::$link->affected_rows != -1){
       $sql = "UPDATE
                 SITZ
               SET
@@ -904,7 +904,7 @@ function deleteAndRegroup($userID, $gruppenID, $nPartyID){
               where
                 MANDANTID='$nPartyID' AND REIHE='$deletedInRow' AND PLATZ='$deletedRowMinSeat'";
       DB::query($sql);
-      if (mysql_affected_rows() != -1){      
+      if (DB::$link->affected_rows != -1){      
         return TRUE;           
       }
       else{
@@ -923,7 +923,7 @@ function deleteAndRegroup($userID, $gruppenID, $nPartyID){
             WHERE
               USERID='$userID' AND MANDANTID='$nPartyID'";
     DB::query($sql);
-    if (mysql_affected_rows() != -1){
+    if (DB::$link->affected_rows != -1){
       $sql = "UPDATE
                 SITZ
               SET
@@ -931,7 +931,7 @@ function deleteAndRegroup($userID, $gruppenID, $nPartyID){
               where
                 MANDANTID='$nPartyID' AND REIHE='$deletedInRow' AND PLATZ='$deletedRowMaxSeat'";
       DB::query($sql);
-      if (mysql_affected_rows() != -1){      
+      if (DB::$link->affected_rows != -1){      
         return TRUE;           
       }
       else{
@@ -950,7 +950,7 @@ function deleteAndRegroup($userID, $gruppenID, $nPartyID){
             WHERE
               USERID='$userID' AND MANDANTID='$nPartyID'";
     DB::query($sql);
-    if (mysql_affected_rows() != -1){      
+    if (DB::$link->affected_rows != -1){      
       return TRUE;           
     }
     else{
@@ -965,7 +965,7 @@ function deleteAndRegroup($userID, $gruppenID, $nPartyID){
             WHERE
               USERID='$userID' AND MANDANTID='$nPartyID'";
     DB::query($sql);
-    if (mysql_affected_rows() != -1){
+    if (DB::$link->affected_rows != -1){
       $debug.="Hello6<br>";   
       $sql = "UPDATE
                 SITZ
@@ -974,7 +974,7 @@ function deleteAndRegroup($userID, $gruppenID, $nPartyID){
               where
                 MANDANTID='$nPartyID' AND REIHE='$deletedInRow' AND PLATZ='$deletedRowMinSeat'";
       DB::query($sql);      
-      if (mysql_affected_rows() != -1){        
+      if (DB::$link->affected_rows != -1){        
         $debug.="Hello7<br>";   
         return TRUE;           
       }
@@ -1000,7 +1000,7 @@ function leaveGroup($userID, $nPartyID){
       return FALSE;
     }
     else {
-      $row = mysql_fetch_row($res);
+      $row = $res->fetch_row();
       $gruppenID = -1;
       $gruppenID = $row[0];
       if (!$gruppenID>0){
@@ -1013,13 +1013,13 @@ function leaveGroup($userID, $nPartyID){
                 WHERE
                   USERID='$userID' AND MANDANTID='$nPartyID'";
           DB::query($sql2);
-          if( mysql_affected_rows() == 1){       
+          if( DB::$link->affected_rows == 1){       
             $sql3 = "Select * from
                   sitzgruppen_mitglieder
                 WHERE
                   GRUPPEN_ID='$gruppenID' AND MANDANTID='$nPartyID'";
             $res = DB::query($sql3);
-            if (!mysql_num_rows($res)>0){
+            if (!$res->num_rows>0){
               // Hier m|sste bei einem Fehler ein Rollback stattfinden
               
 //      Alternative        

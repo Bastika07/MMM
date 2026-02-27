@@ -117,7 +117,7 @@ if(isset($_POST['btnNewsletterOK'])){
 	$sql = "UPDATE USER
 					SET NEWSLETTER = 1, NEWSLETTER_ABO_DATE = NOW(), NEWSLETTER_ABO_CODE='', NEWSLETTER_ABO_EMAIL=NULL, POPUP_DISPLAY = 0
 					WHERE USERID = '".intval($nLoginID)."'";	
-	$erfolg = mysql_query($sql);
+	$erfolg = DB::query($sql);
 	//header("Refresh:0");
 }
 
@@ -126,7 +126,7 @@ if(isset($_POST['btnNewsletterCancel'])){
    	$sql = "UPDATE USER
 					SET NEWSLETTER = 0, NEWSLETTER_ABO_DATE = NULL, NEWSLETTER_ABO_CODE='', NEWSLETTER_ABO_EMAIL=NULL, POPUP_DISPLAY = 0
 					WHERE USERID = '".intval($nLoginID)."'";
-	$erfolg = mysql_query($sql);
+	$erfolg = DB::query($sql);
 	//header("Refresh:0");
 }
 

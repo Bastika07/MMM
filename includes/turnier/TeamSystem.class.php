@@ -390,7 +390,7 @@ class TeamSystem {
 
 		$sql = "SELECT {$field} FROM USER WHERE USERID = '{$userid}'";
 		$res = DB::query($sql);
-		$row = mysql_fetch_assoc($res);
+		$row = $res->fetch_assoc();
 
 		return $row[$field];
 	}
@@ -420,7 +420,7 @@ class TeamSystem {
 			WHERE MANDANTID = '{$mandantid}'
 			AND PARAMETER = 'COINS_GESAMT'";
 		$res = DB::query($sql);
-		$row = mysql_fetch_assoc($res);
+		$row = $res->fetch_assoc();
 		return $row['coins'];
 	}
 
@@ -441,7 +441,7 @@ class TeamSystem {
 			LEFT JOIN t_turnier t ON team.turnierid = t.turnierid
 			AND t.partyid = '{$partyid}'";
 		$res = DB::query($sql);
-		$row = mysql_fetch_assoc($res);
+		$row = $res->fetch_assoc();
 		return $row['used'];
 	}
 }

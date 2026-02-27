@@ -66,7 +66,7 @@ class TurnierLiga {
 
 		$sql = "SELECT * FROM t_ligagame WHERE gameid = '{$gameid}'";
 		$res = DB::query($sql);
-		$row = mysql_fetch_assoc($res);
+		$row = $res->fetch_assoc();
 
 		$retval->gameid		= (int)$row['gameid'];
 		$retval->liga		= (int)$row['liga'];
@@ -88,9 +88,9 @@ class TurnierLiga {
 	function save() {
 		$sql = "UPDATE t_ligagame SET
 				liga = '{$this->liga}',
-				shortname = '".mysql_escape_string($this->shortname)."',
-				name = '".mysql_escape_string($this->name)."',
-				regelurl = '".mysql_escape_string($this->regelurl)."',
+				shortname = '".DB::$link->real_escape_string($this->shortname)."',
+				name = '".DB::$link->real_escape_string($this->name)."',
+				regelurl = '".DB::$link->real_escape_string($this->regelurl)."',
 				teamsize = '{$this->teamsize}',
 				wann_geaendert = '".time()."',
 				wer_geaendert = '".COMPAT::currentID()."'
@@ -116,16 +116,16 @@ class TurnierLiga {
 
 		$sql = "INSERT INTO t_ligagame SET
 				liga = '{$this->liga}',
-				shortname = '".mysql_escape_string($this->ligaid)."',
-				name = '".mysql_escape_string($this->name)."',
-				regelurl = '".mysql_escape_string($this->regelurl)."',
+				shortname = '".DB::$link->real_escape_string($this->ligaid)."',
+				name = '".DB::$link->real_escape_string($this->name)."',
+				regelurl = '".DB::$link->real_escape_string($this->regelurl)."',
 				teamsize = '{$this->teamsize}',
 				wann_angelegt = '".time()."',
 				wer_angelegt = '".COMPAT::currentID()."'";
 		if (!DB::query($sql))
 			return TS_ERROR;
 
-		$this->gameid = mysql_insert_id();
+		$this->gameid = DB::$link->insert_id;
 
 		/* Flush cache */
 		TurnierLiga::load($this->gameid, TRUE);
@@ -154,7 +154,7 @@ class TurnierLiga {
 		$res = DB::query($sql);
 		$retval = array();
 		$ligaArr = TurnierLiga::getLigaArr();
-		while ($row = mysql_fetch_assoc($res)) {
+		while ($row = $res->fetch_assoc()) {
 			$retval[$row['gameid']] = $row;
 			$retval[$row['gameid']]['liganame'] = $ligaArr[$row['liga']];
 			$retval[$row['gameid']]['fullname'] = $ligaArr[$row['liga']].": ".$row['name'];

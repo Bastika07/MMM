@@ -43,7 +43,7 @@ function ShowBlaettern()
 
 
 // Anmeldung offen?
-$row = @mysql_fetch_array(DB::query("select STRINGWERT from CONFIG where PARAMETER = 'VORANMELDUNG_OFFEN' and MANDANTID = $nPartyID"), MYSQL_ASSOC);
+$row = DB::query("select STRINGWERT from CONFIG where PARAMETER = 'VORANMELDUNG_OFFEN' and MANDANTID = $nPartyID")->fetch_assoc();
 // checken, ob get-variable on
 if ($voranmeldung == "true" && $row['STRINGWERT'] == "J") {
 	$bVoranmeld = 1;
@@ -52,7 +52,7 @@ if ($voranmeldung == "true" && $row['STRINGWERT'] == "J") {
 	$bVoranmeld = 0;
 	$sAddQuery="";
 }
-$row = @mysql_fetch_array(DB::query("select STRINGWERT from CONFIG where PARAMETER = 'ANMELDUNG_OFFEN' and MANDANTID = $nPartyID"), MYSQL_ASSOC);
+$row = DB::query("select STRINGWERT from CONFIG where PARAMETER = 'ANMELDUNG_OFFEN' and MANDANTID = $nPartyID")->fetch_assoc();
 if ($row['STRINGWERT'] == "J") {
 	$bAnmeld = 1;
 } else {
@@ -78,8 +78,8 @@ $sql = "select
           a.USERID=u.USERID 
         $limitString";
 $result = DB::query($sql);
-//echo mysql_errno().": ".mysql_error()."<BR>";
-$row = mysql_fetch_array($result);
+//echo DB::$link->errno.": ".DB::$link->error."<BR>";
+$row = $result->fetch_array();
 $AnzahlDS_blaettern = $row[0];
 if ($AnzahlDS_blaettern == 0) {
 	$AnzahlDS_blaettern = 1;
@@ -99,8 +99,8 @@ $sql = "select
 //"select count(*) from ASTATUS a, USER u where (a.STATUS=$STATUS_ANGEMELDET or a.STATUS=$STATUS_BEZAHLT or a.STATUS=$STATUS_BEZAHLT_LOGE) and a.MANDANTID = $nPartyID and a.USERID=u.USERID"
 
 $result = DB::query($sql);
-//echo mysql_errno().": ".mysql_error()."<BR>";
-$row = mysql_fetch_array($result);
+//echo DB::$link->errno.": ".DB::$link->error."<BR>";
+$row = $result->fetch_array();
 $AnzahlDS = $row[0];
 if ($AnzahlDS == 0) {
 	$AnzahlDS = 0;
@@ -139,19 +139,19 @@ if ($AnzahlDS == 0) {
 
 $result = DB::query($sql);
 
-//echo mysql_errno().": ".mysql_error()."<BR>";
+//echo DB::$link->errno.": ".DB::$link->error."<BR>";
 
 $AnzahlDSbezahlt = 0;
-while ($row = mysql_fetch_array($result)) {
+while ($row = $result->fetch_array()) {
 	$AnzahlDSbezahlt = $AnzahlDSbezahlt + $row[0];
 }
 
 $result = DB::query("select count(*) from ASTATUS where (STATUS=$STATUS_BEZAHLT_LOGE) and MANDANTID = $nPartyID");
-$row = mysql_fetch_array($result);
+$row = $result->fetch_array();
 $AnzahlDSbezahltLoge = $row[0];
 //Wie viele Plaetze insgesamt?
 $result = DB::query("select STRINGWERT from CONFIG where MANDANTID=$nPartyID and PARAMETER='TEILNEHMER'");
-$row = mysql_fetch_array($result);
+$row = $result->fetch_array();
 $partyPlaetze = $row[STRINGWERT];
 ?>
 
@@ -253,9 +253,9 @@ if (!BUNGALOWLAN) {
 	        
 	$result = DB::query($sql);
 	
-	//echo mysql_errno().": ".mysql_error()."<BR>";
+	//echo DB::$link->errno.": ".DB::$link->error."<BR>";
 	
-	while ($row = mysql_fetch_array($result)) {
+	while ($row = $result->fetch_array()) {
 		$tempULogin = $row['LOGIN'];
 		if (strlen($tempULogin) > 23 ) {
 			$Anzeige_Name = db2display(substr( $tempULogin, 0, 23)."...");
@@ -279,7 +279,7 @@ if (!BUNGALOWLAN) {
 		} else {
 		  // Clan raussuchen
 		  $result2 = DB::query("select c.CLANID, c.NAME from CLAN c, USER_CLAN uc where c.CLANID = uc.CLANID and uc.USERID=$row[USERID] and uc.MANDANTID=$nPartyID and uc.AUFNAHMESTATUS='$AUFNAHMESTATUS_OK'");
-  		$row2    = mysql_fetch_array($result2);
+  		$row2    = $result2->fetch_array();
 	  	$sClan   = db2display($row2['NAME']);
 		  $nClanID = $row2['CLANID'];
   		if (strlen($sClan) > 22 ) {

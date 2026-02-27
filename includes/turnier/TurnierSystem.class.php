@@ -32,7 +32,7 @@ class TurnierSystem {
 		$sql = "SELECT turnierid FROM t_turnier WHERE pturnierid = '{$turnierid}' ORDER BY name ASC";
 		$res = DB::query($sql);
 		$subtourneys = array();
-		while($row = mysql_fetch_array($res)) {
+		while($row = $res->fetch_array()) {
 			array_push($subtourneys, TURNIER::load($row['turnierid']));
 		}
 		return $subtourneys;
@@ -51,7 +51,7 @@ class TurnierSystem {
 			WHERE pturnierid = '".$turnierid."'";
 		$res= DB::query($sql);
 
-		while ($row = mysql_fetch_assoc($res)) {
+		while ($row = $res->fetch_assoc()) {
 			#matches löschen
 			Match::delete($row['turnierid']);
 			Round::delete($row['turnierid']);
@@ -116,7 +116,7 @@ class TurnierSystem {
 		$res= DB::query($sql);
 		#die(var_dump($turnier_ids));
 		$vorrunde_num = 0;
-		while ($row = mysql_fetch_assoc($res)) {
+		while ($row = $res->fetch_assoc()) {
 			$team = TEAM::load($turnier->turnierid, $row[teamid]);
 			$team->turnierid = $turnier_ids[$vorrunde_num];
 			$team->teamid = 0;
@@ -354,7 +354,7 @@ class TurnierSystem {
 			#welcher Platz wurde als letztes geseedet?
 			$sql = "SELECT max(seedpos) AS seed FROM t_team WHERE turnierid = '{$turnier->turnierid}'";
 			$res = DB::query($sql);
-			$result = mysql_fetch_array($res);
+			$result = $res->fetch_array();
 
 			$next_seed_pos = intval($result['seed']) + 1;
 
@@ -752,7 +752,7 @@ class TurnierSystem {
 							name = (SELECT name FROM t_team WHERE turnierid = '".$turnier->turnierid
 							."' AND teamid = ".$rank_entry[teamid].")";
 						$res = DB::query($sql);
-						$teamid_hauptturnier = mysql_fetch_assoc($res);
+						$teamid_hauptturnier = $res->fetch_assoc();
 						$team_tmp = TEAM::load($turnier->pturnierid, $teamid_hauptturnier[teamid]);
 						$team_tmp->flags &= ~(TEAM_IS_ACTIVE | TEAM_USE_COINS);
 						$team_tmp->save();
@@ -1360,7 +1360,7 @@ class TurnierSystem {
 		$res = DB::query($sql);
 		$seed = array();
 
-		while ($row = mysql_fetch_assoc($res)) {
+		while ($row = $res->fetch_assoc()) {
 			if($row['seedpos'] != 0)
 				$seed[$row[teamid]] = $row['seedpos'];
 		}
@@ -1379,7 +1379,7 @@ class TurnierSystem {
 			FROM t_turnier
 			WHERE pturnierid = '{$turnier->turnierid}'";
 		$res = DB::query($sql);
-		$row = mysql_fetch_array($res);
+		$row = $res->fetch_array();
 		return ($row['anz'] == 0) ? 0 : 1;
 	}
 

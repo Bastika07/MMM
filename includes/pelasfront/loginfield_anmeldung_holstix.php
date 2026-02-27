@@ -14,8 +14,8 @@ if ($nLoginID > 0) {
 if ($nLoginID < 1) {
   $selected = 1;
 } else {
-  $result = mysql_db_query ($dbname, "select STATUS from ASTATUS where USERID='$nLoginID' and MANDANTID='$nPartyID'", $dbh);
-  $row = mysql_fetch_array($result);
+  $result = DB::query("select STATUS from ASTATUS where USERID='$nLoginID' and MANDANTID='$nPartyID'");
+  $row = $result->fetch_array();
   if ($row[STATUS] == 1) {
 	  $selected = 3; 
   } elseif (($row[STATUS] == 2) || ($row[STATUS] == 3)) {

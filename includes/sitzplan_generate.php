@@ -19,10 +19,10 @@ function GeneriereSitzplan($nPartyID, $ebene, $locateUser = 0)
 		  MANDANTID=$nPartyID and 
 		  EBENE=$ebene";
 	$result = DB::query($sql);
-	//echo mysql_errno().": ".mysql_error()."<BR>";
+	//echo DB::$link->errno.": ".DB::$link->error."<BR>";
 	//$PlatzArray = Array ( $row[REIHE] => Array ($row[LAENGE], $row[XCORD], $row[YCORD], $row[AUSRICHTUNG], $row[ISTLOGE] ));
 	$PlatzArray = "";
-	while ($row = mysql_fetch_array($result)) {
+	while ($row = $result->fetch_array()) {
 		//Kommentar ausgeben
 		$PlatzArray[$row['REIHE']][0] = $row['LAENGE'];
 		$PlatzArray[$row['REIHE']][1] = $row['XCORD'];
@@ -33,7 +33,7 @@ function GeneriereSitzplan($nPartyID, $ebene, $locateUser = 0)
 
 	//groessenkonstanten
 	$result = DB::query("select STRINGWERT from CONFIG where PARAMETER='SITZTIEFE' and MANDANTID=$nPartyID");
-	$row = mysql_fetch_array($result);
+	$row = $result->fetch_array();
 	$tTempTiefe = $row['STRINGWERT'];
 	if ($tTempTiefe > 0) {
 		$tbreite = $tTempTiefe;
@@ -42,7 +42,7 @@ function GeneriereSitzplan($nPartyID, $ebene, $locateUser = 0)
 	}
 	$tbreite = $tbreite * 1;
 	$result = DB::query("select STRINGWERT from CONFIG where PARAMETER='SITZBREITE' and MANDANTID=$nPartyID");
-	$row = mysql_fetch_array($result);
+	$row = $result->fetch_array();
 	$tTempBreite = $row['STRINGWERT'];
 	if ($tTempBreite > 0) {
 		$tlaenge = $tTempBreite;
@@ -52,7 +52,7 @@ function GeneriereSitzplan($nPartyID, $ebene, $locateUser = 0)
 
 	//Breite der Loge
 	$result = DB::query("select STRINGWERT from CONFIG where PARAMETER='LOGE_SITZBREITE' and MANDANTID=$nPartyID");
-	$row = mysql_fetch_array($result);
+	$row = $result->fetch_array();
 	$tTempBreite = $row['STRINGWERT'];
 	if ($tTempBreite > 0) {
 		$tLogelaenge = $tTempBreite;
@@ -62,13 +62,13 @@ function GeneriereSitzplan($nPartyID, $ebene, $locateUser = 0)
 
 	//Maximale Reihen
 	$result = DB::query("select MAX(REIHE) as MAXROW from SITZDEF where MANDANTID=$nPartyID and EBENE=$ebene");
-	//echo mysql_errno().": ".mysql_error()."<BR>";
-	$row = mysql_fetch_array($result);
+	//echo DB::$link->errno.": ".DB::$link->error."<BR>";
+	$row = $result->fetch_array();
 	$maxreihen = $row['MAXROW'];
 
 	//Reihen starten ab
 	$result = DB::query("select MIN(REIHE) as MINROW from SITZDEF where MANDANTID=$nPartyID and EBENE=$ebene");
-	$row = mysql_fetch_array($result);
+	$row = $result->fetch_array();
 	$startreihen = $row['MINROW'];
 	//# Daten Ende
 	//#############################
@@ -124,7 +124,7 @@ function GeneriereSitzplan($nPartyID, $ebene, $locateUser = 0)
 				  b.REIHE = $rc and 
 				  b.MANDANTID = $nPartyID";
 			$result = DB::query($sql); 
-			$row = mysql_fetch_array($result);
+			$row = $result->fetch_array();
 
 			if (empty($row['USERID'])) {
 				$tempcolor = $tischfrei;
@@ -258,7 +258,7 @@ function GeneriereSitzplan($nPartyID, $ebene, $locateUser = 0)
             		DB::connect();
 			$result2 = DB::query($sql);
 
-  			$row2    = mysql_fetch_array($result2);
+  			$row2    = $result2->fetch_array();
 	  		if ($row2['CLANID'] > 0) {
 				$sClan   = "<br>Clan: ".db2display($row2['NAME']);
 				if (strlen($sClan) > 32 ) {

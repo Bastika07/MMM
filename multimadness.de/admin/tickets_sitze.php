@@ -26,9 +26,9 @@ $dbh = DB::connect();
 		<td class="dblau">Mandant</td>
 		<td class="hblau" width="220"><select name="iMandant">
 		<?php
-			$result= mysql_db_query ($dbname, "select m.MANDANTID, m.BESCHREIBUNG from MANDANT m, RECHTZUORDNUNG r where r.MANDANTID=m.MANDANTID and r.USERID='".intval($loginID)."' and r.RECHTID='SITZPLANADMIN'",$dbh);
-			//echo mysql_errno().": ".mysql_error()."<BR>";
-			while ($row = mysql_fetch_array($result)) {
+			$result= DB::query("select m.MANDANTID, m.BESCHREIBUNG from MANDANT m, RECHTZUORDNUNG r where r.MANDANTID=m.MANDANTID and r.USERID='".intval($loginID)."' and r.RECHTID='SITZPLANADMIN'");
+			//echo DB::$link->errno.": ".DB::$link->error."<BR>";
+			while ($row = $result->fetch_array()) {
 				echo "<option value=\"$row[MANDANTID]\"";
 				if (isset($_POST['iMandant']) && $_POST['iMandant'] == $row['MANDANTID']) {echo " selected";}
 				echo ">$row[BESCHREIBUNG]";
@@ -121,13 +121,13 @@ if (isset($_POST['iGo']) && $_POST['iGo'] == 'yes') {
 
 	//echo "<pre>$sWhere</pre>";
 
-	$result= mysql_db_query ($dbname, $sWhere,$dbh);
-	//echo mysql_errno().": ".mysql_error()."<BR>";
+	$result= DB::query($sWhere);
+	//echo DB::$link->errno.": ".DB::$link->error."<BR>";
 
 	$bgc = 'hblau';
 	$id = 0;
 
-	while ($row = mysql_fetch_array($result)) {
+	while ($row = $result->fetch_array()) {
 		// $id für logbuch füllen
 		if ($id == 0) {
 			$id = $row['ownerId'];
@@ -163,10 +163,10 @@ if (isset($_POST['iGo']) && $_POST['iGo'] == 'yes') {
 				order by
 					s.EBENE";
 			$resEbene= DB::query($sql);
-			//echo mysql_errno().": ".mysql_error()."<BR>";
+			//echo DB::$link->errno.": ".DB::$link->error."<BR>";
 
 			$doIt = 0;
-			while ($rowEbene= mysql_fetch_array($resEbene)) {
+			while ($rowEbene= $resEbene->fetch_array()) {
 				if ($doIt == 1) {
 					echo " | ";
 				}
@@ -209,7 +209,7 @@ if (isset($_POST['iGo']) && $_POST['iGo'] == 'yes') {
                     
         $res= DB::query($sql);
 
-        while ($row= mysql_fetch_array($res)) {
+        while ($row= $res->fetch_array()) {
         
             echo '<tr><td class="'.$sTBG.'">'.db2display($row['msg']).'</td><td class="'.$sTBG.'">'.dateDisplay2($row['time']).'</td><td class="'.$sTBG.'">'.$row['cat'].'</td></tr>'."\n";
             

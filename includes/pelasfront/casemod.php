@@ -156,8 +156,8 @@ function rules() {
   }
   
   $sqlab2 = "SELECT STRINGWERT FROM CONFIG WHERE PARAMETER='CASEMOD_OFFEN'";
-	$res = mysql_db_query("MMMDB", $sqlab2);
-	$rows = mysql_fetch_array($res);
+	$res = DB::query($sqlab2);
+	$rows = $res->fetch_array();
 	$offen = $rows["STRINGWERT"];
 		
 	if ($offen == 'J') {	
@@ -171,25 +171,25 @@ function add($sLogin,$nLoginID,$beschreibung,$kurzbeschreibung,$type,$artist,$pe
   global $db;
 
   $sqlab = "SELECT STRINGWERT FROM CONFIG WHERE PARAMETER='CASEMOD_OFFEN'";
-  $res = mysql_db_query("MMMDB", $sqlab);
-  $rows = mysql_fetch_array($res);
+  $res = DB::query($sqlab);
+  $rows = $res->fetch_array();
   $offen = $rows["STRINGWERT"];
   
   if($offen == 'J') {
     $sqlab2 = "select * from CASEMOD where userid=$nLoginID";
-    $casemodcheck = mysql_db_query("MMMDB", $sqlab2);
-    $row2 = mysql_fetch_assoc($casemodcheck);
+    $casemodcheck = DB::query($sqlab2);
+    $row2 = $casemodcheck->fetch_assoc();
     if (is_array($row2)) {
       echo "Du hast dich schon f&uuml;r den Casemod-Contest beworben!<br><br><a href='javascript:history.back()'><--zur&uuml;ck</a>";
 	  }	else {
 	    if(isset($sLogin) && strlen($sLogin) && isset($nLoginID) && strlen($nLoginID)) {
 			  if(isset($kurzbeschreibung) && strlen($kurzbeschreibung) && isset($beschreibung) && strlen($beschreibung)) {
           $sqlab = "INSERT INTO CASEMOD (artist,beschreibung,kurzbeschreibung,type,userid,gastbewertung,juribewertung) VALUES ('$artist','$beschreibung','$kurzbeschreibung','$type','$pelasid',0,0)";
-			    mysql_db_query("MMMDB", $sqlab);
+			    DB::query($sqlab);
 			    
 			    $query = "SELECT id FROM CASEMOD WHERE userid='$pelasid'";
-			    $result = mysql_db_query("MMMDB", $query);
-			    $row = mysql_fetch_array($result);
+			    $result = DB::query($query);
+			    $row = $result->fetch_array();
 			    $id = $row["id"];
           
           echo("<script language=\"javascript\">location.href='casemod.php?action=bild&id=$id'</script>");
@@ -271,7 +271,7 @@ function show($sort, $sortnumber) {
 							s.REIHE, s.PLATZ ASC";
 		$res = DB::query($sql);
 		$i = 0;
-		while ($row = mysql_fetch_row($res)) {				
+		while ($row = $res->fetch_row()) {				
 			$timeArray[$row[0]] = $timePerGuestTime + $timePerGuest * 60 * $i;
 			$i++;
 		}
@@ -281,8 +281,8 @@ function show($sort, $sortnumber) {
 
 	
 	$sqlab2 = "SELECT STRINGWERT FROM CONFIG WHERE PARAMETER='CASEMOD_HIDDEN'";
-  $res2 = mysql_db_query("MMMDB", $sqlab2);
-  $rows2 = mysql_fetch_array($res2);
+  $res2 = DB::query($sqlab2);
+  $rows2 = $res2->fetch_array();
   $hidden = $rows2["STRINGWERT"];
    
   if (isset($hidden) && !empty($hidden)) {
@@ -319,8 +319,8 @@ function show($sort, $sortnumber) {
     case 'gesamt': $sqlab .= "gesamtbewertung $sortby"; break;
 		default : $sqlab .= "gesamtbewertung $sortby"; break;
 	}
-	$result = mysql_db_query("MMMDB", $sqlab);
-	echo mysql_error();
+	$result = DB::query($sqlab);
+	echo DB::$link->error;
 	?>
 	<table cellpadding="1" cellspacing="1" border="0">
 	<tr><td class="TNListe" width="210"><b>Kurzbeschreibung</b></td>
@@ -332,7 +332,7 @@ function show($sort, $sortnumber) {
 	    <td class="TNListe" width="90"><b>ca. Jury-Zeit</b></td>
 	    <td class="TNListe">&nbsp;</td></tr>
 	<?
-	while($row = mysql_fetch_array($result)) {
+	while($row = $result->fetch_array()) {
 	  $id = $row["id"];
 	  $kurzbeschreibung = db2display($row["kurzbeschreibung"]);
 	  $artist = $row["artist"];
@@ -362,8 +362,8 @@ function show($sort, $sortnumber) {
 	echo "</table>";
 		
 	$sqlab2 = "SELECT STRINGWERT FROM CONFIG WHERE PARAMETER='CASEMOD_OFFEN'";
-	$res = mysql_db_query("MMMDB", $sqlab2);
-	$rows = mysql_fetch_array($res);
+	$res = DB::query($sqlab2);
+	$rows = $res->fetch_array();
 	$offen = $rows["STRINGWERT"];
 		
 	if ($offen == 'J') {	
@@ -381,8 +381,8 @@ function detail($id) {
 	
 
         $sqlab2 = "SELECT STRINGWERT FROM CONFIG WHERE PARAMETER='CASEMOD_HIDDEN'";
-  $res2 = mysql_db_query("MMMDB", $sqlab2);
-  $rows2 = mysql_fetch_array($res2);
+  $res2 = DB::query($sqlab2);
+  $rows2 = $res2->fetch_array();
   $hidden = $rows2["STRINGWERT"];
 
   if (isset($hidden) && !empty($hidden)) {
@@ -403,8 +403,8 @@ function detail($id) {
 	          WHERE 
 	            c.id = $id AND 
 	            c.userid = u.USERID";
-	$result = mysql_db_query("MMMDB", $sqlab);
-	$row = mysql_fetch_array($result);
+	$result = DB::query($sqlab);
+	$row = $result->fetch_array();
 
 	$beschreibung = db2display($row["beschreibung"]);
 	$kurzbeschreibung = db2display($row["kurzbeschreibung"]);
@@ -432,8 +432,8 @@ $gastbewertung - Jury: $juribewertung - Gesamt: $bewertung</td></tr>";
 	echo "</table><br>";
 
     $sqlab2 = "SELECT STRINGWERT FROM CONFIG WHERE PARAMETER='CASEMODVOTE_OFFEN'";
-    $res2 = mysql_db_query("MMMDB", $sqlab2);
-    $rows2 = mysql_fetch_array($res2);
+    $res2 = DB::query($sqlab2);
+    $rows2 = $res2->fetch_array();
     $voteoffen = $rows2["STRINGWERT"];
 		
 		if ($voteoffen == 'J')
@@ -441,8 +441,8 @@ $gastbewertung - Jury: $juribewertung - Gesamt: $bewertung</td></tr>";
         if(isset($nLoginID) && strlen($nLoginID))
         {
 	    $sqlab2 = "select * from USER2CASEMOD where casemodid='$id' AND userid=$nLoginID";
-	    $user2casemodcheck = mysql_db_query("MMMDB", $sqlab2);
-	    $row2 = mysql_fetch_assoc($user2casemodcheck);
+	    $user2casemodcheck = DB::query($sqlab2);
+	    $row2 = $user2casemodcheck->fetch_assoc();
 	    if (is_array($row2))
 	    {
 	    echo "Du hast den Teilnehmer schon mit <b>".$row2['rating']."</b> bewertet.<br><br>";
@@ -494,8 +494,8 @@ function vote($votevalue,$casemodid,$nLoginID)
 {
 	global $db;
 	$sqlab = "select * from USER2CASEMOD where casemodid=$casemodid AND userid=$nLoginID";
-	$user2casemodcheck = mysql_db_query("MMMDB", $sqlab);
-	$row = mysql_fetch_assoc($user2casemodcheck);
+	$user2casemodcheck = DB::query($sqlab);
+	$row = $user2casemodcheck->fetch_assoc();
 	if (is_array($row))
 	{
 		echo "Du hast den Teilnehmer schon mit <b>".$row['rating']."</b> bewertet.";
@@ -507,26 +507,26 @@ function vote($votevalue,$casemodid,$nLoginID)
                 PELAS::logging("vote fuer case: '$casemodid', rating: '$votevalue'", 'casemod', $nLoginID);
 
 		$sqlab = "INSERT INTO USER2CASEMOD (casemodid,userid,rating) VALUES ('$casemodid','$nLoginID','$votevalue')";
-		mysql_db_query("MMMDB", $sqlab);
-		$num = mysql_affected_rows();
+		DB::query($sqlab);
+		$num = DB::$link->affected_rows;
 		
 		
-		$res = mysql_db_query("MMMDB", "SELECT AVG(rating) FROM USER2CASEMOD WHERE casemodid=$casemodid");
-		$row = mysql_fetch_array($res);
+		$res = DB::query("SELECT AVG(rating) FROM USER2CASEMOD WHERE casemodid=$casemodid");
+		$row = $res->fetch_array();
 		$gastbewertung = $row["AVG(rating)"];
 		
-		$res2 = mysql_db_query("MMMDB", "SELECT juribewertung FROM CASEMOD WHERE id=$casemodid");
-		$row2 = mysql_fetch_array($res2);
+		$res2 = DB::query("SELECT juribewertung FROM CASEMOD WHERE id=$casemodid");
+		$row2 = $res2->fetch_array();
 		$juribewertung = $row2["juribewertung"];
 		
 		$gesamtbewertung=number_format(($gastbewertung+$juribewertung)/2,2,".",".");
 		
 		$sqlab2 = "UPDATE CASEMOD SET gesamtbewertung = $gesamtbewertung WHERE id = $casemodid";
-		mysql_db_query("MMMDB",$sqlab2);
+		DB::query($sqlab2);
 		
 		$sqlab2 = "UPDATE CASEMOD SET gastbewertung = $gastbewertung WHERE id = $casemodid";
-		mysql_db_query("MMMDB",$sqlab2);
-		echo mysql_error();						
+		DB::query($sqlab2);
+		echo DB::$link->error;						
 		if ($num>0) echo "Dein Eintrag wurde gespeichert";
 		else echo "Konnte nicht gespeichert werden";														 
 	
@@ -538,10 +538,10 @@ function vote($votevalue,$casemodid,$nLoginID)
 function bild($photo, $nLoginID, $id) {
   global $db;
 	$sqlab = "select userid from CASEMOD where id=$id";
-	$result = mysql_db_query("MMMDB", $sqlab);
-	$row = mysql_fetch_array($result);
+	$result = DB::query($sqlab);
+	$row = $result->fetch_array();
 	$userid = $row["userid"];
-	echo mysql_error();
+	echo DB::$link->error;
 
   if ($nLoginID == $userid) {
     $Sdir = "/var/www/casemod/";
@@ -613,8 +613,8 @@ function edit($id,$nLoginID,$kurzbeschreibung,$beschreibung)
 {
 	global $db;
 		$sqlab = "select userid from CASEMOD where id=$id";
-		$result = mysql_db_query("MMMDB", $sqlab);
-		$row = mysql_fetch_array($result);
+		$result = DB::query($sqlab);
+		$row = $result->fetch_array();
 		$userid = $row["userid"];
 if ($nLoginID == $userid) 
 {
@@ -623,15 +623,15 @@ if(isset($kurzbeschreibung) && strlen($kurzbeschreibung) && isset($beschreibung)
 	{
 	
 	$query = "update CASEMOD set kurzbeschreibung = '$kurzbeschreibung', beschreibung = '$beschreibung' WHERE id = '$id'";	
-	mysql_db_query("MMMDB", $query);
-	echo mysql_error();
+	DB::query($query);
+	echo DB::$link->error;
 	echo("<script language=\"javascript\">location.href='casemod.php'</script>");
 	}
 	else 
 	{
 		$query = "select kurzbeschreibung, beschreibung from CASEMOD where id=$id";
-		$result = mysql_db_query("MMMDB", $query);
-		$row = mysql_fetch_array($result);
+		$result = DB::query($query);
+		$row = $result->fetch_array();
 		$kurzbeschreibung = $row["kurzbeschreibung"];
 		$beschreibung = $row["beschreibung"];
 
@@ -651,10 +651,10 @@ function del($file,$id)
 global $db;
 global $nLoginID;
 		$sqlab = "select userid from CASEMOD where id='$id'";
-		$result = mysql_db_query("MMMDB", $sqlab);
-		$row = mysql_fetch_array($result);
+		$result = DB::query($sqlab);
+		$row = $result->fetch_array();
 		$userid = $row["userid"];
-		echo mysql_error();
+		echo DB::$link->error;
 if (!preg_match("/$userid/i", $file)) {
 	echo "NICHT ZULÄSSIG"; exit;}
 else {

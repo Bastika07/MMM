@@ -201,7 +201,7 @@ if (($Action == 'new') or ($Action == 'edit')) {
 					WHERE TURNIERID = $TurnierID
 					  AND MANDANTID = '$MandantID'
 				");
-				if (mysql_errno() == 0) {
+				if (DB::$link->errno == 0) {
 					echo "<p>Neue Turnierdaten gespeichert.</p>";
 					echo "<p><a href=\"turniere.php\">Zum Turnieradmin</a></p>";
 				} else {
@@ -213,7 +213,7 @@ if (($Action == 'new') or ($Action == 'edit')) {
 					INSERT INTO TURNIERLISTE (MANDANTID, STANDARD_RUNDENZEIT, STARTZEIT, NAME, ANZAHL_TEILNEHMER, GRUPPENGROESSE, TYPE, BILDKL, BILDGR, REGELN, ART, COINS, AB18, IRC_CHANNEL)
 					VALUES ('$MandantID', '$iStandardRundenzeit', '$iSTARTZEIT', '$_POST[iNAME]', $iANZAHL_TEILNEHMER, $iGRUPPENSPIEL, $iTYP, '$iBILDKL', '$iBILDGR', '$_POST[iTURN_TEXT]','$iART', '$iCoins', '$iAB18', '$ircChannel')
 				");
-				if (mysql_errno() == 0) {
+				if (DB::$link->errno == 0) {
 					echo "<p>Neues Turnier gespeichert.</p>";
 					echo "<p><a href=\"turniere.php\">Zum Turnieradmin</a></p>";
 				} else {

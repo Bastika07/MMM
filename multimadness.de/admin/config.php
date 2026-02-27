@@ -22,7 +22,7 @@ if ($_POST['iGo'] == "Yes") {
 		$sql = "update CONFIG set STRINGWERT = '" . safe($_POST[$row['PARAMETER']]) . "' where PARAMETER = '".$row['PARAMETER']."' and MANDANTID=".intval($_POST['iMandant']);
 		$erfolg = DB::getOne($sql);
 	}
-	//echo mysql_errno().": ".mysql_error()."<BR>";
+	//echo DB::$link->errno.": ".DB::$link->error."<BR>";
 	echo "<p>Konfiguration gespeichert.</p>";
 } else {
 	$sql = "select 

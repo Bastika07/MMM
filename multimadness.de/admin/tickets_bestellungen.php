@@ -54,7 +54,7 @@ if ($_GET['action'] == "detail") {
 		  b.partyId   = '".intval($_GET['iPartyId'])."'
 		";
 	$result = DB::query($sql);
-	$row = mysql_fetch_array($result);
+	$row = $result->fetch_array();
 
 	$_POST['bestellStatus'] = $row['status'];
 	if (!isset($_POST['iZahlungsweise'])) {
@@ -150,8 +150,8 @@ if ($_GET['action'] == "detail") {
 			}
 			$_POST['iOldStatus'] = $_POST['iStatus'];
 			$result = DB::query("select statusId, beschreibung from acc_ticket_bestellung_status");
-			//echo mysql_errno().": ".mysql_error()."<BR>";
-			while ($rowTemp = mysql_fetch_array($result)) {
+			//echo DB::$link->errno.": ".DB::$link->error."<BR>";
+			while ($rowTemp = $result->fetch_array()) {
 				echo "<option value=\"$rowTemp[statusId]\"";
 				if (isset($_POST['iStatus']) && $_POST['iStatus'] == $rowTemp['statusId']) {echo " selected";}
 				echo ">$rowTemp[beschreibung]\n";
@@ -180,8 +180,8 @@ if ($_GET['action'] == "detail") {
 					}
 				}
 				$result = DB::query("select zahlungsweiseId, desc_german from acc_zahlungsweise");
-				//echo mysql_errno().": ".mysql_error()."<BR>";
-				while ($rowTemp = mysql_fetch_array($result)) {
+				//echo DB::$link->errno.": ".DB::$link->error."<BR>";
+				while ($rowTemp = $result->fetch_array()) {
 					echo "<option value=\"$rowTemp[zahlungsweiseId]\"";
 					if (isset($_POST['iZahlungsweise']) && $_POST['iZahlungsweise'] == $rowTemp['zahlungsweiseId']) {echo " selected";}
 					echo ">$rowTemp[desc_german]\n";
@@ -258,8 +258,8 @@ if ($_GET['action'] == "detail") {
 				$iStatus = ACC_STATUS_OFFEN;
 			}
 			$result = DB::query("select statusId, beschreibung from acc_ticket_bestellung_status");
-			//echo mysql_errno().": ".mysql_error()."<BR>";
-			while ($row = mysql_fetch_array($result)) {
+			//echo DB::$link->errno.": ".DB::$link->error."<BR>";
+			while ($row = $result->fetch_array()) {
 				echo "<option value=\"$row[statusId]\"";
 				if (isset($_POST['iStatus']) && $_POST['iStatus'] == $row['statusId']) {echo " selected";}
 				echo ">$row[beschreibung]";
@@ -276,8 +276,8 @@ if ($_GET['action'] == "detail") {
 		>Alle
 		<?php
 			$result = DB::query("select m.MANDANTID, m.BESCHREIBUNG from MANDANT m, RECHTZUORDNUNG r where r.MANDANTID=m.MANDANTID and r.USERID=".intval($loginID)." and r.RECHTID='ACCOUNTINGADMIN'");
-			//echo mysql_errno().": ".mysql_error()."<BR>";
-			while ($row = mysql_fetch_array($result)) {
+			//echo DB::$link->errno.": ".DB::$link->error."<BR>";
+			while ($row = $result->fetch_array()) {
 				echo "<option value=\"$row[MANDANTID]\"";
 				if (isset($_POST['iMandant']) && $_POST['iMandant'] == $row['MANDANTID']) {echo " selected";}
 				echo ">$row[BESCHREIBUNG]";
@@ -385,11 +385,11 @@ if ($_GET['action'] == "detail") {
 		     ".safe($_POST['sortierung']);
 
 	$result = DB::query($sWhere);
-	//echo mysql_errno().": ".mysql_error()."<BR>";
+	//echo DB::$link->errno.": ".DB::$link->error."<BR>";
 
 	$bgc = 'hblau';
 
-	while ($row = mysql_fetch_array($result)) {
+	while ($row = $result->fetch_array()) {
 		echo "<tr>";
 		echo "<td class=\"$bgc\"><a href=\"javascript:openBestellung('".$row['partyId']."', '".$row['bestellId']."');\">".PELAS::formatBestellNr($row['partyId'], $row['bestellId'])."</a>&nbsp;</td>";
 		echo "<td class=\"$bgc\"><a href=\"benutzerdetails.php?id=".$row['USERID']."\">$row[USERID]&nbsp;</a></td>";
@@ -403,7 +403,7 @@ if ($_GET['action'] == "detail") {
 				from acc_zahlungsweise
 				where zahlungsweiseId = '".$row['zahlungsweiseId']."'";
 			$resultTemp = DB::query($sql);
-			$rowTemp = mysql_fetch_array($resultTemp);
+			$rowTemp = $resultTemp->fetch_array();
 			
 			echo "<a href=\"tickets_rechnung.php?iPartyId=".$row['partyId']."&iBestellId=".$row['bestellId']."\" target=\"blank\">".db2display($row['beschreibung'])."</a>";
 			echo " <small>(".db2display($rowTemp['desc_german']);
