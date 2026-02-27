@@ -19,7 +19,7 @@
     		schon ein Bild hochgeladen
     	{/if}
     	<form action="{$filename}" method="post" ENCTYPE="multipart/form-data">
-	{csrf_field}
+    {csrf_field}
 	<input type="hidden" name="action" value="upload">
 	<input type="hidden" name="userId" value="{$lady.userId}">
 	<input type="file" name="uploadImage"><input type="submit" value="hochladen">

@@ -148,10 +148,12 @@ if(isset($_POST['btnNewsletterCancel'])){
 Wir haben unsere Datenschutzrichtlinie aktualisiert, um euch mehr Informationen darüber zur Verfügung zu stellen, wie eure Daten genutzt und geschützt werden.</p>
 <p><a href="?page=47" target="_blank" class="ng_url">Datenschutzrichtlinie</a> </p><br>
 <h4>Ich möchte den Newsletter weiterhin erhalten!</h4>
-								  <form action="/" method="post">' . csrf_field() . '<input type="submit" value="Abonnieren" name="btnNewsletterOK" class="btnNewsletterOK"/>
+								  <form action="/" method="post">' . csrf_field() . '
+								  <input type="submit" value="Abonnieren" name="btnNewsletterOK" class="btnNewsletterOK"/>
 			   </form><br>
 <h4>Ich möchte den Newsletter nicht mehr erhalten. :(</h4>		   
-			   <form action="/" method="post">' . csrf_field() . '<input type="submit" value="Abbestellen" name="btnNewsletterCancel" class="btnNewsletterCancel"/>
+			   <form action="/" method="post">' . csrf_field() . '
+			   <input type="submit" value="Abbestellen" name="btnNewsletterCancel" class="btnNewsletterCancel"/>
 			   </form>
 				  </div>
 			</div>';

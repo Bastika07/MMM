@@ -346,7 +346,7 @@ Each block sets:
 
 ### 🟠 High
 
-4. **No CSRF protection** — Forms (newsletter opt-in, login, seating reservation, accounting) do not include or validate a CSRF token.
+4. ~~**No CSRF protection**~~ — **Fixed.** A per-session CSRF token (`bin2hex(random_bytes(32))`) is generated in `includes/dblib.php` (`csrf_token()`) and stored in the PHP session. `csrf_verify()` is called centrally in `includes/getsession.php` on every non-GET request and returns HTTP 403 on token mismatch. All state-changing HTML forms now embed the token via `<?= csrf_field() ?>` (PHP templates) or `{csrf_field}` (Smarty templates). External forms (e.g. PayPal) and the pre-session cookie-consent form are intentionally excluded.
 
 5. **Hard-coded absolute filesystem paths** — The production block in `constants.php` now supports overrides via `LIVE_PELASDIR` and `LIVE_SMARTY_BASE_DIR` environment variables, but the dev/intranet configuration blocks (`urtyp_dev_internet`, `urtyp_dev_intranet`) still reference `/var/www.il-dev/…` directly. A single `BASE_DIR` constant derived at runtime (e.g. `dirname(__DIR__)`) would make the codebase fully portable.
 
@@ -380,7 +380,7 @@ Each block sets:
 | ✅ | ~~Fix UTF-8 encoding artefacts in `constants.php`~~ — done |
 | ✅ | ~~Use prepared statements (MySQLi `prepare()` / `bind_param()`) for all DB queries to eliminate SQL injection risk~~ — done |
 | ✅ | ~~Replace remaining legacy `mysql_*` call-sites across 80+ files with the `DB::` MySQLi wrapper~~ — done |
-| 🟠 | Add CSRF token generation and validation to all state-changing forms |
+| ✅ | ~~Add CSRF token generation and validation to all state-changing forms~~ — done |
 | 🟠 | Replace hard-coded absolute paths in dev/intranet `constants.php` blocks with a single `BASE_DIR` constant derived at runtime (e.g. `dirname(__DIR__)`) |
 | 🟡 | Add PHPUnit test coverage for core business logic (`pelasfunctions.php`, `DB::`, tournament classes) |
 | 🟡 | Introduce a lightweight router/framework to separate routing, controllers, and views |

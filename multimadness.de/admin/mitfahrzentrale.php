@@ -390,7 +390,8 @@ function show_details($id) {
             if ($freieplaetze) {
                 $aktionshow = "Kommentar:
                     <form method='post' action='mitfahrzentrale.php'>
-                    " . csrf_field() . "<textarea name='KOMMENTAR' cols='20' rows='7'></textarea><br>
+                    " . csrf_field() . "
+                    <textarea name='KOMMENTAR' cols='20' rows='7'></textarea><br>
                     <input type='hidden' name='aktion' value='mitfahrenadd'>
                     <input type='hidden' name='ID' value='" . $id . "'>
                     <input type='submit' name='Submit' value='Mitfahren'>
