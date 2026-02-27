@@ -26,6 +26,7 @@
     <a href="{$filename}&action=changemode&mode=sticky&post={$thread->id}">sticky</a>
   {/if}
   <form method="post" action="{$filename}" name="moveThread">
+    {csrf_field}
     <input type="hidden" name="action" value="moveThread">
     <input type="hidden" name="thread" value="{$thread->id}">
     <select name="dstBoardID" onChange="javascript: submit()">

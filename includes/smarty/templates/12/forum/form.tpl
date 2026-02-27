@@ -20,6 +20,7 @@
 {/if}
 
 <form method="post" action="{$filename}" name="data">
+{csrf_field}
 <input type="hidden" name="action" value="submit">
 {if isset($data)}
   {foreach key=key item=val from=$data}
@@ -39,7 +40,7 @@
   <tr>
     <td class="forum_titel">&nbsp;</td>
     {if $mode == 'newPost' || $mode == 'editPost'}
-      {* Post wurde angegeben, es wird editiert, oder es wird ein neuer Post für einen bestehen $thread angelegt *}
+      {* Post wurde angegeben, es wird editiert, oder es wird ein neuer Post fï¿½r einen bestehen $thread angelegt *}
       <td class="forum_titel"> {$thread->title|escape}</td>
     {else}
       <td class="forum_titel"> Neues Thema</td>

@@ -533,6 +533,7 @@ function InhaltAnlegen($nKategorieID, $nParentID) {
 			?>			
 
 			<form method="post" action="<?php echo $sPostTo; ?>?iAction=add&nInhaltID=<?php echo $nParentID; ?>&Parent=<?php echo $nParentID; ?>" name="data">
+			<?= csrf_field() ?>
 			<input type="hidden" name="iParent" value="<?php echo $nParentID; ?>">
 			<input type="hidden" name="iNick" value="go">
 			
@@ -706,6 +707,7 @@ function InhaltEdit($nKategorieID, $nParentID) {
 			}
 			?>			
 			<form method="post" action="<?php echo $sPostTo; ?>?Action=edit&Inhalt=<?php echo $inhaltID?>" name="data">
+			<?= csrf_field() ?>
 			<input type="hidden" name="iNick" value="go">
 			<input type="hidden" name="Action" value="edit">
 			<input type="hidden" name="Inhalt" value="<?php echo $row['INHALTID']?>">

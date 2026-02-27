@@ -23,6 +23,7 @@ if (isset($nLoginID) && $nLoginID > 0) {
 	echo "</table>";
 } else {
 	echo "<form method=\"post\" action=\"/login.php\">";
+	echo csrf_field() . "\n";
 	echo "<table cellspacing=\"0\" cellpadding=\"2\" border=\"0\">";
 	echo "<tr><td> &nbsp; <img src=\"gfx/headline_pfeil.png\"> Benutzername</td></tr>";
 	echo "<tr><td> &nbsp;  &nbsp;  &nbsp; <input type=\"text\" name=\"iLogin\" size=\"10\" maxlength=\"50\" value=\"".(isset($iLogin) ? $iLogin : '')."\"></td></tr>\n";

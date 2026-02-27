@@ -9,6 +9,7 @@ include('admin/vorspann.php');
 function show_form_neu() {
 ?>
 <form method="post" action="mandanten.php?iAction=<?= htmlspecialchars($_GET['iAction'], ENT_QUOTES | ENT_HTML5, 'UTF-8') ?>&amp;nMandantID=<?= intval($_GET['nMandantID']) ?>">
+<?= csrf_field() ?>
   <input type="hidden" name="iPosted" value="yes"/>
 <table cellspacing="1" class="outer">
   <tr>

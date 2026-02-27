@@ -21,6 +21,7 @@
 
 {* Formular für neue Anwesenheiten *}
 <form action="{$smarty.server.SCRIPT_NAME}?eventID={$eventID}" method="post">
+  {csrf_field}
   <input type="hidden" name="type" value="p"/>
   <tr class="row-{math equation='count % 2' count=$user_presences|@count}">
     <td>
@@ -55,6 +56,7 @@
 <br/>
 
 <form action="{$smarty.server.SCRIPT_NAME}?action=update_absence&eventID={$eventID}" method="post">
+  {csrf_field}
   <label><input type="checkbox" name="is_absent" value="1"{if $user_is_absent} checked="checked"{/if}/> Ich werde abwesend sein.</label>
   <input type="submit" value="aktualisieren"/>
 </form>
@@ -127,6 +129,7 @@
 
 {* Formular für neue Zeiten anzeigen. *}
 <form action="{$smarty.server.SCRIPT_NAME}?eventID={$eventID}" method="post">
+  {csrf_field}
   <input type="hidden" name="type" value="t"/>
   <tr class="row-{math equation='(count + 1) % 2' count=$task_items|@count}">
     <td><input type="text" name="description" size="8" maxlength="20"></td>

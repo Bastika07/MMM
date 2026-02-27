@@ -38,6 +38,7 @@ function ShowForm ($login = '', $password = '') {
 	global $str, $returnTo, $pelasHost, $nPartyID, $iAction, $nInhaltID, $iNick, $iKommentar;
 	
 	echo "\n<form method=\"post\" name=\"login\">\n";
+	echo csrf_field() . "\n";
 	echo "<table cellspacing=\"0\" cellpadding=\"2\" border=\"0\">\n";
 
 	echo "<tr><td>Login oder Email</td><td><input type=\"text\" name=\"iLogin\" size=\"25\" maxlength=\"50\" value=\"";
@@ -69,6 +70,7 @@ function ShowFormPasswordreset () {
 	global $str;
 	echo "<p>$str[gibemail]</p>";
 	echo "\n<form method=\"post\" name=\"login\">\n";
+	echo csrf_field() . "\n";
 	echo "<table cellspacing=\"0\" cellpadding=\"2\" border=\"0\">\n";
 	
 	echo "<tr><td>$str[emailadresse]</td><td><input type=\"text\" name=\"iEmail\" size=\"25\" maxlength=\"50\" value=\"$iLogin\"></td></tr>\n";
@@ -99,6 +101,7 @@ function showFormNewPW () {
 
 	echo "<p>Bitte setze jetzt dein neues Passwort:</p>";
 	echo "\n<form method=\"post\" action=\"".$_SERVER['REQUEST_URI']."\" name=\"login\">\n";
+	echo csrf_field() . "\n";
 	echo "<table cellspacing=\"0\" cellpadding=\"2\" border=\"0\">\n";
 	
 	echo "<tr><td>$str[passwort]</td><td><input type=\"password\" name=\"newP1\" size=\"25\" maxlength=\"50\" value=\"$newP1\"></td></tr>\n";
@@ -311,6 +314,7 @@ if (isset($_GET['action']) && $_GET['action'] == "passwordreset") {
   // ist schon angemeldet
   echo "<p>Du bist als ".htmlspecialchars($_SESSION['MMMSESSION']['sLogin'])." mit der ID ".$_SESSION['MMMSESSION']['nLoginID']." eingeloggt.</p>\n";
   echo "<form method=\"post\">\n";
+  echo csrf_field() . "\n";
   echo "<input type=\"hidden\" name=\"Action\" value=\"logout\">\n";
   echo "<input type=\"submit\" value=\"ausloggen\">\n";
   echo "</form>\n";

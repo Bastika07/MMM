@@ -3,6 +3,7 @@
 <h1>Duschen-Status</h1>
 
   <form action="{$smarty.server.SCRIPT_NAME}" method="post">
+    {csrf_field}
     <table cellspacing="1" class="outer">
       <tr>
         <th colspan="2">Beameranzeige bearbeiten</th>

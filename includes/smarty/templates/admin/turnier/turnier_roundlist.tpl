@@ -111,6 +111,7 @@
 <h1>Runden &Uuml;bersicht - {$turnier->name|escape}</h1>
 
 <form method="post" name="save" id="rounds" action="{$smarty.server.PHP_SELF}?action=save&turnierid={$turnier->turnierid}">
+{csrf_field}
 <table cellspacing="0" cellpadding="0" width="600"><tr><td class="navbar">
 <table width="100%" cellspacing="1" cellpadding="3">
 {foreach key=roundid item=round from=$rounds}

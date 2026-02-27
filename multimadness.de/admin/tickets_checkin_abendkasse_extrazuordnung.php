@@ -99,6 +99,7 @@ while ($rowBestellung = $resTempBestellung->fetch_array()) {
 		echo '<tr class="'.$class.'"><td>';
 
 		echo '<form method="post" action="tickets_checkin_abendkasse_extrazuordnung.php?action=action&iId='.$iId.'&nPartyID='.$nPartyID.'" name="data'.$rowBestellung['bestellId'].$i.'">';
+		echo csrf_field() . "\n";
 
 		echo db2display($rowBestellung['kurzbeschreibung']);
 		echo "</td><td>";

@@ -6,6 +6,7 @@
     <p>{$error}</p>
 {else}
     <form method="post" action="{$filename}" name="formular">
+      {csrf_field}
       <input type="hidden" name="action" value="submit"/>
     {if isset($lady.login)}
       <input type="hidden" name="userId" value="{$lady.userId}"/>

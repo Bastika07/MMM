@@ -47,6 +47,7 @@ function showBestellschein()
 	<?php
 
 	echo "\n<form name=\"bestellung\" action=\"".$_SERVER['REQUEST_URI']."\" method=\"post\">\n";
+	echo csrf_field() . "\n";
 	echo "<table cellspacing=\"1\" cellpadding=\"2\" border=\"0\" width=\"99%\">\n
 	<tr><td class=\"header\">".$str['anzahl']."</td><td class=\"header\">$str[ticketart]</td><td class=\"header\">$str[verfuegbar]</td><td class=\"header\">$str[preis]</td><td class=\"header\">$str[summe]</td></tr>\n";
 	$sql = "select *
@@ -451,6 +452,7 @@ if ($_GET['action'] == "select") {
 			} else {
 				// SUchformular anzeigen wenn Zuordnung offen
 				echo "<p><form name=\"suchen\" method=\"post\" action=\"?page=6&action=reassign&ticketId=".intval($_GET['ticketId'])."\">";
+				echo csrf_field() . "\n";
 
 				echo "<table cellspacing=\"1\" cellpadding=\"2\" border=\"0\" >\n
 					<tr><td class=\"header\" colspan=\"2\">$str[acc_neuerbenutzerzuordnung]</td></tr>\n";
@@ -1170,6 +1172,7 @@ if (39) {
 						for ($i = 1; $i <= $row['anzahl']; $i++) {
 							
 							echo '<form method="post" action="?page=6&action=select" name="data'.$row['bestellId'].$i.'">';
+							echo csrf_field() . "\n";
 							
 							// Zuordnungen
 							$sql = "select 

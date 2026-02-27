@@ -17,6 +17,7 @@ document.title = "{$turnier->name|escape} - " + document.title;
 <br><br>
 
 <form method="post" action="?page=26&action=editMatch&turnierid={$turnier->turnierid}&matchid={$match->matchid}">
+{csrf_field}
 <table class="rahmen_allg" width="600" cellspacing="1" cellpadding="3">
 <tr><td class="TNListe" colspan="3">
 <table width="99%"><tr>

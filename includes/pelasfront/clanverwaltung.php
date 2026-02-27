@@ -73,6 +73,7 @@ if ($nLoginID == "") {
 			echo "<p>M&ouml;chtest Du wirklich Dein bisheriges Clanmitglied <i>&quot;".htmlspecialchars($sClanmateName)."&quot;</i> aus Deinem Clan entfernen?</p>";
 			
 			echo "<form method=\"post\" action=\"?page=18&action=entf&nClanmate=".intval($_GET['nClanmate'])."\">";
+			echo csrf_field() . "\n";
 			echo "<input type=\"hidden\" name=\"check\" value=\"yes\">";
 			echo "<input type=\"submit\" class=\"button\" value=\"Ja\"> &nbsp; <input type=\"button\" value=\"Nein\" OnClick=\"window.history.back();\">";
 			echo "</form>";
@@ -93,6 +94,7 @@ if ($nLoginID == "") {
 			if ($check != "yes") {
 				echo "<p>M&ouml;chtest Du wirklich Deine &Uuml;berweisung und Deinen Sitzplatz diesem Benutzer &uuml;bergeben?</p>";
 				echo "<form method=\"post\" action=\"clanverwaltung.php?action=$action&nClanmate=$nClanmate\">";
+				echo csrf_field() . "\n";
 				echo "<input type=\"hidden\" name=\"check\" value=\"yes\">";
 				echo "<input type=\"submit\" value=\"Ja\"> &nbsp; <input type=\"button\" value=\"Nein\" OnClick=\"window.history.back();\">";
 				echo "</form>";
@@ -525,6 +527,7 @@ if ($nLoginID == "") {
 						
 					echo "</td><td valign=\"top\">$str[voraussetzungen]: <br><li>JPEG-Format <li>$str[breite](!) 220 Px <li>$str[maxhoehe] 60 Pixel <li>$str[dateigroesse] 10 KB</td></tr>";
 					echo "<form method=\"post\" enctype=\"multipart/form-data\" name=\"bildupload\" action=\"?page=18\"><tr><td>$str[neuesbild]:</td><td><input type=\"file\" name=\"iUserbild\" size=\"25\">";
+					echo csrf_field() . "\n";
 					echo "<input type='hidden' name='actionUpload' value='upload'>";
 					echo "</td></tr><tr><td colspan=\"2\"><input type=\"submit\" value=\"$str[upload]\"></td></tr></form>";
 					echo "</table>";
@@ -543,6 +546,7 @@ function ShowForm() {
 	
 	?>
 	<form name="clanverwaltung" method="post" action="?page=18&action=<?=$_GET['action'];?>">
+  <?= csrf_field() ?>
   <input type="hidden" name="go" value="true" />
 	<table>
 	<tr>

@@ -256,6 +256,7 @@ function show_form ()
 	?>
 
 	<form method="post" action="">
+	<?= csrf_field() ?>
 
 	<input type="hidden" name="oldData" value="<?php echo htmlspecialchars($oldData); ?>">
 
@@ -448,6 +449,7 @@ function show_form ()
 
 			echo "</td><td valign=\"top\">$str[voraussetzungen]: <br><li>JPEG-Format <li>$str[breite] 110 Px <li>$str[maxhoehe] 150 Px <li>$str[dateigroesse] 20 KB</td></tr></table></td></tr>";
 			echo "<form method=\"post\" enctype=\"multipart/form-data\" name=\"bildupload\" action=\"?page=11\"><tr><td>$str[neuesbild]:</td><td><input type=\"file\" name=\"iUserbild\" size=\"25\">";
+			echo csrf_field() . "\n";
 			echo "</td></tr>\n";
 			echo "<input type='hidden' name='action' value='upload'>\n";
 			echo "<tr><td colspan=\"2\"><input type=\"submit\" value=\"$str[upload]\"></td></tr></form>\n";

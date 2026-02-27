@@ -36,6 +36,7 @@ function addTurnierPreis(turnierid)
   <a name="turnier_{$turnierid}"></a>
   {if $editid eq $turnierid}
   <form method="post" name="turnier" action="{$smarty.server.PHP_SELF}?action=save&partyid={$partyid}&turnierid={$turnierid}#turnier_{$turnierid}">
+  {csrf_field}
   {/if} 
   <table cellspacing="0" cellpadding="0" width="800">
   	<tr><td class="navbar">  

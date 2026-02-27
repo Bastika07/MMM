@@ -167,6 +167,7 @@ if ($aktuellePartyID < 1) {
 		</p>
 	</td><td align="right" valign="top">
 		<form method="post" action="?page=8">
+		<?= csrf_field() ?>
 		<p><input type="text" name="limitListe" size="20" maxlength="20" value="<?=$_POST['limitListe'];?>"> <input type="submit" value="<?=$str['TN_Suchen']?>"></p>
 		</form>
 	</td></tr>

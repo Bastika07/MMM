@@ -31,6 +31,7 @@
 <p>Bild hochladen</p>
 
 <form action="{$filename}" method="post" ENCTYPE="multipart/form-data">
+{csrf_field}
 <input type="hidden" name="action" value="upload">
 <table cellspacing="0" cellpadding="0" width="800">
   <tr><td class="navbar">

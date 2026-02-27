@@ -11,6 +11,7 @@
 {/if}
 
 <form method="post" action="{$filename}" name="data" onSubmit="closeAll()">
+{csrf_field}
 <input type="hidden" name="action" value="submit">
 {if isset($data)}
   {foreach key=key item=val from=$data}

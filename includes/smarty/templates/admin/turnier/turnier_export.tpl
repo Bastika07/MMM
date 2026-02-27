@@ -6,6 +6,7 @@
 <a href="turnier/{$smarty.server.PHP_SELF}?action=show&liga={$smarty.const.TURNIER_LIGA_NGL}&partyid={$partyid}"> NGL </a>] Turniere</h1>
 
 <form method="post" action="{$smarty.server.PHP_SELF}?action=generate&liga={$liga}&partyid={$partyid}">
+{csrf_field}
 <table cellspacing="0" cellpadding="0"><tr><td class="navbar">
 <table width="100%" cellspacing="1" cellpadding="3">
 

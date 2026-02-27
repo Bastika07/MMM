@@ -13,6 +13,7 @@ function show_form_party_anlegen() {
 	global $loginID;
 ?>
 <form method="post">
+<?= csrf_field() ?>
   <input type="hidden" name="iPosted" value="yes"/>
 <table cellspacing="1" class="outer">
   <tr>

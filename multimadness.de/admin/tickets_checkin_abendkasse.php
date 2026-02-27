@@ -121,6 +121,7 @@ if ($_GET['iMandantID'] < 1) {
 <script type="text/javascript" src="tickets_checkin_abendkasse.js"></script>
 
 <form name="ticketForm" action="<?= $_SERVER['SCRIPT_NAME'] ?>?iMandantID=<?= intval($_GET['iMandantID']); ?>" method="post">
+<?= csrf_field() ?>
   <table cellspacing="1" class="outer">
     <tr>
       <th colspan="2">Teilnehmer</th>
@@ -251,6 +252,7 @@ if ($_GET['iMandantID'] < 1) {
 <h1>Begleiter</h1>
 
 <form name="begleiterForm" action="<?= $_SERVER['SCRIPT_NAME'] ?>?iMandantID=<?= intval($_GET['iMandantID']); ?>" method="post">
+<?= csrf_field() ?>
   <table cellspacing="1" class="outer">
     <tr>
       <th colspan="2">Name und Adresse</th>

@@ -32,6 +32,7 @@ function openAstatus(Mandant) {
 </script>
 
 <form method="post" action="<?= $_SERVER['SCRIPT_NAME'] ?>?id=<?= intval($_GET['id']); ?>" name="details">
+<?= csrf_field() ?>
 	<input type="hidden" name="oldData" value="<?php echo $oldData; ?>">
   <input type="hidden" name="actionID" value="daten"/>
   <input type="hidden" name="formVars[alter_userid]" value="<?= $formVars['userid'] ?>"/>
@@ -361,6 +362,7 @@ function openAstatus(Mandant) {
     # Rechtetabelle
     if ($_GET['id'] > 0) {
         echo '<form method="post" action="'.$_SERVER['PHP_SELF'].'?id='.intval($_GET['id']).'" name="details">'."\n";
+        echo csrf_field() . "\n";
         echo '<input type="hidden" name="actionID" value="rechte">'."\n";
         echo '<table cellspacing="0" cellpadding="0" border="0">'."\n";
         echo '<tr><td class="navbar">'."\n";

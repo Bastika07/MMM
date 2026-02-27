@@ -7,6 +7,7 @@
    <tr>
    	<td><table border="0" cellpadding="3" cellspacing="2">
 	<form action="{$smarty.server.PHP_SELF}?do=addBlock" method="post">
+	{csrf_field}
 	<table border="0" cellpadding="0" cellspacing="0">
 	   <tr>
 	   	<td class="navbar" align="center"><font size="4">IP-Liste<font></td>
@@ -16,7 +17,7 @@
 		</td>
 		
 	   </tr><tr>
-		<td valign='top'><strong>Priorität:</strong><br>
+		<td valign='top'><strong>Prioritï¿½t:</strong><br>
 		<select name=prio>
 		{section name=sec1 loop=$prio}
 		<option value="{$prio[sec1].id}">{$prio[sec1].name}</option>

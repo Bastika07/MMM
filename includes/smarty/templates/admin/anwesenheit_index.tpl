@@ -26,6 +26,7 @@
 
 {if $user_is_admin}
 <form action="{$smarty.server.SCRIPT_NAME}?action=eventAdd" method="post">
+  {csrf_field}
   <tr class="row-{math equation="count % 2" count=$events|@count}">
     <td>
     	<input type="text" name="description" size="18" maxlength="40"/><br />

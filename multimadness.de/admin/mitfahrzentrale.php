@@ -122,6 +122,7 @@ function angebotadd($eventID) {
 <h1>Mitfahrzentrale</h1>
 
 <form action="<?= $_SERVER['SCRIPT_NAME'] ?>" method="post">
+<?= csrf_field() ?>
   <input type="hidden" name="aktion" value="angebotaddsave"/>
   <input type='hidden' name='eventID' value="<?= $eventID ?>"/>
 <table cellspacing="1" class="outer">
@@ -389,6 +390,7 @@ function show_details($id) {
             if ($freieplaetze) {
                 $aktionshow = "Kommentar:
                     <form method='post' action='mitfahrzentrale.php'>
+                    " . csrf_field() . "
                     <textarea name='KOMMENTAR' cols='20' rows='7'></textarea><br>
                     <input type='hidden' name='aktion' value='mitfahrenadd'>
                     <input type='hidden' name='ID' value='" . $id . "'>

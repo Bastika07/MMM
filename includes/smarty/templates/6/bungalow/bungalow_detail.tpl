@@ -16,7 +16,7 @@ die ihr gezahlt habt.</p>
 <tr><th>Gr&ouml;&szlig;e</th><td class="dblau">{$data.size}</td></tr>
 <tr><th>Status</th><td class="hblau">{$data.status}
 {if $owner}<br><a href="bungalows.htm?action=return&bungalow={$data.ID}">Diesen Bungalow abgeben</a>{/if}</td></tr>
-<tr><th>IP-Adresse</th><td class="dblau">172.16.{$data.IP}.y - DHCP ist ebenfalls möglich</td></tr>
+<tr><th>IP-Adresse</th><td class="dblau">172.16.{$data.IP}.y - DHCP ist ebenfalls mï¿½glich</td></tr>
 {* Wer wohnt hier? *}
 <tr><th valign="top">Bewohner</th><td class="hblau">
 
@@ -33,7 +33,7 @@ die ihr gezahlt habt.</p>
 	  {/if}
 	  </tr>
 	{/foreach}
-	{* keine Bewohner da, hütte noch nicht gebucht, user darf hütte buchen *}
+	{* keine Bewohner da, hï¿½tte noch nicht gebucht, user darf hï¿½tte buchen *}
 	{if $reservAllowed}
   {* Reservierung darf erfolgen *}
     <a href="bungalows.htm?action=reserv&bungalow={$data.ID}">Diesen Bungalow reservieren...</a>
@@ -41,7 +41,7 @@ die ihr gezahlt habt.</p>
 	
 	{if $owner && ($currentMates < $data.size)}
 	  <tr><td colspan="2">
-        {* aktueller hat diesen Bungalow gebucht, Menü dafür anzeigen *}
+        {* aktueller hat diesen Bungalow gebucht, Menï¿½ dafï¿½r anzeigen *}
         {literal}
         <script type="text/javascript">
         <!--
@@ -54,6 +54,7 @@ die ihr gezahlt habt.</p>
         </script>
         <br>
         <form name="formular" method="post" action="bungalows.htm">
+        {csrf_field}
         <table><tr><td>Filter: 
         <input type="text" name="nick" value="" onKeyup="printAuswahl()">
         <input type="hidden" name="action" value="addUser">

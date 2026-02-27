@@ -19,6 +19,7 @@ function show_form_ticket_aendern() {
 <p>Die Translation für einen normalen Platz ist &quot;bezahlt&quot;, für die Loge &quot;Bezahlt Loge&quot;. Wenn die Webseite zwei Sprachen unterst&uuml;tzt, bitte ins Feld Beschreibung die englische Bezeichnung eingeben.</p>
 
 <form method="post" action="mandant_tickets.php?iMandantID=<?= intval($_GET['iMandantID']) ?>&iPartyID=<?= intval($_GET['iPartyID']) ?>&iTypID=<?= intval($_GET['iTypID']) ?>&action=<?= htmlspecialchars($_GET['action'] ?? '', ENT_QUOTES | ENT_HTML5, 'UTF-8') ?>">
+<?= csrf_field() ?>
   <input type="hidden" name="iPosted" value="yes"/>
 <table cellspacing="1" class="outer">
   <tr>
@@ -165,6 +166,7 @@ if ($_GET['iMandantID'] < 1) {
 	while ($rowParty = $result->fetch_array()) {
 		
       echo "<form name=\"partyselect\" method=\"post\" action=\"mandant_tickets.php?iMandantID=".intval($_GET['iMandantID'])."&iPartyID=".$rowParty[partyId]."\">";
+	    echo csrf_field() . "\n";
 	    echo "<p><table cellspacing=\"0\" cellpadding=\"0\" width=\"1000\">\n";
 	    echo "<tr><td class=\"navbar\">\n";
 	    echo "<table width=\"100%\" cellspacing=\"1\" cellpadding=\"3\">\n";
