@@ -15,6 +15,7 @@ function show_form() {
 	$iAuswahlanzahl=7;
 ?>
 <form action="<?= $_SERVER['SCRIPT_NAME'] ?>?iMandantID=<?= $iMandantID ?>" method="post">
+<?= csrf_field() ?>
 <table cellspacing="1" class="outer">
   <tr>
     <th colspan="2">Umfragedetails</th>

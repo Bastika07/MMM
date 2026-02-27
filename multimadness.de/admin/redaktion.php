@@ -13,6 +13,7 @@ function show_form ()
 	global $KATEGORIE_MAILING, $KATEGORIEINFO, $loginID, $dbname;
 
 	echo "<form method=\"post\" action=\"redaktion.php?nKategorieID=".intval($_GET['nKategorieID'])."&iAction=".htmlspecialchars($_GET['iAction'] ?? '', ENT_QUOTES | ENT_HTML5, 'UTF-8')."&nInhaltID=".intval($_GET['nInhaltID'])."\" name=\"data\">";
+	echo csrf_field() . "\n";
 	echo "<input type=\"hidden\" name=\"iParent\" value=\"".htmlspecialchars($_POST['Parent'] ?? '', ENT_QUOTES | ENT_HTML5, 'UTF-8')."\">";
 
 	if ($_GET['nKategorieID'] == $KATEGORIE_MAILING) {

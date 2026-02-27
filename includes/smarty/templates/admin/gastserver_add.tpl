@@ -11,6 +11,7 @@
   <p class="fehler">{$error}</p>
   {/if}
   <form action="{$smarty.server.SCRIPT_NAME}?action=add&mandant={$mandant_id}" method="post">
+    {csrf_field}
     <input type="hidden" name="action" value="add"/>
     <input type="hidden" name="mandant" value="{$mandant_id}"/>
     <table cellspacing="1" class="outer">

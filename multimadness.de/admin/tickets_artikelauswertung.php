@@ -19,6 +19,7 @@ echo "<h1>Accounting: Artikelauswertung</h1>";
 	<table width="100%" cellspacing="1" cellpadding="3" border="0">
 
 	<form method="post" name="filter" action="tickets_artikelauswertung.php">
+	<?= csrf_field() ?>
 
 	<tr><td class="navbar" colspan="6"><b>Filtereinstellungen</b></td></tr>
 	<tr>
@@ -402,6 +403,7 @@ if ($_POST['typId'] > 0 && $_POST['filter'] > 0) {
 		<table width="100%" cellspacing="1" cellpadding="3" border="0">
 
 		<form method="post" name="filter" action="tickets_artikelauswertung.php">
+		<?= csrf_field() ?>
 
 		<tr><td class="navbar"><b>Best.-Nr.</b></td><td class="navbar"><b>Anzahl</b></td><td class="navbar"><b>Name</b></td><td class="navbar"><b>PLZ</b></td><td class="navbar"><b>Bestellt am</b></td><td class="navbar"><b>Status</b></td></tr>
 

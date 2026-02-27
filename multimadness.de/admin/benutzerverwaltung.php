@@ -32,6 +32,7 @@ gesuchten Wert enthalten, werden angezeigt. Es wird nicht nach Gross- und Kleins
 <table width="100%" cellspacing="1" cellpadding="3" border="0">
 
 <form method="post" action="benutzerverwaltung.php">
+<?= csrf_field() ?>
 
 <input type="hidden" name="iGo" value="yes">
 <input type="hidden" name="iDest" value="<?=$iDest?>">

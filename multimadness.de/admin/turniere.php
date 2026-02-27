@@ -24,6 +24,7 @@ function show_form() {
 ?>
 
 <form method="post" action="<?= $_SERVER['SCRIPT_NAME'] ?>" name="data">
+<?= csrf_field() ?>
   <input type="hidden" name="Action" value="<?= $Action ?>"/>
   <input type="hidden" name="TurnierID" value="<?= $TurnierID ?>"/>
   <input type="hidden" name="MandantID" value="<?= $MandantID ?>"/>

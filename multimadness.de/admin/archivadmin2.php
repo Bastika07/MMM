@@ -112,6 +112,7 @@ if ($_GET['action'] == "release") {
 		//Sicherheitsabfrage anzeigen
 		?>
 		<form method="post" action="archivadmin2.php?action=<?= htmlspecialchars($_GET['action'] ?? '', ENT_QUOTES | ENT_HTML5, 'UTF-8') ?>&id=<?= intval($_GET['id']) ?>" name="data">
+		<?= csrf_field() ?>
 
 		<input type="hidden" name="iDelete" value="yes">
 
@@ -152,6 +153,7 @@ if ($_GET['action'] == "release") {
 	<table width="100%" cellspacing="1" cellpadding="3" border="0">
 
 	<form method="post" action="archivadmin2.php">
+	<?= csrf_field() ?>
 
 	<input type="hidden" name="iGo" value="yes">
 

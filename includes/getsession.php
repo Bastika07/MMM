@@ -78,8 +78,9 @@ if (isset($_SESSION['MMMSESSION']['nLoginID'])) {
 	$nLoginID = "";
 }
 
-// Ensure a CSRF token exists for this session.
+// Ensure a CSRF token exists for this session and verify on POST requests.
 csrf_token();
+csrf_verify();
 
 // Wenn keine aktuelle Session beim Client gespeichert ist
 if ( ( !isset($_SESSION['MMMSESSION']['nLoginID']) || $_SESSION['MMMSESSION']["nLoginID"] < 1 ) && isset($_COOKIE['pelasGlobalLogin']) ) {

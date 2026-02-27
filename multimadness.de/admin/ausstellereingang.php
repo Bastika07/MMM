@@ -179,6 +179,7 @@ if ($iMandantID < 1) {
 			$countIt++;
 	}
 	echo "<form name='eintragen' action='ausstellereingang.php?action=eintragen' method='post'>\n";
+	echo csrf_field() . "\n";
 	echo "<input type='hidden' name='iMandantID' value='".$iMandantID."'>\n";
 	echo "<tr><td class='$bgc'><input type='text' style='width:100px' maxlength='100' name='vorname' value='".htmlspecialchars($_POST['vorname'] ?? '', ENT_QUOTES | ENT_HTML5, 'UTF-8')."'> <input type='text' maxlength='100'  style='width:100px' name='nachname' value='".htmlspecialchars($_POST['nachname'] ?? '', ENT_QUOTES | ENT_HTML5, 'UTF-8')."'></td>\n";
 	echo "<td class='$bgc'><select name='typ' width='100'>\n";

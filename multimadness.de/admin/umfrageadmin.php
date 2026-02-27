@@ -40,6 +40,7 @@ if ($iMandantID < 1) {
 <p>Beachte, dass eine Bearbeitung nach der Freigabe eine Verfälschung des Ergebnisses herbeiführt.</p>
 
 <form method="post" action="<?= $_SERVER['SCRIPT_NAME'] ?>?iMandantID=<?= $iMandantID ?>&amp;action=edit&iUmfrage=<?= intval($_GET['iUmfrage']); ?>" name="Kopf">
+<?= csrf_field() ?>
   <input type="hidden" name="Was" value="Kopf"/>
 <table cellspacing="1" class="outer">
   <tr>
@@ -96,6 +97,7 @@ if ($iMandantID < 1) {
 <br/>
 
 <form method="post" action="<?= $_SERVER['SCRIPT_NAME'] ?>?iMandantID=<?= $iMandantID ?>&amp;action=edit&iUmfrage=<?= intval($_GET['iUmfrage']); ?>" name="Body">
+<?= csrf_field() ?>
 <table cellspacing="1" class="outer">
   <input type="hidden" name="iName" value="<?= $iName ?>"/>
   <input type="hidden" name="iBeschreibung" value="<?= $iBeschreibung ?>"/>
@@ -167,6 +169,7 @@ if ($iMandantID < 1) {
 <p><a href="umfrageadmin_add.php?iMandantID=<?= $iMandantID ?>">Umfrage für diesen Mandanten anlegen</a></p>
 
 <form action="<?= $_SERVER['SCRIPT_NAME'] ?>?iMandantID=<?= $iMandantID ?>&amp;action=festlegen" method="post">
+<?= csrf_field() ?>
 <table cellspacing="1" class="outer">
   <tr>
     <th>ID</th>

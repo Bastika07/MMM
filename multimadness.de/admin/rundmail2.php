@@ -230,6 +230,7 @@ if (isset($_POST['iGo']) && $_POST['iGo'] == "yes") {
 		}
 		if ($counter2 >= $maxCount) {
 			echo "<form name=\"weiter\" action=\"rundmail2.php?counter=".intval($_GET['counter'])."&nInhaltID=".intval($_GET['nInhaltID'])."\" method=post>";
+		echo csrf_field() . "\n";
 			echo "<input type=\"hidden\" name=\"iGo\" value=\"yes\">";
 			echo "<input type=\"hidden\" name=\"wer\" value=\"".htmlspecialchars($_POST['wer'] ?? '', ENT_QUOTES | ENT_HTML5, 'UTF-8')."\">";
 			echo "<input type=\"hidden\" name=\"iMandant\" value=\"".intval($_POST['iMandant'] ?? 0)."\">";
@@ -256,6 +257,7 @@ else
 	<p><u>Info</u>: Alle User, die im Profil den Newsletterversand nicht aktiviert oder den Versand nicht per Bestätigungslink freigeschaltet haben, werden keine Email erhalten.</p>
 	<table>
 	<form action="rundmail2.php?counter=0&nInhaltID=<?= intval($_GET['nInhaltID']); ?>" method=post>
+	<?= csrf_field() ?>
 	<input type=hidden name=iGo value=yes>
 
 	<tr>

@@ -17,6 +17,7 @@ $dbh = DB::connect();
 	<table width="100%" cellspacing="1" cellpadding="3" border="0">
 
 	<form method="post" name="filter" action="tickets_sitze.php">
+	<?= csrf_field() ?>
 
 	<input type="hidden" name="iGo" value="yes">
 

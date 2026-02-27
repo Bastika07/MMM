@@ -145,6 +145,7 @@ if (strlen($channel) < 1) {
 			echo '<td class="'.$bgc.'">'.db2display(User::name($rowS['owner'])).'</td>';
 			echo '<td class="'.$bgc.'">';
 			echo "<form style='margin:0;' name='del' method='post' action='eatv_schedule.php?channel=".htmlspecialchars($_GET['channel'] ?? '', ENT_QUOTES | ENT_HTML5, 'UTF-8')."&action=delete&broadcastId=".intval($rowS['broadcastId'])."'>\n";
+		echo csrf_field() . "\n";
 			echo "<input type='submit' value='delete'></form></td>";
 			echo '</tr>';
 			($bgc == 'hblau') ? $bgc = 'dblau' : $bgc = 'hblau';
@@ -155,6 +156,7 @@ if (strlen($channel) < 1) {
 	}
 
 	echo "<form name='eintragen' action='eatv_schedule.php?channel=".htmlspecialchars($_GET['channel'] ?? '', ENT_QUOTES | ENT_HTML5, 'UTF-8')."&action=eintragen' method='post'>\n";
+	echo csrf_field() . "\n";
 	echo "<tr><td class='$bgc'><nobr><input type='text' style='width:80px' maxlength='10' name='startDate' id='startDate' class='datepicker' value='".( (isset($_POST['startDate'])) ? htmlspecialchars($_POST['startDate'], ENT_QUOTES | ENT_HTML5, 'UTF-8') : "" )."'> ";
 		echo "<select name='startHour'>\n";
 		for ($i=0;$i<=23;$i++) {

@@ -45,6 +45,7 @@ if ($_POST['iGo'] == "Yes") {
 			echo "<table width=\"100%\" cellspacing=\"1\" cellpadding=\"3\">\n";
 			echo "<tr><td class=\"navbar\" colspan=\"3\"><b>".db2display($row['BESCHREIBUNG'])."</b></td></tr>";
 			echo "<form method=\"post\" action=\"config.php\">";
+			echo csrf_field() . "\n";
 			echo "<input type=\"hidden\" name=\"iMandant\" value=\"".$row['MANDANTID']."\">";
 			$sql = "select * from CONFIG where MANDANTID=".intval($theMandant)." order by PARAMETER";
 			$resultCDatas= DB::getRows($sql);

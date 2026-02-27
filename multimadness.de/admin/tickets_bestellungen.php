@@ -139,6 +139,7 @@ if ($_GET['action'] == "detail") {
 			showOpenBill($_GET['iBestellId'], 0, $row['mandantId'], (isset($_GET['iPartyId']) ? $_GET['iPartyId'] : false));
 
 			echo "<form name=\"statusSelect\" action=\"tickets_bestellungen.php?action=detail&iPartyId=".intval($_GET['iPartyId'])."&iBestellId=".intval($_GET['iBestellId'])."&detailaction=status&close=yes\" method=\"post\"><table><tr>";
+			echo csrf_field() . "\n";
 			if ($_POST['bestellStatus'] != ACC_STATUS_BEZAHLT) {
 				echo "<td valign=\"top\" width=\"140\"><input type=\"button\" value=\"Geldeingang\" OnClick=\"javascript:relocate();\"></td>";
 			}
@@ -222,6 +223,7 @@ if ($_GET['action'] == "detail") {
 	<table width="100%" cellspacing="1" cellpadding="3" border="0">
 
 	<form method="post" name="filter" action="tickets_bestellungen.php">
+	<?= csrf_field() ?>
 
 	<input type="hidden" name="iGo" value="yes">
 

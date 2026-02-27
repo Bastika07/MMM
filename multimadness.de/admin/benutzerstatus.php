@@ -152,6 +152,7 @@ if ($iGo == 'yes') {
 } else {
 
 	echo "<form method=\"post\" action=\"benutzerstatus.php?id=".intval($id)."&nMandantID=".intval($nMandantID)."&nOldStatus=".intval($nOldStatus)."\" name=\"details\">";
+	echo csrf_field() . "\n";
 
 	echo "<input type=\"hidden\" name=\"iGo\" value=\"yes\">";
 

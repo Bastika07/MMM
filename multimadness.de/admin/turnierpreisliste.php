@@ -12,6 +12,7 @@ echo "<h1>Turniere: Preiseliste ausgeben</h1>";
 // Mandant nicht gewählt
 if ($iMandantID < 1) {
 	echo "<form method=\"post\" action=\"turnierpreisliste.php\">";
+	echo csrf_field() . "\n";
 	echo "<p>Mandantauswahl: <select name=\"iMandantID\">\n";
 		
 	$result= DB::query("select m.MANDANTID, m.BESCHREIBUNG from RECHTZUORDNUNG r, MANDANT m where r.USERID=$loginID and r.RECHTID='TURNIERADMIN' and r.MANDANTID=m.MANDANTID and r.MANDANTID > 0");
