@@ -91,6 +91,7 @@ pipeline (`.github/workflows/phpunit.yml`) runs the full suite against PHP 8.1,
 
 | Test class | Covers |
 |---|---|
+| `RouterTest` | `Router::add()`, `resolve()`, `has()`, `getRoutes()`, `getDefaultId()`, and the full production route table |
 | `PelasTest` | Pure methods of `PELAS`: `HashPassword`, `PayPalGebuehr`, `formatBestellNr`, `formatTicketNr`, `userLink`, `countdown` |
 | `CsrfTest` | `csrf_token()`, `csrf_field()`, `csrf_verify()` helpers in `dblib.php` |
 | `TurnierConstantsTest` | Tournament flag/status constants in `includes/turnier/t_constants.php` |
@@ -278,7 +279,11 @@ Browser → multimadness.de/index.php
 
 ### Routing
 
-`index.php` maps integer page IDs to file names:
+`index.php` uses the `Router` class (`includes/classes/Router.class.php`) to map
+integer page IDs to module names.  A `Router` instance is built with a fluent
+`add(int $id, string $module)` call chain, and `resolve(int $pageId)` returns the
+module name for the current request (falling back to the default page when the ID
+is not registered).
 
 | Page ID | Module |
 |---|---|
@@ -427,7 +432,7 @@ Each block sets:
 
 8. ~~**Global variable pollution**~~ — **Fixed.** A lightweight `AuthState` value-object (`includes/classes/AuthState.class.php`) now encapsulates the `$nLoginID` / `$sLogin` pair.  `includes/getsession.php` instantiates it at the end of session resolution and exposes it as `$authState`; `includes/security.php` uses `$authState->isLoggedIn()` for the authentication guard.  `BenutzerHatRechtMandant()` accepts an optional `?AuthState $auth` parameter so callers can pass the object explicitly instead of relying on the `global $loginID` side-channel.  The existing bare globals (`$nLoginID`, `$sLogin`, `$loginID`) are preserved for backward compatibility with the 70+ files that still read them directly, but new code should use `AuthState` via dependency injection.
 
-9. **Inline HTML / mixed concerns** — Page modules (files under `includes/pelasfront/`, `multimadness.de/page/`, and `multimadness.de/admin/`) mix raw SQL queries, business logic, and HTML output in the same file with no separation of concerns. For example, `includes/pelasfront/teilnahme.php` issues DB queries, performs business-logic calculations, and `echo`s HTML form markup all in the same function. This tight coupling makes unit-testing individual concerns impossible without a browser/DB harness. The long-term fix is to separate controllers (routing + input validation) from models (DB/domain logic) and views (HTML templates).
+9. ~~**Inline HTML / mixed concerns**~~ — **Partially fixed.** A `Router` class (`includes/classes/Router.class.php`) now encapsulates the routing concern: it holds the page-ID → module-name map and exposes `add()`, `resolve()`, `has()`, and `getRoutes()` methods.  `multimadness.de/index.php` uses `Router` to resolve the requested page ID to a module name, separating routing from the rest of the front controller.  The page modules themselves (`includes/pelasfront/`, `multimadness.de/page/`) still mix logic and HTML output — a full MVC separation of controllers and views is the recommended next step.
 
 10. ~~**Outdated frontend libraries**~~ — **Fixed.** All vendored JS/CSS libraries have now been updated:
     - **jQuery** updated from legacy 2.x → **3.7.1** ✅ (done previously)
@@ -458,5 +463,5 @@ Each block sets:
 | ✅ | ~~Update or replace vendored frontend libraries~~ — jQuery 3.7.1, bxSlider 4.2.17, Lightbox 2.11.5 — done |
 | ✅ | ~~Remove `@` error-suppression prefix from all `DB::query()` / MySQLi calls and add proper error handling (see item 7 in Known Issues)~~ — done |
 | ✅ | ~~Encapsulate auth state (`$nLoginID`, `$sLogin`, `$loginID`) in a `Session`/`Auth` value-object and pass it via dependency injection instead of relying on PHP globals (see item 8)~~ — done |
-| 🟡 | Introduce a lightweight router/framework to separate routing, controllers, and views (see item 9) |
+| ✅ | ~~Introduce a lightweight router/framework to separate routing, controllers, and views (see item 9)~~ — `Router` class added; page modules still mix logic and HTML (full MVC split is the next step) |
 | 🟢 | Clean up dead/commented-out code in `pelasfunctions.php` |

@@ -5,6 +5,7 @@
 
 require_once('constants.php');
 require_once('classes/AuthState.class.php');
+require_once('classes/Router.class.php');
 
 
 /* `mysql_pconnect()` versucht, bestehende DB-Links wieder zu verwenden.
